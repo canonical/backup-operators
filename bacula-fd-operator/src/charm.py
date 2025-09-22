@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+"""Charm the service.
+
+Refer to the following post for a quick-start guide that will help you
+develop a new k8s charm using the Operator Framework:
+
+https://discourse.charmhub.io/t/4208
+"""
+
+import logging
+import typing
+
+from pathlib import Path
+
+import ops
+
+import charms.backup_integrator.v0.backup as backup
+
+import bacula
+import relations
+
+BACULA_DIR_RELATION_NAME = "bacula-dir"
+PEER_RELATION_NAME = "bacula-peer"
+BACKUP_SCRIPT_DIR = Path("/opt/bacula-fd-charm/")
+NOOP_SCRIPT = str((Path(__file__).parent / "noop.py").absolute())
+
+
+class NotReady(Exception):
+    pass
+
+
+class CharmFailureException(Exception):
+    pass
+
+
+logger = logging.getLogger(__name__)
+
+
+class BaculaFdCharm(ops.CharmBase):
+    """Charm the service."""
+
+    def __init__(self, *args: typing.Any):
+        """Construct.
+
+        Args:
+            args: Arguments passed to the CharmBase parent constructor.
+        """
+        super().__init__(*args)
+        self._backup_provider = backup.BackupProvider(charm=self)
+        self._bacula_dir = relations.BaculaRequirer(charm=self)
+        self.framework.observe(self.on.config_changed, self._reconcile_event)
+        self.framework.observe(self.on.upgrade_charm, self._reconcile_event)
+        self.framework.observe(self.on.secret_changed, self._reconcile_event)
+
+        self.framework.observe(self.on.bacula_peer_relation_created, self._reconcile_event)
+        self.framework.observe(self.on.bacula_peer_relation_changed, self._reconcile_event)
+        self.framework.observe(self.on.bacula_peer_relation_departed, self._reconcile_event)
+
+        self.framework.observe(self.on.bacula_dir_relation_changed, self._reconcile_event)
+        self.framework.observe(self.on.bacula_dir_relation_broken, self._reconcile_event)
+
+    def _get_peer_data(self) -> dict[str, str] | None:
+        peer_relation = self.model.get_relation(PEER_RELATION_NAME)
+        if not peer_relation:
+            return None
+        data = peer_relation.data[self.app]
+        peer_relation_factory = {
+            "name": lambda charm: "-".join(
+                [
+                    "relation",
+                    charm.model.name,
+                    charm.unit.name.replace("/", "-"),
+                    charm.model.uuid.split("-")[-1],
+                    "fd",
+                ]
+            ),
+        }
+        if set(data.keys()) != set(peer_relation_factory.keys()):
+            if self.unit.is_leader():
+                for key, factory in peer_relation_factory.items():
+                    if key not in data:
+                        data[key] = factory(self)
+                return dict(data)
+            else:
+                return {}
+        return dict(data)
+
+    def _load_schedule(self) -> list[str]:
+        schedule_list = self.config.get("schedule").split(",")
+        return [schedule.strip() for schedule in schedule_list if schedule.strip()]
+
+    def _get_unit_address(self) -> str:
+        peer_relation = self.model.get_relation(PEER_RELATION_NAME)
+        if not peer_relation:
+            raise NotReady("waiting for peer relation")
+        return peer_relation.data[self.unit]["ingress-address"]
+
+    def _reconcile(self):
+        if not bacula.is_installed():
+            self.unit.status = ops.WaitingStatus("installing bacula-fd")
+            bacula.install()
+            self.unit.status = ops.ActiveStatus()
+        peer_data = self._get_peer_data()
+        if not peer_data:
+            raise NotReady("waiting for peer data to be initialized")
+        name = peer_data["name"]
+        backup_relation = self.model.get_relation("backup")
+        if not backup_relation:
+            raise NotReady("waiting for backup relation")
+        try:
+            backup_spec = self._backup_provider.get_backup_spec(backup_relation)
+        except ValueError as exc:
+            raise CharmFailureException("invalid backup relation data: %s", exc)
+        if not backup_spec:
+            raise NotReady("waiting for backup relation data")
+        bacula_dir = self.model.get_relation("bacula-dir")
+        if not bacula_dir:
+            raise NotReady("waiting for bacula-dir relation")
+        port = self.config.get("port")
+        self.unit.set_ports(port)
+        self._bacula_dir.send_to_bacula_dir(
+            name=name,
+            port=port,
+            fileset=",".join(map(str, backup_spec.fileset)),
+            schedule=",".join(self._load_schedule()),
+            client_run_before_backup=backup_spec.run_before_backup or NOOP_SCRIPT,
+            client_run_after_backup=backup_spec.run_after_backup or NOOP_SCRIPT,
+            client_run_before_restore=backup_spec.run_before_restore or NOOP_SCRIPT,
+            client_run_after_restore=backup_spec.run_after_restore or NOOP_SCRIPT,
+        )
+        bacula_dir_data = self._bacula_dir.receive_from_bacula_dir()
+        if not bacula_dir_data:
+            raise NotReady("waiting for bacula-dir relation data")
+        dir_name, dir_password = bacula_dir_data["name"], bacula_dir_data["password"]
+        bacula.config_reload(
+            name=name,
+            host=self._get_unit_address(),
+            port=port,
+            director_name=dir_name,
+            director_password=dir_password,
+        )
+
+    def _reconcile_event(self, _: ops.EventBase):
+        try:
+            self._reconcile()
+            self.unit.status = ops.ActiveStatus()
+        except NotReady as exc:
+            self.unit.status = ops.WaitingStatus(str(exc))
+        except CharmFailureException as exc:
+            self.unit.status = ops.BlockedStatus(str(exc))
+
+
+if __name__ == "__main__":  # pragma: nocover
+    ops.main.main(BaculaFdCharm)

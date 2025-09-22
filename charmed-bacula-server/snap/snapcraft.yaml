@@ -1,0 +1,344 @@
+name: charmed-bacula-server
+base: core24
+version: "15.0.3"
+summary: Bacula dir/sd + Baculum in a snap.
+description: Bacula Director, Storage Daemon, and Baculum web GUI served by Apache in a snap.
+grade: devel
+confinement: strict
+
+layout:
+  /usr/bin/perl:
+    symlink: $SNAP/usr/bin/perl
+  /usr/bin/install:
+    bind-file: $SNAP/usr/bin/install
+  /etc/perl:
+    bind: $SNAP/etc/perl
+  /usr/local/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl:
+    bind: $SNAP/usr/local/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl
+  /usr/local/share/perl:
+    bind: $SNAP/usr/local/share/perl
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl5:
+    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl5
+  /usr/share/perl5:
+    bind: $SNAP/usr/share/perl5
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl-base:
+    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl-base
+  /usr/share/perl:
+    bind: $SNAP/usr/share/perl
+  /usr/local/lib/site_perl:
+    bind: $SNAP/usr/local/lib/site_perl
+  /usr/lib/postgresql/16:
+    bind: $SNAP/usr/lib/postgresql/16
+  /usr/share/postgresql:
+    bind: $SNAP/usr/share/postgresql
+  /var/lib/php/sessions:
+    bind: $SNAP_DATA/var/lib/php/sessions
+
+  /opt/bacula/bin:
+    bind: $SNAP/opt/bacula/bin
+  /opt/bacula/lib:
+    bind: $SNAP/opt/bacula/lib
+  /opt/bacula/plugins:
+    bind: $SNAP/opt/bacula/plugins
+  /opt/bacula/bsr:
+    bind: $SNAP_COMMON/opt/bacula/bsr
+  /opt/bacula/working:
+    bind: $SNAP_COMMON/opt/bacula/working
+  /opt/bacula/log:
+    bind: $SNAP_COMMON/opt/bacula/log
+  /opt/bacula/archive:
+    bind: $SNAP_COMMON/opt/bacula/archive
+  /opt/bacula/backups:
+    bind: $SNAP_COMMON/opt/bacula/backups
+  /opt/bacula/etc:
+    bind: $SNAP_COMMON/opt/bacula/etc
+
+  /etc/apache2:
+    bind: $SNAP/etc/apache2
+  /etc/php:
+    bind: $SNAP/etc/php
+  /usr/bin/php8.3:
+    bind-file: $SNAP/usr/bin/php8.3
+  /usr/lib/apache2:
+    bind: $SNAP/usr/lib/apache2
+  /usr/lib/php:
+    bind: $SNAP/usr/lib/php
+  /usr/share/php8.3-bcmath:
+    bind: $SNAP/usr/share/php8.3-bcmath
+  /usr/share/php8.3-common:
+    bind: $SNAP/usr/share/php8.3-common
+  /usr/share/php8.3-curl:
+    bind: $SNAP/usr/share/php8.3-curl
+  /usr/share/php8.3-ldap:
+    bind: $SNAP/usr/share/php8.3-ldap
+  /usr/share/php8.3-opcache:
+    bind: $SNAP/usr/share/php8.3-opcache
+  /usr/share/php8.3-pgsql:
+    bind: $SNAP/usr/share/php8.3-pgsql
+  /usr/share/php8.3-readline:
+    bind: $SNAP/usr/share/php8.3-readline
+  /usr/share/php8.3-xml:
+    bind: $SNAP/usr/share/php8.3-xml
+  /usr/share/apache2:
+    bind: $SNAP/usr/share/apache2
+
+  /etc/baculum/Config-web-apache:
+    bind: $SNAP_DATA/etc/baculum/Config-web-apache
+  /etc/baculum/Config-api-apache:
+    bind: $SNAP_DATA/etc/baculum/Config-api-apache
+
+  /usr/share/baculum/htdocs/AUTHORS:
+    bind-file: $SNAP/usr/share/baculum/htdocs/AUTHORS
+  /usr/share/baculum/htdocs/INSTALL:
+    bind-file: $SNAP/usr/share/baculum/htdocs/INSTALL
+  /usr/share/baculum/htdocs/LICENSE:
+    bind-file: $SNAP/usr/share/baculum/htdocs/LICENSE
+  /usr/share/baculum/htdocs/README:
+    bind-file: $SNAP/usr/share/baculum/htdocs/README
+  /usr/share/baculum/htdocs/assets:
+    bind: $SNAP_COMMON/usr/share/baculum/htdocs/assets
+  /usr/share/baculum/htdocs/index.php:
+    bind-file: $SNAP/usr/share/baculum/htdocs/index.php
+  /usr/share/baculum/htdocs/themes:
+    bind: $SNAP/usr/share/baculum/htdocs/themes
+  /usr/share/baculum/htdocs/protected/Common:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Common
+  /usr/share/baculum/htdocs/protected/application.xml:
+    bind-file: $SNAP/usr/share/baculum/htdocs/protected/application.xml
+  /usr/share/baculum/htdocs/protected/autoload.php:
+    bind-file: $SNAP/usr/share/baculum/htdocs/protected/autoload.php
+  /usr/share/baculum/htdocs/protected/runtime:
+    bind: $SNAP_DATA/usr/share/baculum/htdocs/protected/runtime
+  /usr/share/baculum/htdocs/protected/vendor:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/vendor
+  /usr/share/baculum/htdocs/protected/API/Config:
+    bind: $SNAP_COMMON/usr/share/baculum/htdocs/protected/API/Config
+  /usr/share/baculum/htdocs/protected/API/Lang:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/API/Lang
+  /usr/share/baculum/htdocs/protected/API/Layouts:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/API/Layouts
+  /usr/share/baculum/htdocs/protected/API/Logs:
+    bind: $SNAP_DATA/usr/share/baculum/htdocs/protected/API/Logs
+  /usr/share/baculum/htdocs/protected/API/Modules:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/API/Modules
+  /usr/share/baculum/htdocs/protected/API/Pages:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/API/Pages
+  /usr/share/baculum/htdocs/protected/API/Portlets:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/API/Portlets
+  /usr/share/baculum/htdocs/protected/Web/Config:
+    bind: $SNAP_COMMON/usr/share/baculum/htdocs/protected/Web/Config
+  /usr/share/baculum/htdocs/protected/Web/Data:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/Data
+  /usr/share/baculum/htdocs/protected/Web/Init.php:
+    bind-file: $SNAP/usr/share/baculum/htdocs/protected/Web/Init.php
+  /usr/share/baculum/htdocs/protected/Web/JavaScript:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/JavaScript
+  /usr/share/baculum/htdocs/protected/Web/Lang:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/Lang
+  /usr/share/baculum/htdocs/protected/Web/Layouts:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/Layouts
+  /usr/share/baculum/htdocs/protected/Web/Logs:
+    bind: $SNAP_DATA/usr/share/baculum/htdocs/protected/Web/Logs
+  /usr/share/baculum/htdocs/protected/Web/Modules:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/Modules
+  /usr/share/baculum/htdocs/protected/Web/Pages:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/Pages
+  /usr/share/baculum/htdocs/protected/Web/Portlets:
+    bind: $SNAP/usr/share/baculum/htdocs/protected/Web/Portlets
+  /usr/share/baculum/htdocs/protected/Web/endpoints.xml:
+    bind-file: $SNAP/usr/share/baculum/htdocs/protected/Web/endpoints.xml
+
+system-usernames:
+  _daemon_: shared
+
+apps:
+  baculum:
+    command: usr/sbin/apache2 -DFOREGROUND
+    daemon: simple
+    install-mode: disable
+    plugs: [ network, network-bind ]
+    environment:
+      APACHE_RUN_USER: _daemon_
+      APACHE_RUN_GROUP: _daemon_
+      APACHE_PID_FILE: $SNAP_DATA/apache2/run/apache2.pid
+      APACHE_RUN_DIR: $SNAP_DATA/apache2/run
+      APACHE_LOCK_DIR: $SNAP_DATA/apache2/lock
+      APACHE_LOG_DIR: $SNAP_DATA/apache2/log
+
+  bacula-fd:
+    command: opt/bacula/bin/bacula-fd -fP -c /opt/bacula/etc/bacula-fd.conf
+    daemon: simple
+    install-mode: disable
+    plugs: [ network, network-bind ]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
+
+  bacula-fd-test:
+    command: /opt/bacula/bin/bacula-fd -t -c
+    plugs: [ network ]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
+
+  bacula-sd:
+    command: opt/bacula/bin/bacula-sd -fP -c /opt/bacula/etc/bacula-sd.conf
+    daemon: simple
+    install-mode: disable
+    plugs: [ network, network-bind ]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
+
+  bacula-sd-test:
+    command: /opt/bacula/bin/bacula-sd -t -c
+    plugs: [ network ]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
+
+  bacula-dir:
+    command: opt/bacula/bin/bacula-dir -fP -c /opt/bacula/etc/bacula-dir.conf
+    daemon: simple
+    install-mode: disable
+    plugs: [ network, network-bind ]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
+
+  bacula-dir-test:
+    command: /opt/bacula/bin/bacula-dir -t -c
+    plugs: [ network ]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
+
+  bconsole:
+    plugs: [ network, network-bind ]
+    command: opt/bacula/bin/bconsole -c /opt/bacula/etc/bconsole.conf
+
+  make-postgresql-tables:
+    plugs: [ network, network-bind ]
+    command: opt/bacula/scripts/make_postgresql_tables
+
+  psql:
+    plugs: [ network ]
+    command: usr/bin/psql
+
+  htpasswd:
+    command: usr/bin/htpasswd
+
+parts:
+  libs3:
+    plugin: make
+    build-environment:
+      - CFLAGS: "-Wno-deprecated-declarations -Wno-format-overflow"
+    source: https://gitlab.bacula.org/bacula-community-edition/libs3.git
+    source-type: git
+    source-depth: 1
+    build-packages:
+      - libcurl4-openssl-dev
+      - libxml2-dev
+      - pkg-config
+    stage-packages:
+      - libcurl4t64
+      - libxml2
+
+  bacula:
+    after: [ libs3 ]
+    source: https://gitlab.bacula.org/bacula-community-edition/bacula-community.git
+    source-tag: Release-15.0.3
+    source-type: git
+    source-subdir: bacula
+    source-depth: 1
+    plugin: autotools
+    build-packages:
+      - libpq-dev
+      - libs3-dev
+      - libreadline-dev
+      - libssl-dev
+      - zlib1g-dev
+      - liblz4-dev
+      - libzstd-dev
+      - liblzo2-dev
+      - libacl1-dev
+      - libattr1-dev
+      - libcurl4-openssl-dev
+      - libcap-dev
+    stage-packages:
+      - libpq5
+      - libs3-2
+      - libreadline8t64
+      - libssl3
+      - zlib1g
+      - liblz4-1
+      - libzstd1
+      - liblzo2-2
+      - libacl1
+      - libattr1
+      - libcurl4t64
+      - libcap2
+      - postgresql-client
+    autotools-configure-parameters:
+      - --enable-smartalloc
+      - --enable-lockmgr
+      - --enable-build-dird
+      - --enable-build-stored
+      - --enable-ipv6
+      - --enable-batch-insert
+      - --enable-readline
+      - --with-readline
+      - --with-curl
+      - --with-zstd
+      - --with-openssl
+      - --with-postgresql
+      - --with-s3
+      - --with-aws
+      - --with-lzo
+      - --with-scriptdir=/opt/bacula/scripts
+      - --with-plugindir=/opt/bacula/plugins
+      - --libdir=/opt/bacula/lib
+      - --bindir=/opt/bacula/bin
+      - --sbindir=/opt/bacula/bin
+      - --sysconfdir=/opt/bacula/etc
+    override-build: |
+      craftctl default
+      chmod -R +rx $CRAFT_PART_INSTALL/opt/bacula/scripts
+      chmod -R +rx $CRAFT_PART_INSTALL/opt/bacula/bin
+
+  baculum:
+    source: https://gitlab.bacula.org/bacula-community-edition/bacula-community.git
+    source-tag: Release-15.0.3
+    source-type: git
+    source-subdir: gui/baculum
+    source-depth: 1
+    plugin: nil
+    stage-packages:
+      - apache2
+      - libapache2-mod-php8.3
+      - php8.3
+      - php8.3-pgsql
+      - php8.3-xml
+      - php8.3-bcmath
+      - php8.3-curl
+      - php8.3-ldap
+    override-build: |
+      cd $CRAFT_PART_SRC/gui/baculum
+      make DESTDIR=$CRAFT_PART_INSTALL SAMPLETYPE=deb-template HTTPDNAME=apache2 HTTPDSITECONF=sites-available
+      
+      for file in $CRAFT_PART_INSTALL/usr/share/baculum/htdocs/protected/*/Lang/*/messages.mo; do
+        cp -p $file $file.tmp
+        mv $file.tmp $file
+      done
+      
+      sed -i 's|/var/log/apache2|${APACHE_LOG_DIR}|g' $CRAFT_PART_INSTALL/etc/apache2/sites-available/baculum*
+      
+      find $CRAFT_PART_INSTALL/usr/share/php8.3* -name "*.ini" -exec cp "{}" $CRAFT_PART_INSTALL/etc/php/8.3/mods-available \;
+      
+      for file in $(ls $CRAFT_PART_INSTALL/etc/php/8.3/mods-available); do
+        ln -sf "../../mods-available/$file" "$CRAFT_PART_INSTALL/etc/php/8.3/apache2/conf.d/20-$file"
+      done
+
+      export APACHE_CONFDIR=$CRAFT_PART_INSTALL/etc/apache2
+
+      $CRAFT_PART_INSTALL/usr/sbin/a2dismod mpm_event
+      $CRAFT_PART_INSTALL/usr/sbin/a2enmod php8.3 rewrite access_compat alias auth_basic authn_core authn_file authz_core authz_host authz_user autoindex deflate dir env filter mime mpm_prefork negotiation reqtimeout setenvif status
+      $CRAFT_PART_INSTALL/usr/sbin/a2enconf charset localized-error-pages other-vhosts-access-log security serve-cgi-bin
+      $CRAFT_PART_INSTALL/usr/sbin/a2ensite baculum-web
+      $CRAFT_PART_INSTALL/usr/sbin/a2ensite baculum-api
+    organize:
+      "usr/lib/php/8.3/php.ini-production": /etc/php/8.3/apache2/php.ini

@@ -1,0 +1,75 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+# This file configures Charmcraft.
+# See https://canonical-charmcraft.readthedocs-hosted.com/stable/howto/manage-charmcraft/ 
+# for guidance.
+
+type: charm
+subordinate: true
+name: bacula-fd
+title: Bacula file daemon
+summary: A very short one-line summary of the charm.
+links:
+  documentation: https://discourse.charmhub.io
+  issues: https://github.com/canonical/is-charms-template-repo/issues
+  source: https://github.com/canonical/is-charms-template-repo
+  contact: https://launchpad.net/~canonical-is-devops
+
+description: |
+  A single sentence that says what the charm is, concisely and memorably.
+
+  A paragraph of one to three short sentences, that describe what the charm does.
+
+  A third paragraph that explains what need the charm meets.
+
+  Finally, a paragraph that describes whom the charm is useful for.
+
+platforms:
+  ubuntu@22.04:amd64:
+  ubuntu@24.04:amd64:
+
+peers:
+  bacula-peer:
+    interface: bacula_peer
+
+provides:
+  backup:
+    interface: backup
+    limit: 1
+
+requires:
+  bacula-dir:
+    interface: bacula_dir
+    limit: 1
+  juju-info:
+    interface: juju-info
+    limit: 1
+    scope: container
+
+config:
+  options:
+    port:
+      description: |
+        Listen port for the bacula file daemon.
+      default: 9102
+      type: int
+    schedule:
+      description: |
+        Defines when the backup job is to be run.
+        If not provided, the backup job will only run manually.
+        The detailed format of the schedule string is defined at https://docs.baculasystems.com/BETechnicalReference/Director/DirectorResourceTypes/ScheduleResource/index.html#director-schedule-run
+        You can provide multiple schedule strings separated by commas.
+      default: ""
+      type: string
+
+parts:
+  charm:
+    build-snaps:
+      - rustup
+    override-build: |
+      rustup default stable
+      craftctl default
+    build-packages:
+      - libffi-dev
+      - libssl-dev
+      - pkg-config
