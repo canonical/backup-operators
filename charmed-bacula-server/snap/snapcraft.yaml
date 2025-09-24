@@ -1,12 +1,17 @@
 name: charmed-bacula-server
 base: core24
 version: "15.0.3"
-summary: Bacula dir/sd + Baculum in a snap.
-description: Bacula Director, Storage Daemon, and Baculum web GUI served by Apache in a snap.
-grade: devel
+summary: Bacula dir/sd + Baculum in a snap for the bacula-server charm
+description: >-
+  Bacula Director, Storage Daemon, and the Baculum web GUI served by
+  Apache, all in a single snap. This snap is designed to be used by
+  the bacula-server charm to facilitate easy installation and 
+  management of the Bacula server components.
+
 confinement: strict
 
 layout:
+  # for psql
   /usr/bin/perl:
     symlink: $SNAP/usr/bin/perl
   /usr/bin/install:
@@ -34,6 +39,7 @@ layout:
   /var/lib/php/sessions:
     bind: $SNAP_DATA/var/lib/php/sessions
 
+  # for bacula
   /opt/bacula/bin:
     bind: $SNAP/opt/bacula/bin
   /opt/bacula/lib:
@@ -53,6 +59,7 @@ layout:
   /opt/bacula/etc:
     bind: $SNAP_COMMON/opt/bacula/etc
 
+  # for apache and PHP
   /etc/apache2:
     bind: $SNAP/etc/apache2
   /etc/php:
@@ -82,11 +89,7 @@ layout:
   /usr/share/apache2:
     bind: $SNAP/usr/share/apache2
 
-  /etc/baculum/Config-web-apache:
-    bind: $SNAP_DATA/etc/baculum/Config-web-apache
-  /etc/baculum/Config-api-apache:
-    bind: $SNAP_DATA/etc/baculum/Config-api-apache
-
+  # for baculum
   /usr/share/baculum/htdocs/AUTHORS:
     bind-file: $SNAP/usr/share/baculum/htdocs/AUTHORS
   /usr/share/baculum/htdocs/INSTALL:
@@ -336,8 +339,34 @@ parts:
       export APACHE_CONFDIR=$CRAFT_PART_INSTALL/etc/apache2
 
       $CRAFT_PART_INSTALL/usr/sbin/a2dismod mpm_event
-      $CRAFT_PART_INSTALL/usr/sbin/a2enmod php8.3 rewrite access_compat alias auth_basic authn_core authn_file authz_core authz_host authz_user autoindex deflate dir env filter mime mpm_prefork negotiation reqtimeout setenvif status
-      $CRAFT_PART_INSTALL/usr/sbin/a2enconf charset localized-error-pages other-vhosts-access-log security serve-cgi-bin
+      $CRAFT_PART_INSTALL/usr/sbin/a2enmod \
+        php8.3 \
+        rewrite \
+        access_compat \
+        alias \
+        auth_basic \
+        authn_core \
+        authn_file \
+        authz_core \
+        authz_host \
+        authz_user \
+        autoindex \
+        deflate \
+        dir \
+        env \
+        filter \
+        mime \
+        mpm_prefork \
+        negotiation \
+        reqtimeout \
+        setenvif \
+        statu
+      $CRAFT_PART_INSTALL/usr/sbin/a2enconf \
+        charset \
+        localized-error-pages \
+        other-vhosts-access-log \
+        security \
+        serve-cgi-bin
       $CRAFT_PART_INSTALL/usr/sbin/a2ensite baculum-web
       $CRAFT_PART_INSTALL/usr/sbin/a2ensite baculum-api
     organize:
