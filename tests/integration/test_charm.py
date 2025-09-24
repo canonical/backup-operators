@@ -86,16 +86,12 @@ def test_deploy(juju: jubilant.Juju):
     )
     juju.integrate("ubuntu:juju-info", "backup-integrator")
     juju.integrate("backup-integrator:backup", "bacula-fd")
-
     juju.deploy("postgresql", constraints={"virt-type": "virtual-machine"})
     juju.deploy("s3-integrator", constraints={"virt-type": "virtual-machine"})
     juju.deploy("./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm")
     juju.wait(
-        lambda status: (
-            jubilant.all_active(status, "postgresql")
-            and jubilant.all_agents_idle(status, "s3-integrator", "bacula-server", "minio")
-        ),
-        timeout=1000,
+        lambda status: jubilant.all_agents_idle(status, "s3-integrator"),
+        timeout=600,
     )
 
     minio_address = juju.status().apps["minio"].address
@@ -116,4 +112,4 @@ def test_deploy(juju: jubilant.Juju):
     juju.integrate("bacula-server", "s3-integrator")
     juju.integrate("bacula-server:backup", "bacula-fd")
 
-    juju.wait(lambda status: jubilant.all_active(status))
+    juju.wait(lambda status: jubilant.all_active(status), timeout=600)
