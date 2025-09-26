@@ -5,6 +5,7 @@
 
 """Integration tests."""
 import json
+import shutil
 import subprocess
 
 import jubilant
@@ -71,6 +72,15 @@ def deploy_minio(juju: jubilant.Juju):
 
 
 def test_deploy(juju: jubilant.Juju):
+    subprocess.check_call(["snapcraft", "pack"], cwd="./charmed-bacula-server/")
+    try:
+        shutil.copy(
+            "./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm",
+            "./bacula-server-operator/src",
+        )
+    except shutil.SameFileError:
+        pass
+
     subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-server-operator/")
     subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-fd-operator/")
     subprocess.check_call(["charmcraft", "pack"], cwd="./backup-integrator-operator/")

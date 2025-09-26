@@ -360,7 +360,7 @@ parts:
         negotiation \
         reqtimeout \
         setenvif \
-        statu
+        status
       $CRAFT_PART_INSTALL/usr/sbin/a2enconf \
         charset \
         localized-error-pages \
