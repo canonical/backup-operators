@@ -38,4 +38,4 @@ def config_reload(
     if current_config == config:
         return
     BACULA_FD_CONFIG_FILE.write_text(config)
-    systemd.service_reload("bacula-fd")
+    systemd.service_restart("bacula-fd")
