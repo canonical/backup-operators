@@ -1,0 +1,30 @@
+name: Publish snap
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - charmed-bacula-service/**
+
+jobs:
+  build:
+    name: Build charmed-bacula-server snap
+    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v35.0.2
+    with:
+      path-to-snap-project-directory: ./charmed-bacula-service
+
+  release:
+    name: Release charmed-bacula-server snap
+    needs:
+      - build
+    uses: canonical/data-platform-workflows/.github/workflows/release_snap.yaml@v35.0.2
+    with:
+      path-to-snap-project-directory: ./charmed-bacula-service
+      channel: latest/edge
+      artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
+    secrets:
+      snap-store-token: ${{ secrets.SNAP_STORE_TOKEN }}
+    permissions:
+      contents: write  # Needed to create git tags
