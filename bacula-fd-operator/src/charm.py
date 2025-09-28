@@ -60,6 +60,11 @@ class BaculaFdCharm(ops.CharmBase):
         self.framework.observe(self.on.bacula_peer_relation_changed, self._reconcile_event)
         self.framework.observe(self.on.bacula_peer_relation_departed, self._reconcile_event)
 
+        self.framework.observe(self.on.backup_relation_created, self._reconcile_event)
+        self.framework.observe(self.on.backup_relation_changed, self._reconcile_event)
+        self.framework.observe(self.on.backup_relation_departed, self._reconcile_event)
+        self.framework.observe(self.on.backup_relation_broken, self._reconcile_event)
+
         self.framework.observe(self.on.bacula_dir_relation_changed, self._reconcile_event)
         self.framework.observe(self.on.bacula_dir_relation_broken, self._reconcile_event)
 

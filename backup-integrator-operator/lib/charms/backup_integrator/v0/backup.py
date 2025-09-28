@@ -43,7 +43,9 @@ logger = logging.getLogger(__name__)
 
 class BackupSpec(BaseModel):
     model_config = ConfigDict(
-        alias_generator=lambda name: name.replace("_", "-"), serialize_by_alias=True
+        alias_generator=lambda name: name.replace("_", "-"),
+        serialize_by_alias=True,
+        populate_by_name=True,
     )
     fileset: List[Path]
     run_before_backup: Optional[Path] = None

@@ -42,12 +42,11 @@ class BackupIntegratorCharm(ops.CharmBase):
         )
         script_path.parent.mkdir(parents=True, exist_ok=True)
         script_path.write_text(content, encoding="utf-8")
+        script_path.chmod(0o755)
         return script_path
 
     def _reconcile(self, _: ops.EventBase):
-        fileset=[
-            file.strip() for file in self.config.get("fileset").split(",") if file.strip()
-        ]
+        fileset = [file.strip() for file in self.config.get("fileset").split(",") if file.strip()]
         if not fileset:
             self.unit.status = ops.WaitingStatus("waiting for fileset config")
             return

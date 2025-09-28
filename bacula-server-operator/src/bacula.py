@@ -1,6 +1,8 @@
 import dataclasses
+import glob
 import logging
 import os
+import signal
 import subprocess
 from pathlib import Path
 from typing import Literal
@@ -113,9 +115,10 @@ class BaculaService:
         bacula_snap = snap.SnapCache()["charmed-bacula-server"]
         bacula_service = bacula_snap.services[self.name]
         if bacula_service["active"]:
-            bacula_snap.restart([self.name], reload=True)
-            return
+            logger.warning("restarting %s service", self.name)
+            bacula_snap.restart([self.name])
         else:
+            logger.warning("starting %s service", self.name)
             bacula_snap.start([self.name], enable=True)
 
     def _current_config(self) -> dict[str, str]:
@@ -179,6 +182,26 @@ class BaculaDirService(BaculaService):
         "/opt/bacula/etc/bconsole.conf": "bconsole.conf.j2",
     }
 
+    def _reload_bacula_dir(self):
+        for exe_link in glob.glob("/proc/[0-9]*/exe"):
+            try:
+                exe = Path(os.readlink(exe_link)).resolve()
+                if exe.name == "bacula-dir":
+                    pid = int(exe_link.removeprefix("/proc/").removesuffix("/exe"))
+                    os.kill(pid, signal.SIGHUP)
+            except FileNotFoundError:
+                continue
+
+    def _reload(self):
+        bacula_snap = snap.SnapCache()["charmed-bacula-server"]
+        bacula_service = bacula_snap.services[self.name]
+        if bacula_service["active"]:
+            logger.info("reloading bacula-dir service")
+            self._reload_bacula_dir()
+        else:
+            logger.info("starting bacula-dir service")
+            bacula_snap.start([self.name], enable=True)
+
 
 class BaculumService(BaculaService):
     name: str = "baculum"
@@ -195,6 +218,13 @@ class BaculumService(BaculaService):
 
     def _test_config(self) -> bool:
         return True
+
+    def _reload(self):
+        bacula_snap = snap.SnapCache()["charmed-bacula-server"]
+        bacula_service = bacula_snap.services[self.name]
+        if not bacula_service["active"]:
+            logger.info("starting baculum service")
+            bacula_snap.start([self.name], enable=True)
 
 
 class Bacula:

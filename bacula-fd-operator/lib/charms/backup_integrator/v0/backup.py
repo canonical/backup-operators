@@ -40,7 +40,9 @@ DEFAULT_BACKUP_RELATION_NAME = "backup"
 
 class BackupSpec(BaseModel):
     model_config = ConfigDict(
-        alias_generator=lambda name: name.replace("_", "-"), serialize_by_alias=True
+        alias_generator=lambda name: name.replace("_", "-"),
+        serialize_by_alias=True,
+        populate_by_name=True,
     )
     fileset: List[Path]
     run_before_backup: Optional[Path] = None
@@ -68,9 +70,7 @@ class BackupSpec(BaseModel):
             if "," in str_path:
                 raise ValueError("path cannot contain commas")
         if [str(p) for p in v if not p.is_absolute()]:
-            raise ValueError(
-                f"all path in fileset must be absolute."
-            )
+            raise ValueError(f"all path in fileset must be absolute.")
         return v
 
     @field_serializer("fileset", mode="plain")
