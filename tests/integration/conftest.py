@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """Fixtures for integration tests."""
+import json
 import shutil
 import subprocess
 import textwrap
@@ -9,10 +10,10 @@ import textwrap
 import jubilant
 import pytest
 
-import baculum
+from tests.integration import baculum
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def deploy_minio(juju: jubilant.Juju):
     any_charm = textwrap.dedent(
         '''
@@ -74,7 +75,7 @@ def deploy_minio(juju: jubilant.Juju):
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def deploy_charms(juju: jubilant.Juju, deploy_minio):
     subprocess.check_call(["snapcraft", "pack"], cwd="./charmed-bacula-server/")
     try:
@@ -134,7 +135,7 @@ def deploy_charms(juju: jubilant.Juju, deploy_minio):
     juju.wait(lambda status: jubilant.all_active(status), timeout=7200)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def setup_database(juju: jubilant.Juju, deploy_charms):
     juju.ssh("ubuntu/0", "sudo apt-get install -y postgresql")
     juju.ssh("ubuntu/0", "sudo mkdir -p /var/backups/postgresql")
@@ -220,7 +221,7 @@ def setup_database(juju: jubilant.Juju, deploy_charms):
     )
 
 
-@pytest.fixture(scope="session", name="baculum")
+@pytest.fixture(scope="module", name="baculum")
 def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
     unit_name, unit = list(juju.status().apps["bacula-server"].units.items())[0]
     username = "test-admin"
