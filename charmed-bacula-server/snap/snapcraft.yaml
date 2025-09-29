@@ -251,7 +251,6 @@ parts:
     plugin: autotools
     build-packages:
       - libpq-dev
-      - libs3-dev
       - libreadline-dev
       - libssl-dev
       - zlib1g-dev
@@ -264,7 +263,6 @@ parts:
       - libcap-dev
     stage-packages:
       - libpq5
-      - libs3-2
       - libreadline8t64
       - libssl3
       - zlib1g

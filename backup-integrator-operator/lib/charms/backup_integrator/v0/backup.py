@@ -121,6 +121,24 @@ class BackupSpec(BaseModel):
         else:
             return str(v)
 
+class BackupProvider:
+    def __init__(
+        self,
+        charm: ops.CharmBase,
+        *,
+        relation_name: str = DEFAULT_BACKUP_RELATION_NAME,
+    ):
+        self._charm = charm
+        self._relation_name = relation_name
+
+    def get_backup_spec(self, relation: ops.Relation) -> Optional[BackupSpec]:
+        if relation.app is None:
+            return None
+        data = relation.data[relation.app]
+        if not data:
+            return None
+        return BackupSpec.model_validate(data)
+
 
 class BackupDynamicRequirer:
     def __init__(
@@ -192,22 +210,3 @@ class BackupRequirer:
 
     def _set_relation_data(self, _: ops.EventBase):
         self._dynamic_requirer._request_backup(spec=self._spec)
-
-
-class BackupProvider:
-    def __init__(
-        self,
-        charm: ops.CharmBase,
-        *,
-        relation_name: str = DEFAULT_BACKUP_RELATION_NAME,
-    ):
-        self._charm = charm
-        self._relation_name = relation_name
-
-    def get_backup_spec(self, relation: ops.Relation) -> Optional[BackupSpec]:
-        if relation.app is None:
-            return None
-        data = relation.data[relation.app]
-        if not data:
-            return None
-        return BackupSpec.model_validate(data)

@@ -7,6 +7,8 @@ import shutil
 import subprocess
 import textwrap
 
+import boto3
+import botocore.config
 import jubilant
 import pytest
 
@@ -233,3 +235,15 @@ def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
     ).results["password"]
     address = list(juju.status().apps["bacula-server"].units.values())[0].public_address
     return baculum.Baculum(f"http://{address}:9096/api/v2", username=username, password=password)
+
+
+@pytest.fixture(scope="module", name="s3")
+def s3_client(juju: jubilant.Juju, setup_database):
+    minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
+    return boto3.client(
+        "s3",
+        endpoint_url=f"http://{minio_address}:9000",
+        aws_access_key_id="minioadmin",
+        aws_secret_access_key="minioadmin",
+        config=botocore.config.Config(s3={"addressing_style": "path"}),
+    )
