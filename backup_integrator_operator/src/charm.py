@@ -8,8 +8,7 @@ import pathlib
 import typing
 
 import ops
-
-from ..lib.charms.backup_integrator.v0.backup import BackupDynamicRequirer
+from charms.backup_integrator.v0.backup import BackupDynamicRequirer
 
 logger = logging.getLogger(__name__)
 
