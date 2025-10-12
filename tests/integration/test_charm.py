@@ -40,6 +40,7 @@ def select_table(juju) -> str:
         "ubuntu/0", "sudo -u postgres psql -P pager=off -d ubuntu -c 'SELECT * FROM release;'"
     )
 
+
 def list_objects(s3, bucket) -> list[str]:
     paginator = s3.get_paginator("list_objects_v2")
     pages = paginator.paginate(Bucket=bucket)
@@ -48,6 +49,7 @@ def list_objects(s3, bucket) -> list[str]:
         for obj in page.get("Contents", []):
             objects.append(obj["Key"])
     return objects
+
 
 def test_backup_restore_database(juju: jubilant.Juju, baculum, s3):
     assert "Noble Numbat" in select_table(juju)

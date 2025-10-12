@@ -1,10 +1,10 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+from pathlib import Path
+
 import ops.testing
 import pytest
-
-from pathlib import Path
 
 
 @pytest.mark.parametrize("config", [{}, {"run-before-backup": "#!/bin/bash"}])
