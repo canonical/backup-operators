@@ -5,7 +5,7 @@
 
 # Learn more at: https://documentation.ubuntu.com/juju/3.6/howto/manage-charms/#build-a-charm
 
-"""Charm the service."""
+"""Bacula-server charm the service."""
 
 import json
 import logging
@@ -26,11 +26,11 @@ BACULUM_CHARM_USERNAME = "charm-admin"
 logger = logging.getLogger(__name__)
 
 
-class NotReadyException(Exception):
+class NotReadyError(Exception):
     pass
 
 
-class CharmFailureException(Exception):
+class UnrecoverableError(Exception):
     pass
 
 
@@ -107,7 +107,7 @@ class BaculaServerCharm(ops.CharmBase):
     def _get_db_config(self) -> bacula.DbConfig:
         relation = typing.cast(ops.Relation, self.model.get_relation(self._database.relation_name))
         if relation is None:
-            raise NotReadyException("waiting for postgresql relation")
+            raise NotReadyError("waiting for postgresql relation")
         relation_id = relation.id
         try:
             db_data = self._database.fetch_relation_data(
@@ -120,9 +120,9 @@ class BaculaServerCharm(ops.CharmBase):
                 "invalid postgresql integration: %s",
                 self._dump_relation("postgresql"),
             )
-            raise CharmFailureException("invalid postgresql relation") from exc
+            raise UnrecoverableError("invalid postgresql relation") from exc
         if "database" not in db_data:
-            raise NotReadyException("waiting for postgresql relation data")
+            raise NotReadyError("waiting for postgresql relation data")
         host, port = db_data["endpoints"].split(",")[0].split(":")
         return bacula.DbConfig(
             host=host,
@@ -135,10 +135,10 @@ class BaculaServerCharm(ops.CharmBase):
     def _get_s3_config(self) -> bacula.S3Config:
         relation = typing.cast(ops.Relation, self.model.get_relation(self._s3.relation_name))
         if relation is None:
-            raise NotReadyException("waiting for s3 relation")
+            raise NotReadyError("waiting for s3 relation")
         s3_data = self._s3.get_s3_connection_info()
         if not s3_data or "access-key" not in s3_data:
-            raise NotReadyException("waiting for s3 integration")
+            raise NotReadyError("waiting for s3 integration")
         url = urllib.parse.urlparse(s3_data["endpoint"])
         return bacula.S3Config(
             address=url.netloc,
@@ -152,18 +152,18 @@ class BaculaServerCharm(ops.CharmBase):
     def _get_unit_address(self) -> str:
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
-            raise NotReadyException("waiting for peer relation")
+            raise NotReadyError("waiting for peer relation")
         return peer_relation.data[self.unit]["ingress-address"]
 
     def _get_peer_data(self) -> dict:
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
-            raise NotReadyException("waiting for peer relation")
+            raise NotReadyError("waiting for peer relation")
         data = peer_relation.data[self.app]
         password_secret_id = data.get("passwords")
         if not self.unit.is_leader():
             if not password_secret_id:
-                raise NotReadyException("waiting for peer relation data")
+                raise NotReadyError("waiting for peer relation data")
         if not password_secret_id:
             passwords = {
                 "dir-password": secrets.token_urlsafe(32),
@@ -217,7 +217,7 @@ class BaculaServerCharm(ops.CharmBase):
         db_config = self._get_db_config()
         s3_config = self._get_s3_config()
         if not self._is_singleton():
-            raise CharmFailureException("bacula-server charm does not support multiple units")
+            raise UnrecoverableError("bacula-server charm does not support multiple units")
         if not self._bacula.is_installed():
             self.unit.status = ops.MaintenanceStatus("installing charmed-bacula-server")
             self._bacula.install()
@@ -235,7 +235,7 @@ class BaculaServerCharm(ops.CharmBase):
                 relation_fd_list=relation_fd_list,
             )
         except bacula.InvalidConfigError as exc:
-            raise CharmFailureException("failed to apply bacula configuration") from exc
+            raise UnrecoverableError("failed to apply bacula configuration") from exc
         self.unit.set_ports(9101, 9103, 9095, 9096)
         self._bacula.update_baculum_api_user(
             baculum_api_config.username,
@@ -250,10 +250,10 @@ class BaculaServerCharm(ops.CharmBase):
         try:
             self._reconcile()
             self.unit.status = ops.ActiveStatus()
-        except CharmFailureException as exc:
+        except UnrecoverableError as exc:
             self.unit.status = ops.BlockedStatus(str(exc))
             return
-        except NotReadyException as exc:
+        except NotReadyError as exc:
             self.unit.status = ops.WaitingStatus(str(exc))
             return
 
