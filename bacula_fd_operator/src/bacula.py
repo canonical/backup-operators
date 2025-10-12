@@ -1,7 +1,7 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""A helper library for controlling bacula-fd"""
+"""A helper library for managing bacula-fd"""
 
 from pathlib import Path
 

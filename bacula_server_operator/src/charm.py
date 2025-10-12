@@ -234,7 +234,7 @@ class BaculaServerCharm(ops.CharmBase):
                 baculum_api_config=baculum_api_config,
                 relation_fd_list=relation_fd_list,
             )
-        except bacula.BaculaServiceException as exc:
+        except bacula.InvalidConfigError as exc:
             raise CharmFailureException("failed to apply bacula configuration") from exc
         self.unit.set_ports(9101, 9103, 9095, 9096)
         self._bacula.update_baculum_api_user(
