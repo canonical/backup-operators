@@ -28,6 +28,22 @@ def install() -> None:
     apt.add_package(["bacula-fd"], update_cache=True)
 
 
+def restart() -> None:
+    """Restart bacula-fd service."""
+    systemd.service_restart("bacula-fd")
+
+
+def read_config() -> str:
+    """Read the current bacula-fd configuration file.
+
+    Returns:
+        The content of the bacula-fd configuration file, empty string if not exists.
+    """
+    if not BACULA_FD_CONFIG_FILE.exists():
+        return ""
+    return BACULA_FD_CONFIG_FILE.read_text(encoding="utf-8")
+
+
 def config_reload(
     *,
     name: str,
@@ -54,8 +70,8 @@ def config_reload(
         name=name,
         port=port,
     )
-    current_config = BACULA_FD_CONFIG_FILE.read_text(encoding="utf-8")
-    if current_config == config:
+    if config == read_config():
         return
     BACULA_FD_CONFIG_FILE.write_text(config)
-    systemd.service_restart("bacula-fd")
+    import uuid
+()

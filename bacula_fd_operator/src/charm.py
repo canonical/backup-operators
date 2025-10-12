@@ -14,12 +14,12 @@ import ops
 
 import charms.backup_integrator.v0.backup as backup
 
-import bacula
-import relations
+from . import bacula
+from . import relations
 
+BACKUP_RELATION_NAME = "backup"
 BACULA_DIR_RELATION_NAME = "bacula-dir"
 PEER_RELATION_NAME = "bacula-peer"
-BACKUP_SCRIPT_DIR = Path("/opt/bacula-fd-charm/")
 NOOP_SCRIPT = str((Path(__file__).parent / "noop.py").absolute())
 
 
@@ -27,7 +27,7 @@ class NotReady(Exception):
     """Charm is not ready."""
 
 
-class CharmFailureException(Exception):
+class UnrecoverableError(Exception):
     """Unrecoverable Charm failure."""
 
 
@@ -124,16 +124,16 @@ class BaculaFdCharm(ops.CharmBase):
         if not peer_data:
             raise NotReady("waiting for peer data to be initialized")
         name = peer_data["name"]
-        backup_relation = self.model.get_relation("backup")
+        backup_relation = self.model.get_relation(BACKUP_RELATION_NAME)
         if not backup_relation:
             raise NotReady("waiting for backup relation")
         try:
             backup_spec = self._backup_provider.get_backup_spec(backup_relation)
         except ValueError as exc:
-            raise CharmFailureException("invalid backup relation data: %s", exc)
+            raise UnrecoverableError("invalid backup relation data: %s", exc)
         if not backup_spec:
             raise NotReady("waiting for backup relation data")
-        bacula_dir = self.model.get_relation("bacula-dir")
+        bacula_dir = self.model.get_relation(BACULA_DIR_RELATION_NAME)
         if not bacula_dir:
             raise NotReady("waiting for bacula-dir relation")
         port = self.config.get("port")
@@ -166,7 +166,7 @@ class BaculaFdCharm(ops.CharmBase):
             self.unit.status = ops.ActiveStatus()
         except NotReady as exc:
             self.unit.status = ops.WaitingStatus(str(exc))
-        except CharmFailureException as exc:
+        except UnrecoverableError as exc:
             self.unit.status = ops.BlockedStatus(str(exc))
 
 

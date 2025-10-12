@@ -39,13 +39,25 @@ class BaculaRequirer:
         *,
         name: str,
         fileset: str,
-        port: int = 9102,
         client_run_before_backup: str,
         client_run_after_backup: str,
         client_run_before_restore: str,
         client_run_after_restore: str,
+        port: int = 9102,
         schedule: str | None = None,
     ) -> None:
+        """Send bacula-fd information to the bacula-dir.
+
+        Args:
+            name: bacula-fd name.
+            fileset: backup fileset.
+            client_run_before_backup: backup run-before-backup script.
+            client_run_after_backup: backup run-after-backup script.
+            client_run_before_restore: backup run-before-restore script.
+            client_run_after_restore: backup run-after-restore script.
+            port: bacula-fd port.
+            schedule: backup schedule.
+        """
         relation = self._charm.model.get_relation(self._relation_name)
         data = relation.data[self._charm.unit]
         data["name"] = name
@@ -61,6 +73,11 @@ class BaculaRequirer:
             del data["schedule"]
 
     def receive_from_bacula_dir(self) -> BaculaDirInfo | None:
+        """Receive the bacula-dir information from the bacula-dir.
+
+        Returns:
+            bacula-dir information or None if the relation or relation data doesn't exist.
+        """
         relation = self._charm.model.get_relation(self._relation_name)
         if not relation or not relation.app:
             return None
