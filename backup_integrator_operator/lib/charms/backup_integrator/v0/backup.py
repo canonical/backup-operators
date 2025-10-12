@@ -153,6 +153,8 @@ LIBAPI = 0
 # to 0 if you are raising the major API version
 LIBPATCH = 1
 
+PYDEPS = ["pydantic>=2"]
+
 DEFAULT_BACKUP_RELATION_NAME = "backup"
 
 logger = logging.getLogger(__name__)
