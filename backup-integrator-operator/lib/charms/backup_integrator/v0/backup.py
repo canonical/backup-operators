@@ -1,22 +1,139 @@
-"""TODO: Add a proper docstring here.
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
 
-This is a placeholder docstring for this charm library. Docstrings are
-presented on Charmhub and updated whenever you push a new version of the
-library.
+"""
+Library to manage the relation between backup providers and backup
+requirers.
 
-Complete documentation about creating and documenting libraries can be found
-in the SDK docs at https://juju.is/docs/sdk/libraries.
+Backup provider charms are charms that provide backup services, and
+backup requirer charms are charms that have files on the unit that need
+to be backed up. This library provides helper classes: `BackupProvider`
+for backup provider charms, and `BackupRequirer` and
+`BackupDynamicRequirer` for backup requirer charms.
 
-See `charmcraft publish-lib` and `charmcraft fetch-lib` for details of how to
-share and consume charm libraries. They serve to enhance collaboration
-between charmers. Use a charmer's libraries for classes that handle
-integration with their charm.
+## Understanding the Backup Relation
 
-Bear in mind that new revisions of the different major API versions (v0, v1,
-v2 etc) are maintained independently.  You can continue to update v0 and v1
-after you have pushed v3.
+On the requirer side, the backup relation contains five fields in the
+application databag that describe what to back up and how to perform the
+backup:
 
-Markdown is supported, following the CommonMark specification.
+* `fileset`
+* `run-before-backup` (optional)
+* `run-after-backup` (optional)
+* `run-before-restore` (optional)
+* `run-after-restore` (optional)
+
+The `fileset` field is a comma-separated list of files or directories
+that the backup provider charm will back up.
+
+The `run-before-backup`, `run-after-backup`, `run-before-restore`, and
+`run-after-restore` fields are optional and point to absolute paths of
+executable files on the requirer charm units. These executables can be
+scripts such as Bash or Python scripts, provided they include an
+appropriate shebang. If any of the fields are not provided, nothing will
+be executed before or after the backup or restore process. For
+`run-before-backup` and `run-before-restore`, if the scripts fail, the
+backup or restore operation will be canceled. These scripts can be
+useful for performing tasks such as preparing for a backup, automating a
+restore, and so on.
+
+On the provider side, the backup relation contains no data.
+
+## Backup Requirer Charm Using the `BackupRequirer` Class
+
+For most backup requirer charms, you should use the `BackupRequirer`
+class. To use it, simply initialize the `BackupRequirer` class with the
+appropriate arguments in the charm constructor. The input arguments (
+`fileset`, `run_before_backup`, `run_after_backup`,
+`run_before_restore`, `run_after_restore`) should ideally be hardcoded
+rather than dynamically generated. The `BackupRequirer` will handle all
+aspects of the backup relation.
+
+```python
+class FooCharm(ops.CharmBase):
+    def __init__(self, *args: typing.Any):
+        super().__init__(*args)
+        src_dir = pathlib.Path(__file__).parent
+        self._requirer = BackupRequirer(
+            charm=self,
+            fileset=["/var/backups/foo"],
+            run_before_backup=src_dir / "run_before_backup.py",
+            run_after_backup=src_dir / "run_after_backup.py",
+            run_after_restore=src_dir / "run_after_restore.py",
+        )
+```
+
+## Backup Requirer Charm Using the `BackupDynamicRequirer` Class
+
+In some rare cases, the charm does not know the exact backup
+specification at runtime—for example, when the backup fileset depends on
+charm configuration. In that case, you should use the
+`BackupDynamicRequirer` class. To use it, initialize the
+`BackupDynamicRequirer` class in the charm constructor. Unlike the
+`BackupRequirer` class, the backup specification is not provided during
+initialization. Instead, you must call
+`BackupDynamicRequirer.request_backup` within an event handler to
+provide the information dynamically. You can only call
+`BackupDynamicRequirer.request_backup` on the leader unit.
+
+```python
+class BarCharm(ops.CharmBase):
+    def __init__(self, *args: typing.Any):
+        super().__init__(*args)
+        self._requirer = BackupDynamicRequirer(charm=self)
+        self.framework.observe(
+            self.on.config_changed,
+            self._on_config_changed,
+        )
+
+    def _on_config_changed(self, _):
+        if not self.unit.is_leader():
+            return
+        fileset = [
+            file.strip()
+            for file in self.config.get("fileset").split(",")
+            if file.strip()
+        ]
+        if not fileset:
+            self.unit.status = ops.WaitingStatus("waiting for fileset config")
+            return
+        self._requirer.request_backup(fileset=fileset)
+
+```
+
+## Backup Provider Charm Using the `BackupProvider` Class
+
+If you are creating a new backup provider charm, you should use the
+`BackupProvider` class, which helps retrieve and validate the backup
+specifications provided by backup requirer charms.
+
+```python
+import ops
+
+
+class ProviderCharm(ops.CharmBase):
+    def __init__(self, *args: typing.Any):
+        super().__init__(*args)
+        self._provider = BackupProvider(charm=self)
+        self.framework.observe(
+            self.on._backup_relation_changed,
+            self._on_backup_relation_changed,
+        )
+
+    def _on_backup_relation_changed(self, _):
+        backup_relation = self.model.get_relation("backup")
+        if not backup_relation:
+            self.unit.status = ops.WaitingStatus("invalid backup relation data")
+            return
+        try:
+            backup_spec = self._provider.get_backup_spec(backup_relation)
+        except ValueError:
+            self.unit.status = ops.BlockedStatus("invalid backup relation data")
+            return
+        # do something with backup_spec
+        ...
+
+```
 """
 
 import logging
@@ -42,6 +159,22 @@ logger = logging.getLogger(__name__)
 
 
 class BackupSpec(BaseModel):
+    """BackupSpec describes what and how to back up a charm unit.
+
+    Attributes:
+        fileset: A list of absolute file or directory paths that need to be backed up.
+        run_before_backup: An optional absolute path to an executable that, if defined,
+            will run before the backup operation. If this command fails, the backup
+            operation will be canceled.
+        run_after_backup: An optional absolute path to an executable that, if defined,
+            will run after the backup operation completes.
+        run_before_restore: An optional absolute path to an executable that, if defined,
+            will run before the restore operation. If this command fails, the restore
+            operation will be canceled.
+        run_after_restore: An optional absolute path to an executable that, if defined,
+            will run after the restore operation completes.
+        model_config: The Pydantic model configuration.
+    """
     model_config = ConfigDict(
         alias_generator=lambda name: name.replace("_", "-"),
         serialize_by_alias=True,
@@ -56,6 +189,14 @@ class BackupSpec(BaseModel):
     @field_validator("fileset", mode="before")
     @classmethod
     def _coerce_fileset(cls, value: Union[str, List[str], List[Path]]) -> List[Path]:
+        """Normalizes the provided fileset input.
+
+        Args:
+            value: The input fileset to normalize.
+
+        Returns:
+            A normalized list of file and directory paths.
+        """
         if isinstance(value, str):
             parts = [p.strip() for p in value.split(",") if p.strip()]
             return [Path(p) for p in parts]
@@ -63,22 +204,41 @@ class BackupSpec(BaseModel):
 
     @field_validator("fileset", mode="after")
     @classmethod
-    def _validate_fileset(cls, v: list[Path]) -> list[Path]:
-        if not v:
+    def _validate_fileset(cls, value: list[Path]) -> list[Path]:
+        """Validates the given fileset input.
+
+        Args:
+            value: The input fileset to validate.
+
+        Returns:
+            A validated list of absolute file and directory paths.
+
+        Raises:
+            ValueError: If the fileset contains invalid paths or fails validation.
+        """
+        if not value:
             raise ValueError("fileset cannot be empty")
-        for path in v:
+        for path in value:
             str_path = str(path)
             if str_path != str_path.strip():
                 raise ValueError("path cannot start or end with whitespaces")
             if "," in str_path:
                 raise ValueError("path cannot contain commas")
-        if [str(p) for p in v if not p.is_absolute()]:
+        if [str(p) for p in value if not p.is_absolute()]:
             raise ValueError(f"all path in fileset must be absolute.")
-        return v
+        return value
 
     @field_serializer("fileset", mode="plain")
-    def _serialize_fileset(self, v: list[Path]) -> str:
-        return ",".join(map(str, v))
+    def _serialize_fileset(self, fileset: list[Path]) -> str:
+        """Serializes the given fileset into a string.
+
+        Args:
+            fileset: The fileset to serialize.
+
+        Returns:
+            The serialized fileset.
+        """
+        return ",".join(map(str, fileset))
 
     @field_validator(
         "run_before_backup",
@@ -88,10 +248,18 @@ class BackupSpec(BaseModel):
         mode="before",
     )
     @classmethod
-    def _coerce_optional_path(cls, v: Optional[Union[str, Path]]):
-        if v is None:
-            return v
-        return Path(v)
+    def _coerce_optional_path(cls, value: Optional[Union[str, Path]]):
+        """Normalizes the provided script path input.
+
+        Args:
+            value: The input script path to normalize.
+
+        Returns:
+            A normalized script path.
+        """
+        if value is None:
+            return value
+        return Path(value)
 
     @field_validator(
         "run_before_backup",
@@ -101,12 +269,23 @@ class BackupSpec(BaseModel):
         mode="after",
     )
     @classmethod
-    def _validate_optional_path_absolute(cls, v: Optional[Path]) -> Optional[Path]:
-        if v is None:
+    def _validate_optional_path_absolute(cls, value: Optional[Path]) -> Optional[Path]:
+        """Validates the given script path input.
+
+        Args:
+            value: The input script path to validate.
+
+        Returns:
+            A validated script path.
+
+        Raises:
+            ValueError: If the script path is invalid.
+        """
+        if value is None:
             return None
-        if not v.is_absolute():
+        if not value.is_absolute():
             raise ValueError("path must be absolute")
-        return v
+        return value
 
     @field_serializer(
         "run_before_backup",
@@ -115,23 +294,46 @@ class BackupSpec(BaseModel):
         "run_after_restore",
         mode="plain",
     )
-    def _serialize_optional_path(self, v: Optional[Path]) -> Optional[str]:
-        if v is None:
+    def _serialize_optional_path(self, value: Optional[Path]) -> Optional[str]:
+        """Serializes the given script path into a string.
+
+        Args:
+            value: The input script path.
+
+        Returns:
+            The serialized script path.
+        """
+        if value is None:
             return None
         else:
-            return str(v)
+            return str(value)
 
 class BackupProvider:
+    """Backup provider helper class."""
     def __init__(
         self,
         charm: ops.CharmBase,
         *,
         relation_name: str = DEFAULT_BACKUP_RELATION_NAME,
-    ):
+    ) -> None:
+        """Initialize the backup provider.
+
+        Args:
+            charm: The provider charm instance.
+            relation_name: The name of the backup relation.
+        """
         self._charm = charm
         self._relation_name = relation_name
 
     def get_backup_spec(self, relation: ops.Relation) -> Optional[BackupSpec]:
+        """Retrieve the backup spec for the given relation.
+
+        Args:
+            relation: The relation to get the backup spec from.
+
+        Returns:
+            The backup spec.
+        """
         if relation.app is None:
             return None
         data = relation.data[relation.app]
@@ -139,17 +341,28 @@ class BackupProvider:
             return None
         return BackupSpec.model_validate(data)
 
-
 class BackupDynamicRequirer:
+    """Backup requirer helper class."""
     def __init__(
         self,
         charm: ops.CharmBase,
         relation_name: str = DEFAULT_BACKUP_RELATION_NAME,
-    ):
+    ) -> None:
+        """Initialize the backup requirer.
+
+        Args:
+            charm: The requirer charm instance.
+            relation_name: The name of the backup relation.
+        """
         self._charm = charm
         self._relation_name = relation_name
 
-    def _request_backup(self, spec: BackupSpec):
+    def _request_backup(self, spec: BackupSpec) -> None:
+        """Update the backup requirement in the relation data.
+
+        Args:
+            spec: The backup spec.
+        """
         for relation in self._charm.model.relations[self._relation_name]:
             data = spec.model_dump(exclude_none=True)
             relation_data = relation.data[self._charm.app]
@@ -166,7 +379,22 @@ class BackupDynamicRequirer:
         run_after_backup: Optional[Union[str, Path]] = None,
         run_before_restore: Optional[Union[str, Path]] = None,
         run_after_restore: Optional[Union[str, Path]] = None,
-    ):
+    ) -> None:
+        """Update the backup requirement in the relation data.
+
+        Args:
+            fileset: A list of absolute file or directory paths that need to be backed up.
+            run_before_backup: An optional absolute path to an executable that, if defined,
+                will run before the backup operation. If this command fails, the backup
+                operation will be canceled.
+            run_after_backup: An optional absolute path to an executable that, if defined,
+                will run after the backup operation completes.
+            run_before_restore: An optional absolute path to an executable that, if defined,
+                will run before the restore operation. If this command fails, the restore
+                operation will be canceled.
+            run_after_restore: An optional absolute path to an executable that, if defined,
+                will run after the restore operation completes.
+        """
         spec = BackupSpec(
             fileset=fileset,
             run_before_backup=run_before_backup,
@@ -176,8 +404,8 @@ class BackupDynamicRequirer:
         )
         self._request_backup(spec)
 
-
 class BackupRequirer:
+    """Backup requirer helper class."""
     def __init__(
         self,
         charm: ops.CharmBase,
@@ -189,6 +417,23 @@ class BackupRequirer:
         run_after_restore: Optional[Union[str, Path]] = None,
         relation_name: str = DEFAULT_BACKUP_RELATION_NAME,
     ):
+        """Initialize the backup requirer.
+
+        Args:
+            charm: The requirer charm instance.
+            fileset: A list of absolute file or directory paths that need to be backed up.
+            run_before_backup: An optional absolute path to an executable that, if defined,
+                will run before the backup operation. If this command fails, the backup
+                operation will be canceled.
+            run_after_backup: An optional absolute path to an executable that, if defined,
+                will run after the backup operation completes.
+            run_before_restore: An optional absolute path to an executable that, if defined,
+                will run before the restore operation. If this command fails, the restore
+                operation will be canceled.
+            run_after_restore: An optional absolute path to an executable that, if defined,
+                will run after the restore operation completes.
+            relation_name: The name of the backup relation.
+        """
         self._charm = charm
         self._relation_name = relation_name
         self._spec = BackupSpec(
@@ -201,12 +446,15 @@ class BackupRequirer:
         self._dynamic_requirer = BackupDynamicRequirer(charm=charm, relation_name=relation_name)
         self._listen_on_every_event()
 
-    def _listen_on_every_event(self):
+    def _listen_on_every_event(self) -> None:
+        """Listen on every charm event."""
         for attr in dir(self._charm.on):
             event = getattr(self._charm.on, attr)
             if isinstance(event, ops.EventBase):
                 continue
             self._charm.framework.observe(event, self._set_relation_data)
 
-    def _set_relation_data(self, _: ops.EventBase):
-        self._dynamic_requirer._request_backup(spec=self._spec)
+    def _set_relation_data(self, _: ops.EventBase) -> None:
+        """Charm relation handler."""
+        if self._charm.unit.is_leader():
+            self._dynamic_requirer._request_backup(spec=self._spec)
