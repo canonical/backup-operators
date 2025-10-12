@@ -3,13 +3,7 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Charm the service.
-
-Refer to the following post for a quick-start guide that will help you
-develop a new k8s charm using the Operator Framework:
-
-https://discourse.charmhub.io/t/4208
-"""
+"""Bacula file daemon charm the service."""
 
 import logging
 import typing
@@ -30,18 +24,18 @@ NOOP_SCRIPT = str((Path(__file__).parent / "noop.py").absolute())
 
 
 class NotReady(Exception):
-    pass
+    """Charm is not ready."""
 
 
 class CharmFailureException(Exception):
-    pass
+    """Unrecoverable Charm failure."""
 
 
 logger = logging.getLogger(__name__)
 
 
 class BaculaFdCharm(ops.CharmBase):
-    """Charm the service."""
+    """Bacula file daemon charm the service."""
 
     def __init__(self, *args: typing.Any):
         """Construct.
@@ -52,6 +46,7 @@ class BaculaFdCharm(ops.CharmBase):
         super().__init__(*args)
         self._backup_provider = backup.BackupProvider(charm=self)
         self._bacula_dir = relations.BaculaRequirer(charm=self)
+
         self.framework.observe(self.on.config_changed, self._reconcile_event)
         self.framework.observe(self.on.upgrade_charm, self._reconcile_event)
         self.framework.observe(self.on.secret_changed, self._reconcile_event)
@@ -69,6 +64,11 @@ class BaculaFdCharm(ops.CharmBase):
         self.framework.observe(self.on.bacula_dir_relation_broken, self._reconcile_event)
 
     def _get_peer_data(self) -> dict[str, str] | None:
+        """Get data stored in the peer relation and initialize it if not exist.
+
+        Returns:
+            peer data stored in the peer relation, None if peer relation doesn't exist yet.
+        """
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
             return None
@@ -95,16 +95,27 @@ class BaculaFdCharm(ops.CharmBase):
         return dict(data)
 
     def _load_schedule(self) -> list[str]:
-        schedule_list = self.config.get("schedule").split(",")
-        return [schedule.strip() for schedule in schedule_list if schedule.strip()]
+        """Load the backup schedule configuration.
+
+        Returns:
+            Backup schedule configuration.
+        """
+        schedule_config = self.config.get("schedule").split(",")
+        return [schedule.strip() for schedule in schedule_config if schedule.strip()]
 
     def _get_unit_address(self) -> str:
+        """Get the address of the unit.
+
+        Returns:
+            The IP address of the unit.
+        """
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
             raise NotReady("waiting for peer relation")
         return peer_relation.data[self.unit]["ingress-address"]
 
-    def _reconcile(self):
+    def _reconcile(self) -> None:
+        """Reconcile the charm."""
         if not bacula.is_installed():
             self.unit.status = ops.WaitingStatus("installing bacula-fd")
             bacula.install()
@@ -137,19 +148,19 @@ class BaculaFdCharm(ops.CharmBase):
             client_run_before_restore=backup_spec.run_before_restore or NOOP_SCRIPT,
             client_run_after_restore=backup_spec.run_after_restore or NOOP_SCRIPT,
         )
-        bacula_dir_data = self._bacula_dir.receive_from_bacula_dir()
-        if not bacula_dir_data:
+        dir_data = self._bacula_dir.receive_from_bacula_dir()
+        if not dir_data:
             raise NotReady("waiting for bacula-dir relation data")
-        dir_name, dir_password = bacula_dir_data["name"], bacula_dir_data["password"]
         bacula.config_reload(
             name=name,
             host=self._get_unit_address(),
             port=port,
-            director_name=dir_name,
-            director_password=dir_password,
+            director_name=dir_data.name,
+            director_password=dir_data.password,
         )
 
-    def _reconcile_event(self, _: ops.EventBase):
+    def _reconcile_event(self, _: ops.EventBase) -> None:
+        """Reconcile the charm."""
         try:
             self._reconcile()
             self.unit.status = ops.ActiveStatus()

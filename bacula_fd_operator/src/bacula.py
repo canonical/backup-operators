@@ -1,3 +1,8 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+"""A helper library for controlling bacula-fd"""
+
 from pathlib import Path
 
 import jinja2
@@ -9,11 +14,17 @@ BACULA_FD_CONFIG_TEMPLATE_FILE = Path(__file__).parent / "templates/bacula-fd.co
 BACULA_FD_CONFIG_FILE = Path("/etc/bacula/bacula-fd.conf")
 
 
-def is_installed():
+def is_installed() -> bool:
+    """Check if bacula-fd is installed.
+
+    Returns:
+        True if bacula-fd is installed.
+    """
     return Path("/usr/sbin/bacula-fd").exists()
 
 
-def install():
+def install() -> None:
+    """Install bacula-fd."""
     apt.add_package(["bacula-fd"], update_cache=True)
 
 
@@ -24,7 +35,16 @@ def config_reload(
     port: int,
     director_name: str,
     director_password: str,
-):
+) -> None:
+    """Update and reload bacula-fd configuration.
+
+    Args:
+        name: bacula-fd name.
+        host: bacula-fd address.
+        port: bacula-fd port.
+        director_name: bacula-dir name.
+        director_password: bacula-dir password.
+    """
     env = jinja2.Environment()
     template = env.from_string(BACULA_FD_CONFIG_TEMPLATE_FILE.read_text())
     config = template.render(
