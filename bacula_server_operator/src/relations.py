@@ -1,3 +1,8 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+"""Library to handle the provider part of the bacula-dir relation."""
+
 import logging
 import secrets
 from pathlib import Path
@@ -12,6 +17,21 @@ logger = logging.getLogger(__name__)
 
 
 class BaculaFdInfo(BaseModel):
+    """Bacula file daemon information model.
+
+    Attributes:
+        model_config: Pydantic model configuration.
+        name: Bacula file daemon name.
+        fileset: backup fileset.
+        host: Bacula file daemon host.
+        port: Bacula file daemon port.
+        schedule: backup schedule.
+        client_run_before_backup: run script on Bacula file daemon before backup.
+        client_run_after_backup: run script on Bacula file daemon after backup
+        client_run_before_restore: run script on Bacula file daemon before restore.
+        client_run_after_restore: run script on Bacula file daemon after restore.
+    """
+
     model_config = ConfigDict(
         alias_generator=lambda name: name.replace("_", "-"), serialize_by_alias=True
     )
@@ -29,11 +49,26 @@ class BaculaFdInfo(BaseModel):
     @field_validator("name", mode="before")
     @classmethod
     def _coerce_name(cls, value: str) -> str:
+        """Normalize Bacula file daemon name.
+
+        Args:
+            value: Bacula file daemon name.
+
+        Returns:
+            Normalized Bacula file daemon name.
+        """
         return value.removesuffix("-fd")
 
     @field_validator("schedule", mode="before")
     @classmethod
     def _coerce_schedule(cls, value: str | None) -> list[str]:
+        """Normalize backup schedule.
+
+        Args:
+            value: backup schedule input.
+
+        Returns: normalized schedule.
+        """
         if not value:
             return []
         return [p.strip() for p in value.split(",") if p.strip()]
@@ -41,6 +76,13 @@ class BaculaFdInfo(BaseModel):
     @field_validator("fileset", mode="before")
     @classmethod
     def _coerce_fileset(cls, value: str) -> list[Path]:
+        """Normalize backup fileset.
+
+        Args:
+            value: backup fileset input.
+
+        Returns: normalized backup fileset.
+        """
         if isinstance(value, str):
             parts = [p.strip() for p in value.split(",") if p.strip()]
             return [Path(p) for p in parts]
@@ -48,26 +90,42 @@ class BaculaFdInfo(BaseModel):
 
     @field_validator("fileset", mode="after")
     @classmethod
-    def _validate_fileset(cls, v: list[Path]) -> list[Path]:
-        if not v:
+    def _validate_fileset(cls, valeu: list[Path]) -> list[Path]:
+        """Validate backup fileset input.
+
+        Args:
+            valeu: backup fileset input.
+
+        Returns: validated backup fileset.
+        """
+        if not valeu:
             raise ValueError("fileset cannot be empty")
-        for path in v:
+        for path in valeu:
             str_path = str(path)
             if str_path != str_path.strip():
                 raise ValueError("path cannot start or end with whitespaces")
             if "," in str_path:
                 raise ValueError("path cannot contain commas")
-        if [str(p) for p in v if not p.is_absolute()]:
+        if [str(p) for p in valeu if not p.is_absolute()]:
             raise ValueError(f"all path in fileset must be absolute.")
-        return v
+        return valeu
 
 
 class BaculaProvider:
-    def __init__(self, charm: ops.CharmBase, relation_name=BACULA_DIR_RELATION_NAME):
+    """bacula-dir relation provider."""
+
+    def __init__(self, charm: ops.CharmBase, relation_name=BACULA_DIR_RELATION_NAME) -> None:
+        """Initialize bacula-dir relation provider.
+
+        Args:
+            charm: charm instance.
+            relation_name: bacula-dir relation name.
+        """
         self._charm = charm
         self._relation_name = relation_name
 
-    def send_to_bacula_fd(self):
+    def send_to_bacula_fd(self) -> None:
+        """Send Bacula directory information to the Bacula file daemon."""
         relations = self._charm.model.relations[self._relation_name]
         for relation in relations:
             data = relation.data[self._charm.app]
@@ -82,6 +140,11 @@ class BaculaProvider:
             data["password"] = password_secret_id
 
     def receive_from_bacula_fd(self) -> list[BaculaFdInfo]:
+        """Receive Bacula file daemon information from relations.
+
+        Returns:
+            list of BaculaFdInfo retrieved from relations.
+        """
         relations = self._charm.model.relations[self._relation_name]
         info = []
         for relation in relations:

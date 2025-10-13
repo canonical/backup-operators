@@ -17,8 +17,8 @@ import ops
 
 import charms.data_platform_libs.v0.data_interfaces as data_interfaces
 import charms.data_platform_libs.v0.s3 as s3
-import bacula
-import relations
+from . import bacula
+from . import relations
 
 PEER_RELATION_NAME = "bacula-peer"
 BACULUM_CHARM_USERNAME = "charm-admin"
@@ -105,6 +105,11 @@ class BaculaServerCharm(ops.CharmBase):
         return json.dumps(dump)
 
     def _get_db_config(self) -> bacula.DbConfig:
+        """Get database configuration from the database relation.
+
+        Returns:
+            a database configuration object.
+        """
         relation = typing.cast(ops.Relation, self.model.get_relation(self._database.relation_name))
         if relation is None:
             raise NotReadyError("waiting for postgresql relation")
@@ -133,6 +138,11 @@ class BaculaServerCharm(ops.CharmBase):
         )
 
     def _get_s3_config(self) -> bacula.S3Config:
+        """Get s3 configuration from the s3 relation.
+
+        Returns:
+            a s3 configuration object.
+        """
         relation = typing.cast(ops.Relation, self.model.get_relation(self._s3.relation_name))
         if relation is None:
             raise NotReadyError("waiting for s3 relation")
@@ -150,12 +160,22 @@ class BaculaServerCharm(ops.CharmBase):
         )
 
     def _get_unit_address(self) -> str:
+        """Get the unit address of the unit.
+
+        Returns:
+            IP address of the unit.
+        """
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
             raise NotReadyError("waiting for peer relation")
         return peer_relation.data[self.unit]["ingress-address"]
 
     def _get_peer_data(self) -> dict:
+        """Get the peer data from the peer relation and initialize it if not exist.
+
+        Returns:
+            a dict containing the peer data.
+        """
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
             raise NotReadyError("waiting for peer relation")
@@ -179,6 +199,11 @@ class BaculaServerCharm(ops.CharmBase):
             return secret.get_content(refresh=True)
 
     def _get_bacula_config(self) -> bacula.BaculaConfig:
+        """Get bacula configuration.
+
+        Returns:
+            a bacula configuration object.
+        """
         passwords = self._get_peer_data()
         return bacula.BaculaConfig(
             dir_address=self._get_unit_address(),
@@ -192,12 +217,22 @@ class BaculaServerCharm(ops.CharmBase):
         )
 
     def _get_baculum_api_config(self) -> bacula.BaculumApiConfig:
+        """Get baculum api configuration.
+
+        Returns:
+            a baculum api configuration object.
+        """
         return bacula.BaculumApiConfig(
             username=BACULUM_CHARM_USERNAME,
             password=self._get_peer_data()["api-password"],
         )
 
     def _is_singleton(self) -> bool:
+        """Check if there are more than one unit in the bacula-server charm.
+
+        Returns:
+            True if there are only one unit in the bacula-server charm.
+        """
         relation = self.model.get_relation(PEER_RELATION_NAME)
         if not relation:
             return False
@@ -208,10 +243,16 @@ class BaculaServerCharm(ops.CharmBase):
         return self.unit.name == unit_names[0]
 
     def _list_relation_fd(self) -> list[relations.BaculaFdInfo]:
+        """List all established bacula-dir relations.
+
+        Returns:
+            a list of bacula-dir relations.
+        """
         self._bacula_dir_relation.send_to_bacula_fd()
         return self._bacula_dir_relation.receive_from_bacula_fd()
 
     def _reconcile(self) -> None:
+        """Reconcile the bacula-server."""
         bacula_config = self._get_bacula_config()
         baculum_api_config = self._get_baculum_api_config()
         db_config = self._get_db_config()
@@ -246,7 +287,8 @@ class BaculaServerCharm(ops.CharmBase):
             baculum_api_config.password,
         )
 
-    def _reconcile_event(self, _: ops.EventBase):
+    def _reconcile_event(self, _: ops.EventBase) -> None:
+        """Reconcile the bacula-server charm."""
         try:
             self._reconcile()
             self.unit.status = ops.ActiveStatus()
@@ -257,13 +299,23 @@ class BaculaServerCharm(ops.CharmBase):
             self.unit.status = ops.WaitingStatus(str(exc))
             return
 
-    def _on_create_api_user(self, event: ops.ActionEvent):
+    def _on_create_api_user(self, event: ops.ActionEvent) -> None:
+        """Event handler for the create-api-user action.
+
+        Args:
+            event: create-api-user action event.
+        """
         username = event.params["username"]
         password = secrets.token_urlsafe(16)
         self._bacula.update_baculum_api_user(username, password)
         event.set_results({"username": username, "password": password})
 
-    def _on_create_web_user(self, event: ops.ActionEvent):
+    def _on_create_web_user(self, event: ops.ActionEvent) -> None:
+        """Event handler for the create-web-user action.
+
+        Args:
+            event: create-web-user action event.
+        """
         username = event.params["username"]
         password = secrets.token_urlsafe(16)
         self._bacula.update_baculum_web_user(username, password)

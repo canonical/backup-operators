@@ -11,12 +11,12 @@ Director {
 }
 
 Storage {
-  Name        = charm-s3-storage                         # must match Device.Name in bacula-sd.conf
-  Address     = {{ bacula.dir_address }}                        # where your bacula-sd runs
-  SDPort      = 9103                                     # default port for bacula-sd
-  Password    = {{ bacula.sd_password }}                 # exact same secret as in the SD’s Director{} block
-  Device      = charm-s3-storage                         # the Device.Name in bacula-sd.conf
-  Media Type  = CloudType                                # the Media Type you chose in bacula-sd.conf
+  Name        = charm-s3-storage
+  Address     = {{ bacula.dir_address }}
+  SDPort      = 9103
+  Password    = {{ bacula.sd_password }}
+  Device      = charm-s3-storage
+  Media Type  = CloudType
 }
 
 Pool {
