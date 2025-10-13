@@ -3,6 +3,8 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+"""backup-integrator charm."""
+
 import logging
 import pathlib
 import typing
@@ -32,7 +34,7 @@ class BackupIntegratorCharm(ops.CharmBase):
         self.framework.observe(self.on.upgrade_charm, self._reconcile)
 
     def _save_script(self, config_option: str) -> pathlib.Path | None:
-        """Saves the content of a script configuration.
+        """Save the content of a script configuration.
 
         Args:
             config_option: The name of the script configuration option.

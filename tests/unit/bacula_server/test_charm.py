@@ -1,16 +1,20 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
+
 import textwrap
 
 import ops.testing
 
 import bacula_server_operator.src.bacula as bacula
-
 from bacula_server_operator.src.charm import BaculaServerCharm
 
 
 def make_s3_relation() -> ops.testing.Relation:
-    """Create an example S3 relation."""
+    """Create an example S3 relation.
+
+    Returns:
+        An example S3 relation object.
+    """
     return ops.testing.Relation(
         remote_app_name="s3-integrator",
         endpoint="s3",
@@ -25,7 +29,11 @@ def make_s3_relation() -> ops.testing.Relation:
 
 
 def make_postgresql_relation() -> ops.testing.Relation:
-    """Create an example postgresql relation."""
+    """Create an example postgresql relation.
+
+    Returns:
+        An example postgresql relation object.
+    """
     return ops.testing.Relation(
         remote_app_name="postgresql",
         endpoint="postgresql",
@@ -149,7 +157,7 @@ def test_bacula_fd_config():
               Name = charm-bacula-dir
               Password = {peer_secret_data['fd-password']}
             }}
-            
+
             FileDaemon {{
               Name = charm-bacula-fd
               FDport = 9102
@@ -159,7 +167,7 @@ def test_bacula_fd_config():
               Plugin Directory = /opt/bacula/plugins
               FDAddress = 127.0.0.1
             }}
-            
+
             Messages {{
               Name = Standard
               director = client1-dir = all, !skipped, !restored, !verified, !saved
@@ -202,7 +210,7 @@ def test_bacula_sd_config():
               Maximum Concurrent Jobs = 20
               SDAddress = 192.0.2.0
             }}
-            
+
             Cloud {{
               Name           = charm-s3-cloud
               Driver         = S3
@@ -215,7 +223,7 @@ def test_bacula_sd_config():
               Truncate Cache = AfterUpload
               Upload         = EachPart
             }}
-            
+
             Device {{
               Name              = charm-s3-storage
               Media Type        = CloudType
@@ -230,12 +238,12 @@ def test_bacula_sd_config():
               AlwaysOpen        = no
               Maximum Concurrent Jobs = 1
             }}
-            
+
             Director {{
               Name = charm-bacula-dir
               Password = "{peer_secret_data['sd-password']}"
             }}
-            
+
             Messages {{
               Name = Standard
               director = charm-bacula-dir = all
@@ -244,7 +252,8 @@ def test_bacula_sd_config():
         ).strip()
     )
 
-def test_bacula_sd_config():
+
+def test_bacula_dir_config():
     """
     arrange: integrate bacula-server charm with a postgresql and s3 relation.
     act: run config-changed event hook.
@@ -279,7 +288,7 @@ def test_bacula_sd_config():
               Messages = charm-daemon-messages
               DirAddress = 127.0.0.1
             }}
-            
+
             Storage {{
               Name        = charm-s3-storage
               Address     = 192.0.2.0
@@ -288,7 +297,7 @@ def test_bacula_sd_config():
               Device      = charm-s3-storage
               Media Type  = CloudType
             }}
-            
+
             Pool {{
               Name = charm-cloud-pool
               Pool Type = Backup
@@ -298,12 +307,12 @@ def test_bacula_sd_config():
               Volume Retention = 1 year
               Label Format = "bacula-server-vol-${{Year}}${{Month:p/2/0/r}}${{Day:p/2/0/r}}-${{Job}}-${{NumVols}}"
             }}
-            
+
             Schedule {{
               Name = charm-cloud-upload-schedule
               Run = daily at 01:00
             }}
-            
+
             Job {{
                 Name = charm-cloud-upload
                 Type = Admin
@@ -320,12 +329,12 @@ def test_bacula_sd_config():
                 Pool = charm-cloud-pool
                 Fileset = charm-empty-fileset
             }}
-            
+
             FileSet {{
               Name = charm-empty-fileset
               Include {{ File = /dev/null }}
             }}
-            
+
             Client {{
               Name = charm-bacula-fd
               Address = 127.0.0.1
@@ -335,7 +344,7 @@ def test_bacula_sd_config():
               File Retention = 1 year
               Job Retention = 1 year
             }}
-            
+
             Catalog {{
               Name = charm-catalog
               dbname = "bacula_db"
@@ -344,7 +353,7 @@ def test_bacula_sd_config():
               dbuser = "bacula_db_username"
               dbpassword = "bacula_db_password"
             }}
-            
+
             Messages {{
               Name = charm-daemon-messages
               # mailcommand = "/sbin/bsmtp -h localhost -f \\"\\(Bacula\\) \\<%r\\>\\" -s \\"Bacula daemon message\\" %r"

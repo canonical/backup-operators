@@ -80,7 +80,13 @@ def baculum_api_htpasswd(monkeypatch):
     """Patch Bacula.update_baculum_api_user."""
     htpasswd = {}
 
-    def update_user(self, username: str, password: str):
+    def update_user(_, username: str, password: str) -> None:
+        """Mock update_baculum_api_user function.
+
+        Args:
+            username: username
+            password: password
+        """
         htpasswd[username] = password
 
     monkeypatch.setattr(
@@ -97,7 +103,13 @@ def baculum_web_htpasswd(monkeypatch):
     """Patch Bacula.update_baculum_web_user."""
     htpasswd = {}
 
-    def update_user(self, username: str, password: str):
+    def update_user(_, username: str, password: str):
+        """Mock update_baculum_web_user function.
+
+        Args:
+            username: username
+            password: password
+        """
         htpasswd[username] = password
 
     monkeypatch.setattr(

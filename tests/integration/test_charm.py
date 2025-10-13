@@ -13,18 +13,20 @@ import jubilant
 logger = logging.getLogger(__name__)
 
 
-def test_list_jobs(baculum):
-    assert len(baculum.list_job_names()) == 3
-
-
-def test_connect_client(baculum):
-    clients = baculum.list_clients()
-    assert len(clients) == 2
-    for client in clients:
-        assert "Daemon started" in baculum.get_client_status(id=client["clientid"])
-
-
 def wait_job_complete(baculum, job_name, timeout=300) -> dict:
+    """Wait for a bacula job to complete.
+
+    Args:
+        baculum: baculum API client.
+        job_name: bacula job name.
+        timeout: timeout in seconds.
+
+    Returns:
+        completed job run object.
+
+    Raises:
+        TimeoutError: When timeout is reached.
+    """
     deadline = time.time() + timeout
     while time.time() < deadline:
         job_run = baculum.list_job_runs(job_name)[0]
@@ -36,12 +38,29 @@ def wait_job_complete(baculum, job_name, timeout=300) -> dict:
 
 
 def select_table(juju) -> str:
+    """Select all content from the test postgresql table.
+
+    Args:
+        juju: jubilant.Juju object.
+
+    Returns:
+        Table content.
+    """
     return juju.ssh(
         "ubuntu/0", "sudo -u postgres psql -P pager=off -d ubuntu -c 'SELECT * FROM release;'"
     )
 
 
 def list_objects(s3, bucket) -> list[str]:
+    """List all objects in a s3 bucket.
+
+    Args:
+        s3: S3 client.
+        bucket: S3 bucket name.
+
+    Returns:
+        List of object names.
+    """
     paginator = s3.get_paginator("list_objects_v2")
     pages = paginator.paginate(Bucket=bucket)
     objects = []
@@ -51,7 +70,33 @@ def list_objects(s3, bucket) -> list[str]:
     return objects
 
 
+def test_list_jobs(baculum):
+    """
+    arrange: deploy and integrate backup charms.
+    act: list bacula jobs using baculum API
+    assert: bacula-server should have the correct number of jobs
+    """
+    assert len(baculum.list_job_names()) == 3
+
+
+def test_connect_client(baculum):
+    """
+    arrange: deploy and integrate backup charms.
+    act: get client status using baculum API
+    assert: client should show normal status.
+    """
+    clients = baculum.list_clients()
+    assert len(clients) == 2
+    for client in clients:
+        assert "Daemon started" in baculum.get_client_status(id=client["clientid"])
+
+
 def test_backup_restore_database(juju: jubilant.Juju, baculum, s3):
+    """
+    arrange: deploy and integrate backup charms.
+    arrange: run a backup and restore.
+    assert: the backup and restore should work as intended.
+    """
     assert "Noble Numbat" in select_table(juju)
     assert len(list_objects(s3, "bacula")) == 0
 

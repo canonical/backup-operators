@@ -140,7 +140,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
               Name = bacula-dir
               Password = "foobar"
             }
-            
+
             FileDaemon {
               Name = relation-test-bacula-bacula-fd-0-000000000000-fd
               FDport = 9102
@@ -150,7 +150,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
               Plugin Directory = /usr/lib/bacula
               FDAddress = 192.0.2.0
             }
-            
+
             Messages {
               Name = Standard
               director = bacula-dir = all, !skipped, !restored, !verified, !saved

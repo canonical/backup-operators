@@ -90,25 +90,25 @@ class BaculaFdInfo(BaseModel):
 
     @field_validator("fileset", mode="after")
     @classmethod
-    def _validate_fileset(cls, valeu: list[Path]) -> list[Path]:
+    def _validate_fileset(cls, value: list[Path]) -> list[Path]:
         """Validate backup fileset input.
 
         Args:
-            valeu: backup fileset input.
+            value: backup fileset input.
 
         Returns: validated backup fileset.
         """
-        if not valeu:
+        if not value:
             raise ValueError("fileset cannot be empty")
-        for path in valeu:
+        for path in value:
             str_path = str(path)
             if str_path != str_path.strip():
                 raise ValueError("path cannot start or end with whitespaces")
             if "," in str_path:
                 raise ValueError("path cannot contain commas")
-        if [str(p) for p in valeu if not p.is_absolute()]:
+        if [str(p) for p in value if not p.is_absolute()]:
             raise ValueError(f"all path in fileset must be absolute.")
-        return valeu
+        return value
 
 
 class BaculaProvider:

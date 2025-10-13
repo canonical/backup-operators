@@ -5,8 +5,8 @@
 
 import pytest
 
-import bacula_fd_operator.src.charm
 import bacula_fd_operator.src.bacula
+import bacula_fd_operator.src.charm
 
 
 @pytest.fixture(autouse=True)
@@ -15,6 +15,7 @@ def bacula_fd_charm(monkeypatch, tmp_path):
     is_installed = False
 
     def _install():
+        """Mock installation function"""
         nonlocal is_installed
         is_installed = True
 
