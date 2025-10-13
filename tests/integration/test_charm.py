@@ -88,7 +88,7 @@ def test_connect_client(baculum):
     clients = baculum.list_clients()
     assert len(clients) == 2
     for client in clients:
-        assert "Daemon started" in baculum.get_client_status(id=client["clientid"])
+        assert "Daemon started" in baculum.get_client_status(client_id=client["clientid"])
 
 
 def test_backup_restore_database(juju: jubilant.Juju, baculum, s3):

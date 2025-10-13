@@ -1,7 +1,11 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+# for using fixtures in fixtures
+# pylint: disable=unused-argument
+
 """Fixtures for integration tests."""
+
 import json
 import shutil
 import subprocess
@@ -15,8 +19,9 @@ import pytest
 from tests.integration import baculum
 
 
-@pytest.fixture(scope="module")
-def deploy_minio(juju: jubilant.Juju):
+@pytest.fixture(scope="module", name="deploy_minio")
+def deploy_minio_fixture(juju: jubilant.Juju):
+    """Deploy the minio charm (using any-charm)."""
     any_charm = textwrap.dedent(
         '''
         import os
@@ -77,8 +82,9 @@ def deploy_minio(juju: jubilant.Juju):
     )
 
 
-@pytest.fixture(scope="module")
-def deploy_charms(juju: jubilant.Juju, deploy_minio):
+@pytest.fixture(scope="module", name="deploy_charms")
+def deploy_charms_fixture(juju: jubilant.Juju, deploy_minio):
+    """Deploy backup charms."""
     subprocess.check_call(["snapcraft", "pack"], cwd="./charmed-bacula-server/")
     try:
         shutil.copy(
@@ -134,11 +140,12 @@ def deploy_charms(juju: jubilant.Juju, deploy_minio):
     juju.integrate("bacula-server", "s3-integrator")
     juju.integrate("bacula-server", "bacula-fd")
 
-    juju.wait(lambda status: jubilant.all_active(status), timeout=7200)
+    juju.wait(jubilant.all_active, timeout=7200)
 
 
-@pytest.fixture(scope="module")
-def setup_database(juju: jubilant.Juju, deploy_charms):
+@pytest.fixture(scope="module", name="setup_database")
+def setup_database_fixture(juju: jubilant.Juju, deploy_charms):
+    """Setup backup source, a simple postgresql server."""
     juju.ssh("ubuntu/0", "sudo apt-get install -y postgresql")
     juju.ssh("ubuntu/0", "sudo mkdir -p /var/backups/postgresql")
     juju.ssh("ubuntu/0", "sudo chown postgres /var/backups/postgresql")
@@ -225,7 +232,8 @@ def setup_database(juju: jubilant.Juju, deploy_charms):
 
 @pytest.fixture(scope="module", name="baculum")
 def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
-    unit_name, unit = list(juju.status().apps["bacula-server"].units.items())[0]
+    """Initialize a Baculum API client."""
+    unit_name, _ = list(juju.status().apps["bacula-server"].units.items())[0]
     username = "test-admin"
     password = juju.run(
         unit_name,
@@ -239,6 +247,7 @@ def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
 
 @pytest.fixture(scope="module", name="s3")
 def s3_client(juju: jubilant.Juju, setup_database):
+    """Initialize a S3 client."""
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     return boto3.client(
         "s3",

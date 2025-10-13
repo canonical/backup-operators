@@ -1,11 +1,16 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+# for checking configuration files and mocking
+# pylint: disable=line-too-long,no-member
+
+"""bacula-server charm unit tests."""
+
 import textwrap
 
 import ops.testing
 
-import bacula_server_operator.src.bacula as bacula
+from bacula_server_operator.src import bacula
 from bacula_server_operator.src.charm import BaculaServerCharm
 
 
@@ -57,10 +62,9 @@ def test_no_database():
         leader=True,
         relations=[ops.testing.PeerRelation(endpoint="bacula-peer")],
     )
-
     state_out = ctx.run(ctx.on.config_changed(), state_in)
-    assert state_out.unit_status.name == "waiting"
     assert state_out.unit_status.message == "waiting for postgresql relation"
+    assert state_out.unit_status.name == "waiting"
 
 
 def test_no_s3():

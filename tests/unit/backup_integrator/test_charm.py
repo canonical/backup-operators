@@ -1,6 +1,8 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+"""backup-integrator charm unit tests."""
+
 from pathlib import Path
 
 import ops.testing
@@ -79,7 +81,7 @@ def test_update_backup_relation(backup_integrator_charm, config) -> None:
         if script not in config:
             assert script not in relation_data
         else:
-            assert config[script] == Path(relation_data[script]).read_text()
+            assert config[script] == Path(relation_data[script]).read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize("fileset", ["var/backups", "/var/backups,etc,/var/backups/foobar"])

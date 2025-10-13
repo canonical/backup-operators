@@ -154,14 +154,14 @@ class Baculum:
         response = self._session.get(f"{self._base}/clients")
         return self._extract_output("list clients", response)
 
-    def get_client_status(self, id: int) -> str:
+    def get_client_status(self, client_id: int) -> str:
         """Get client status.
 
         Args:
-            id: client ID.
+            client_id: client ID.
 
         Returns:
             Client status.
         """
-        response = self._session.get(f"{self._base}/clients/{id}/status")
-        return "\n".join(self._extract_output(f"get client (id: {id}) status", response))
+        response = self._session.get(f"{self._base}/clients/{client_id}/status")
+        return "\n".join(self._extract_output(f"get client (id: {client_id}) status", response))
