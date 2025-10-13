@@ -42,7 +42,7 @@ class BackupIntegratorCharm(ops.CharmBase):
         Returns:
             The path to the saved script if the configuration value is not empty, otherwise, None.
         """
-        content = self.config.get(config_option)
+        content = typing.cast(str | None, self.config.get(config_option))
         if not content:
             return None
         script_path = (
@@ -55,7 +55,7 @@ class BackupIntegratorCharm(ops.CharmBase):
 
     def _reconcile(self, _: ops.EventBase) -> None:
         """Reconciles the charm."""
-        fileset_config = self.config.get("fileset", "").strip()
+        fileset_config = typing.cast(str, self.config.get("fileset", "")).strip()
         if not fileset_config:
             self.unit.status = ops.BlockedStatus("missing fileset config")
             return
