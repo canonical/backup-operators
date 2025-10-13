@@ -78,7 +78,6 @@ def deploy_minio_fixture(juju: jubilant.Juju):
         "minio",
         channel="latest/edge",
         config={"src-overwrite": json.dumps({"any_charm.py": any_charm})},
-        constraints={"virt-type": "virtual-machine"},
     )
 
 
@@ -111,9 +110,8 @@ def deploy_charms_fixture(juju: jubilant.Juju, deploy_minio):
         "postgresql",
         "bacula-database",
         channel="14/stable",
-        constraints={"virt-type": "virtual-machine"},
     )
-    juju.deploy("s3-integrator", constraints={"virt-type": "virtual-machine"})
+    juju.deploy("s3-integrator")
     juju.wait(
         lambda status: jubilant.all_agents_idle(status, "s3-integrator"),
         timeout=7200,
