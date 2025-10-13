@@ -24,4 +24,6 @@ header:
     - 'pyproject.toml'
     - 'zap_rules.tsv'
     - '**/*.md.j2'
+    - '**/lib/**'
+    - '**/templates/**'
   comment: on-failure
