@@ -180,7 +180,7 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
 
   bacula-fd-test:
-    command: /opt/bacula/bin/bacula-fd -t -c
+    command: opt/bacula/bin/bacula-fd -t -c
     plugs: [ network ]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
@@ -194,7 +194,7 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
 
   bacula-sd-test:
-    command: /opt/bacula/bin/bacula-sd -t -c
+    command: opt/bacula/bin/bacula-sd -t -c
     plugs: [ network ]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
@@ -208,7 +208,7 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
 
   bacula-dir-test:
-    command: /opt/bacula/bin/bacula-dir -t -c
+    command: opt/bacula/bin/bacula-dir -t -c
     plugs: [ network ]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
