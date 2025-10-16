@@ -375,8 +375,10 @@ class Bacula:
     def install() -> None:
         """Install bacula service."""
         logger.info("installing charmed-bacula-server snap")
-        snap_file = (Path(__file__).parent / "charmed-bacula-server_15.0.3_amd64.snap").absolute()
-        snap.install_local(filename=str(snap_file), dangerous=True)
+        cache = snap.SnapCache()
+        charmed_bacula_server = cache["charmed-bacula-server"]
+        if not charmed_bacula_server.present:
+            charmed_bacula_server.ensure(snap.SnapState.Latest, channel="stable")
 
     def is_initialized(self, db: DbConfig) -> bool:
         """Check if bacula category database is initialized.

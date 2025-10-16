@@ -7,7 +7,6 @@
 """Fixtures for integration tests."""
 
 import json
-import shutil
 import subprocess  # nosec
 import textwrap
 
@@ -20,7 +19,15 @@ from tests.integration import baculum
 
 
 def find_charm_file(pytestconfig, name: str) -> str | None:
-    """Find charm file from --charm-file input."""
+    """Find charm file from --charm-file input.
+
+    Args:
+        pytestconfig: pytest config.
+        name: The filename of the charm file.
+
+    Returns:
+        The path to the charm file.
+    """
     charm_files = pytestconfig.getoption("--charm-file", default=[])
     for file in charm_files:
         if file.endswith(name):
