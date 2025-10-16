@@ -10,3 +10,8 @@ jobs:
     with:
       self-hosted-runner: true
       self-hosted-runner-label: "edge"
+  build-snap:
+    name: Build charmed-bacula-server snap
+    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v35.0.2
+    with:
+      path-to-snap-project-directory: ./charmed-bacula-service

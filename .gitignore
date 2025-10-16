@@ -1,6 +1,7 @@
 venv/
 build/
 *.charm
+*.snap
 .tox/
 .coverage
 __pycache__/
@@ -11,3 +12,4 @@ __pycache__/
 *.egg-info/
 */*.rock
 terraform/tests/.terraform
+.logs

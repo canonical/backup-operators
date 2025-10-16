@@ -18,6 +18,22 @@
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "ubuntu"
+    },
+    {
+      "customType": "regex",
+      "description": "Update Bacula versions",
+      "managerFilePatterns": [
+        "/(^|/)snapcraft\\.yaml$/"
+      ],
+      "matchStrings": [
+        "source-tag:\\s*Release-(?<currentValue>\\d+\\.\\d+\\.\\d+)",
+        "(?:^|\\n|\\r)\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "datasourceTemplate": "gitlab-tags",
+      "depNameTemplate": "bacula-community-edition/bacula-community",
+      "registryUrlTemplate": "https://gitlab.bacula.org",
+      "extractVersionTemplate": "^Release-(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "versioningTemplate": "semver"
     }
   ],
   "packageRules": [
@@ -40,8 +56,12 @@
       "enabled": false
     },
     {
-      "matchDatasources": ["terraform-provider"],
-      "matchPackageNames": ["juju/juju"],
+      "matchDatasources": [
+        "terraform-provider"
+      ],
+      "matchPackageNames": [
+        "juju/juju"
+      ],
       "enabled": true
     }
   ]
