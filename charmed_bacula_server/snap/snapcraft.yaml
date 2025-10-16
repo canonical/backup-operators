@@ -3,7 +3,7 @@
 
 name: charmed-bacula-server
 base: core24
-version: "15.0.3"
+version: 15.0.3
 summary: Bacula dir/sd + Baculum in a snap for the bacula-server charm
 description: >-
   Bacula Director, Storage Daemon, and the Baculum web GUI served by
@@ -180,7 +180,7 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
 
   bacula-fd-test:
-    command: /opt/bacula/bin/bacula-fd -t -c
+    command: opt/bacula/bin/bacula-fd -t -c
     plugs: [ network ]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
@@ -194,7 +194,7 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
 
   bacula-sd-test:
-    command: /opt/bacula/bin/bacula-sd -t -c
+    command: opt/bacula/bin/bacula-sd -t -c
     plugs: [ network ]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
@@ -208,7 +208,7 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
 
   bacula-dir-test:
-    command: /opt/bacula/bin/bacula-dir -t -c
+    command: opt/bacula/bin/bacula-dir -t -c
     plugs: [ network ]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/opt/bacula/lib
@@ -228,6 +228,9 @@ apps:
   htpasswd:
     command: usr/bin/htpasswd
 
+platforms:
+  amd64:
+
 parts:
   libs3:
     plugin: make
@@ -235,6 +238,7 @@ parts:
       - CFLAGS: "-Wno-deprecated-declarations -Wno-format-overflow"
     source: https://gitlab.bacula.org/bacula-community-edition/libs3.git
     source-type: git
+    source-commit: 66885387c9f761253988321de9c4bbfc1660717d
     source-depth: 1
     build-packages:
       - libcurl4-openssl-dev
