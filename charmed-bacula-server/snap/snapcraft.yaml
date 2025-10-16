@@ -3,7 +3,7 @@
 
 name: charmed-bacula-server
 base: core24
-version: "15.0.3"
+version: 15.0.3
 summary: Bacula dir/sd + Baculum in a snap for the bacula-server charm
 description: >-
   Bacula Director, Storage Daemon, and the Baculum web GUI served by
@@ -235,6 +235,7 @@ parts:
       - CFLAGS: "-Wno-deprecated-declarations -Wno-format-overflow"
     source: https://gitlab.bacula.org/bacula-community-edition/libs3.git
     source-type: git
+    source-commit: 66885387c9f761253988321de9c4bbfc1660717d
     source-depth: 1
     build-packages:
       - libcurl4-openssl-dev
