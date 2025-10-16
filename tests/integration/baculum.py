@@ -2,6 +2,7 @@
 # See LICENSE file for licensing details.
 
 """A simple Baculum API client for testing."""
+
 import typing
 
 import requests
