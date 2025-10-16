@@ -228,6 +228,10 @@ apps:
   htpasswd:
     command: usr/bin/htpasswd
 
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+
 parts:
   libs3:
     plugin: make
