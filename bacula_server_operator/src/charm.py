@@ -3,9 +3,10 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-# Learn more at: https://documentation.ubuntu.com/juju/3.6/howto/manage-charms/#build-a-charm
-
 """Bacula-server charm the service."""
+
+# suppress pylint false positive no-member warning
+# pylint: disable=no-member
 
 import json
 import logging
@@ -14,11 +15,9 @@ import typing
 import urllib.parse
 
 import ops
+from charms.data_platform_libs.v0 import data_interfaces, s3
 
-import charms.data_platform_libs.v0.data_interfaces as data_interfaces
-import charms.data_platform_libs.v0.s3 as s3
-from . import bacula
-from . import relations
+from . import bacula, relations
 
 PEER_RELATION_NAME = "bacula-peer"
 BACULUM_CHARM_USERNAME = "charm-admin"
@@ -27,11 +26,11 @@ logger = logging.getLogger(__name__)
 
 
 class NotReadyError(Exception):
-    pass
+    """Exception raised when charm is not ready."""
 
 
-class UnrecoverableError(Exception):
-    pass
+class UnrecoverableCharmError(Exception):
+    """Exception raised when charm encounters an unrecoverable error."""
 
 
 class BaculaServerCharm(ops.CharmBase):
@@ -125,7 +124,7 @@ class BaculaServerCharm(ops.CharmBase):
                 "invalid postgresql integration: %s",
                 self._dump_relation("postgresql"),
             )
-            raise UnrecoverableError("invalid postgresql relation") from exc
+            raise UnrecoverableCharmError("invalid postgresql relation") from exc
         if "database" not in db_data:
             raise NotReadyError("waiting for postgresql relation data")
         host, port = db_data["endpoints"].split(",")[0].split(":")
@@ -192,11 +191,10 @@ class BaculaServerCharm(ops.CharmBase):
                 "api-password": secrets.token_urlsafe(32),
             }
             secret = self.app.add_secret(content=passwords)
-            data["passwords"] = secret.id
+            data["passwords"] = typing.cast(str, secret.id)
             return passwords
-        else:
-            secret = self.model.get_secret(id=password_secret_id)
-            return secret.get_content(refresh=True)
+        secret = self.model.get_secret(id=password_secret_id)
+        return secret.get_content(refresh=True)
 
     def _get_bacula_config(self) -> bacula.BaculaConfig:
         """Get bacula configuration.
@@ -211,9 +209,9 @@ class BaculaServerCharm(ops.CharmBase):
             dir_password=passwords["dir-password"],
             fd_password=passwords["fd-password"],
             sd_password=passwords["sd-password"],
-            file_retention=self.config.get("file-retention"),
-            job_retention=self.config.get("job-retention"),
-            volume_retention=self.config.get("volume-retention"),
+            file_retention=typing.cast(str, self.config.get("file-retention")),
+            job_retention=typing.cast(str, self.config.get("job-retention")),
+            volume_retention=typing.cast(str, self.config.get("volume-retention")),
         )
 
     def _get_baculum_api_config(self) -> bacula.BaculumApiConfig:
@@ -258,7 +256,7 @@ class BaculaServerCharm(ops.CharmBase):
         db_config = self._get_db_config()
         s3_config = self._get_s3_config()
         if not self._is_singleton():
-            raise UnrecoverableError("bacula-server charm does not support multiple units")
+            raise UnrecoverableCharmError("bacula-server charm does not support multiple units")
         if not self._bacula.is_installed():
             self.unit.status = ops.MaintenanceStatus("installing charmed-bacula-server")
             self._bacula.install()
@@ -277,7 +275,7 @@ class BaculaServerCharm(ops.CharmBase):
                 relation_fd_list=relation_fd_list,
             )
         except bacula.InvalidConfigError as exc:
-            raise UnrecoverableError("failed to apply bacula configuration") from exc
+            raise UnrecoverableCharmError("failed to apply bacula configuration") from exc
         self.unit.set_ports(9101, 9103, 9095, 9096)
         self._bacula.update_baculum_api_user(
             baculum_api_config.username,
@@ -293,7 +291,7 @@ class BaculaServerCharm(ops.CharmBase):
         try:
             self._reconcile()
             self.unit.status = ops.ActiveStatus()
-        except UnrecoverableError as exc:
+        except UnrecoverableCharmError as exc:
             self.unit.status = ops.BlockedStatus(str(exc))
             return
         except NotReadyError as exc:

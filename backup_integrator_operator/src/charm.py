@@ -31,7 +31,7 @@ class BackupIntegratorCharm(ops.CharmBase):
         self.framework.observe(self.on.backup_relation_created, self._reconcile)
         self.framework.observe(self.on.backup_relation_changed, self._reconcile)
         self.framework.observe(self.on.config_changed, self._reconcile)
-        self.framework.observe(self.on.leader_changed, self._reconcile)
+        self.framework.observe(self.on.leader_elected, self._reconcile)
         self.framework.observe(self.on.leader_settings_changed, self._reconcile)
         self.framework.observe(self.on.upgrade_charm, self._reconcile)
 

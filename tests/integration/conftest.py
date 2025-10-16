@@ -8,7 +8,7 @@
 
 import json
 import shutil
-import subprocess
+import subprocess  # nosec
 import textwrap
 
 import boto3
@@ -84,7 +84,7 @@ def deploy_minio_fixture(juju: jubilant.Juju):
 @pytest.fixture(scope="module", name="deploy_charms")
 def deploy_charms_fixture(juju: jubilant.Juju, deploy_minio):
     """Deploy backup charms."""
-    subprocess.check_call(["snapcraft", "pack"], cwd="./charmed-bacula-server/")
+    subprocess.check_call(["snapcraft", "pack"], cwd="./charmed-bacula-server/")  # nosec
     try:
         shutil.copy(
             "./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm",
@@ -93,9 +93,9 @@ def deploy_charms_fixture(juju: jubilant.Juju, deploy_minio):
     except shutil.SameFileError:
         pass
 
-    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-server-operator/")
-    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-fd-operator/")
-    subprocess.check_call(["charmcraft", "pack"], cwd="./backup-integrator-operator/")
+    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-server-operator/")  # nosec
+    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-fd-operator/")  # nosec
+    subprocess.check_call(["charmcraft", "pack"], cwd="./backup-integrator-operator/")  # nosec
 
     juju.deploy("ubuntu", base="ubuntu@24.04")
     juju.deploy(
@@ -250,7 +250,7 @@ def s3_client(juju: jubilant.Juju, setup_database):
     return boto3.client(
         "s3",
         endpoint_url=f"http://{minio_address}:9000",
-        aws_access_key_id="minioadmin",
-        aws_secret_access_key="minioadmin",
+        aws_access_key_id="minioadmin",  # nosec
+        aws_secret_access_key="minioadmin",  # nosec
         config=botocore.config.Config(s3={"addressing_style": "path"}),
     )

@@ -19,7 +19,10 @@ def test_no_fileset_config(backup_integrator_charm, config: dict):
     ctx = ops.testing.Context(backup_integrator_charm)
     state_in = ops.testing.State(
         config=config,
-        relations=[ops.testing.SubordinateRelation(endpoint="juju-info", id=1)],
+        relations=[
+            ops.testing.SubordinateRelation(endpoint="juju-info", id=1),
+            ops.testing.Relation(endpoint="backup", id=2),
+        ],
     )
 
     state_out = ctx.run(ctx.on.config_changed(), state_in)

@@ -5,10 +5,11 @@
 
 import logging
 import secrets
+import typing
 from pathlib import Path
 
 import ops
-from pydantic import BaseModel, field_validator, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 BACULA_DIR_RELATION_NAME = "bacula-dir"
 BACULA_DIR_NAME = "charm-bacula-dir"
@@ -22,6 +23,7 @@ class BaculaFdInfo(BaseModel):
     Attributes:
         model_config: Pydantic model configuration.
         name: Bacula file daemon name.
+        password: Bacula file daemon password.
         fileset: backup fileset.
         host: Bacula file daemon host.
         port: Bacula file daemon port.
@@ -106,15 +108,17 @@ class BaculaFdInfo(BaseModel):
                 raise ValueError("path cannot start or end with whitespaces")
             if "," in str_path:
                 raise ValueError("path cannot contain commas")
-        if [str(p) for p in value if not p.is_absolute()]:
-            raise ValueError(f"all path in fileset must be absolute.")
+            if not path.is_absolute():
+                raise ValueError("all path in fileset must be absolute.")
         return value
 
 
 class BaculaProvider:
     """bacula-dir relation provider."""
 
-    def __init__(self, charm: ops.CharmBase, relation_name=BACULA_DIR_RELATION_NAME) -> None:
+    def __init__(
+        self, charm: ops.CharmBase, relation_name: str = BACULA_DIR_RELATION_NAME
+    ) -> None:
         """Initialize bacula-dir relation provider.
 
         Args:
@@ -137,7 +141,7 @@ class BaculaProvider:
                 password_secret.grant(relation)
                 password_secret_id = password_secret.id
             data["name"] = BACULA_DIR_NAME
-            data["password"] = password_secret_id
+            data["password"] = typing.cast(str, password_secret_id)
 
     def receive_from_bacula_fd(self) -> list[BaculaFdInfo]:
         """Receive Bacula file daemon information from relations.
@@ -168,7 +172,7 @@ class BaculaProvider:
                     )
                 except ValueError as exc:
                     logger.error(
-                        f"skipping invalid bacula-dir relation (id: %s) from %s: %s",
+                        "skipping invalid bacula-dir relation (id: %s) from %s: %s",
                         relation.id,
                         relation.app.name,
                         exc,

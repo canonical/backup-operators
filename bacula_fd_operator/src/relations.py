@@ -4,7 +4,6 @@
 """Library to handle the requirer part of the bacula-dir relation."""
 
 import ops
-
 from pydantic import BaseModel, Field
 
 BACULA_DIR_RELATION_NAME = "bacula-dir"
@@ -17,6 +16,7 @@ class BaculaDirInfo(BaseModel):
         name: bacula-dir name.
         password: bacula-dir password.
     """
+
     name: str = Field(min_length=1)
     password: str = Field(min_length=1)
 
@@ -24,7 +24,9 @@ class BaculaDirInfo(BaseModel):
 class BaculaRequirer:
     """Requirer for the bacula-dir relation."""
 
-    def __init__(self, charm: ops.CharmBase, relation_name=BACULA_DIR_RELATION_NAME):
+    def __init__(
+        self, charm: ops.CharmBase, relation_name: str = BACULA_DIR_RELATION_NAME
+    ) -> None:
         """Initialize the requirer.
 
         Args:
@@ -34,7 +36,7 @@ class BaculaRequirer:
         self._charm = charm
         self._relation_name = relation_name
 
-    def send_to_bacula_dir(
+    def send_to_bacula_dir(  # pylint: disable=too-many-arguments
         self,
         *,
         name: str,
@@ -59,6 +61,8 @@ class BaculaRequirer:
             schedule: backup schedule.
         """
         relation = self._charm.model.get_relation(self._relation_name)
+        if not relation:
+            return
         data = relation.data[self._charm.unit]
         data["name"] = name
         data["fileset"] = fileset

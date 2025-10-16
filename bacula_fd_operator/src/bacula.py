@@ -1,15 +1,13 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""A helper library for managing bacula-fd"""
+"""A helper library for managing bacula-fd."""
 
 import shutil
 from pathlib import Path
 
 import jinja2
-
-import charms.operator_libs_linux.v0.apt as apt
-import charms.operator_libs_linux.v0.systemd as systemd
+from charms.operator_libs_linux.v0 import apt, systemd
 
 BACULA_FD_CONFIG_TEMPLATE_FILE = Path(__file__).parent / "templates/bacula-fd.conf.j2"
 BACULA_FD_CONFIG_FILE = Path("/etc/bacula/bacula-fd.conf")
@@ -62,7 +60,8 @@ def config_reload(
         director_name: bacula-dir name.
         director_password: bacula-dir password.
     """
-    env = jinja2.Environment()
+    # not used for HTML
+    env = jinja2.Environment()  # nosec
     template = env.from_string(BACULA_FD_CONFIG_TEMPLATE_FILE.read_text())
     config = template.render(
         host=host,
@@ -73,4 +72,4 @@ def config_reload(
     )
     if config == read_config():
         return
-    BACULA_FD_CONFIG_FILE.write_text(config)
+    BACULA_FD_CONFIG_FILE.write_text(config, encoding="utf-8")

@@ -1,23 +1,26 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""A helper library for managing bacula server components"""
+"""A helper library for managing bacula server components."""
+
+# suppress pylint false positive no-member warning
+# pylint: disable=no-member
 
 import dataclasses
 import glob
 import logging
 import os
 import signal
-import subprocess
+import subprocess  # nosec
+import typing
 from pathlib import Path
 from typing import Literal
 
 import jinja2
 import psycopg2
+from charms.operator_libs_linux.v2 import snap
 
 from . import relations
-
-import charms.operator_libs_linux.v2.snap as snap
 
 TEMPLATES_DIR = (Path(__file__).parent / "templates").absolute()
 BACULA_SERVER_SNAP_COMMON = Path("/var/snap/charmed-bacula-server/common")
@@ -27,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass
-class BaculaConfig:
+class BaculaConfig:  # pylint: disable=too-many-instance-attributes
     """Bacula server configurations.
 
     Attributes:
@@ -110,7 +113,7 @@ class InvalidConfigError(Exception):
     """Invalid bacula service configuration."""
 
 
-class BaculaService:
+class BaculaService:  # pylint: disable=too-few-public-methods
     """Bacula service manager.
 
     Attributes:
@@ -138,7 +141,7 @@ class BaculaService:
                 ],
                 stderr=subprocess.STDOUT,
                 encoding="utf-8",
-            )
+            )  # nosec
             return True
         except subprocess.CalledProcessError as e:
             logger.error("errors detected in %s configuration: %s", self.name, e.output)
@@ -156,8 +159,7 @@ class BaculaService:
         return BACULA_SERVER_SNAP_COMMON / config.removeprefix("/")
 
     def _config_tmp_path(self, config: str) -> Path:
-        """Get a path to temporary file which can be used to test the configuration before
-            overwriting the existing one.
+        """Get a path to temporary file which can be used to test the configuration.
 
         Args:
             config: bacula service configuration file.
@@ -210,17 +212,21 @@ class BaculaService:
 
     def apply(
         self,
-        **template_globals: dict,
+        **template_globals: typing.Any,
     ) -> None:
         """Apply bacula service configuration.
 
         Args:
             template_globals: template variables inputs.
+
+        Raises:
+            InvalidConfigError: if bacula service configuration is invalid.
         """
+        # not used for HTML
         templates = jinja2.Environment(
             loader=jinja2.FileSystemLoader(TEMPLATES_DIR),
             undefined=jinja2.StrictUndefined,
-        )
+        )  # nosec
         templates.globals.update(template_globals)
         new_config = self._new_config(templates)
         current_config = self._current_config()
@@ -237,24 +243,42 @@ class BaculaService:
         self._reload()
 
 
-class BaculaFdService(BaculaService):
-    """Bacula file daemon service."""
+class BaculaFdService(BaculaService):  # pylint: disable=too-few-public-methods
+    """Bacula file daemon service.
+
+    Attributes:
+        name: name of the bacula service.
+        config_files: bacula service configuration files.
+        config_templates: bacula service configuration templates (filename -> template name)
+    """
 
     name: str = "bacula-fd"
     config_files: list[str] = ["/opt/bacula/etc/bacula-fd.conf"]
     config_templates: dict[str, str] = {"/opt/bacula/etc/bacula-fd.conf": "bacula-fd.conf.j2"}
 
 
-class BaculaSdService(BaculaService):
-    """Bacula storage daemon service."""
+class BaculaSdService(BaculaService):  # pylint: disable=too-few-public-methods
+    """Bacula storage daemon service.
+
+    Attributes:
+        name: name of the bacula service.
+        config_files: bacula service configuration files.
+        config_templates: bacula service configuration templates (filename -> template name)
+    """
 
     name: str = "bacula-sd"
     config_files: list[str] = ["/opt/bacula/etc/bacula-sd.conf"]
     config_templates: dict[str, str] = {"/opt/bacula/etc/bacula-sd.conf": "bacula-sd.conf.j2"}
 
 
-class BaculaDirService(BaculaService):
-    """Bacula director service."""
+class BaculaDirService(BaculaService):  # pylint: disable=too-few-public-methods
+    """Bacula director service.
+
+    Attributes:
+        name: name of the bacula service.
+        config_files: bacula service configuration files.
+        config_templates: bacula service configuration templates (filename -> template name)
+    """
 
     name: str = "bacula-dir"
     config_files: list[str] = ["/opt/bacula/etc/bacula-dir.conf", "/opt/bacula/etc/bconsole.conf"]
@@ -286,8 +310,14 @@ class BaculaDirService(BaculaService):
             bacula_snap.start([self.name], enable=True)
 
 
-class BaculumService(BaculaService):
-    """Baculum service."""
+class BaculumService(BaculaService):  # pylint: disable=too-few-public-methods
+    """Baculum service.
+
+    Attributes:
+        name: name of the bacula service.
+        config_files: bacula service configuration files.
+        config_templates: bacula service configuration templates (filename -> template name)
+    """
 
     name: str = "baculum"
     config_files = [
@@ -298,7 +328,9 @@ class BaculumService(BaculaService):
     config_templates = {
         "/usr/share/baculum/htdocs/protected/API/Config/api.conf": "baculum-api.conf.j2",
         "/usr/share/baculum/htdocs/protected/Web/Config/hosts.conf": "baculum-web-hosts.conf.j2",
-        "/usr/share/baculum/htdocs/protected/Web/Config/settings.conf": "baculum-web-settings.conf.j2",
+        (
+            "/usr/share/baculum/htdocs/protected/Web/Config/settings.conf"
+        ): "baculum-web-settings.conf.j2",
     }
 
     def _test_config(self) -> bool:
@@ -386,10 +418,11 @@ class Bacula:
                 "PGPASSWORD": db.password,
                 "db_name": db.name,
             },
-        )
+        )  # nosec
 
-    def apply(
+    def apply(  # pylint: disable=too-many-arguments
         self,
+        *,
         name: str,
         bacula_config: BaculaConfig,
         db_config: DbConfig,
@@ -425,7 +458,7 @@ class Bacula:
         user_file: str,
         username: str,
         password: str,
-    ):
+    ) -> None:
         """Update or create a baculum user.
 
         Args:
@@ -438,7 +471,9 @@ class Bacula:
             cmd.append("-c")
         cmd.append(user_file)
         cmd.append(username)
-        subprocess.check_output(cmd, input=password, encoding="utf-8", stderr=subprocess.STDOUT)
+        subprocess.check_output(
+            cmd, input=password, encoding="utf-8", stderr=subprocess.STDOUT
+        )  # nosec
 
     def update_baculum_api_user(
         self,

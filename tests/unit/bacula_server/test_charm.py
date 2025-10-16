@@ -240,7 +240,6 @@ def test_bacula_sd_config():
               AutomaticMount    = yes
               RemovableMedia    = no
               AlwaysOpen        = no
-              Maximum Concurrent Jobs = 1
             }}
 
             Director {{
