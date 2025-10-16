@@ -37,6 +37,12 @@ backup or restore operation will be canceled. These scripts can be
 useful for performing tasks such as preparing for a backup, automating a
 restore, and so on.
 
+The backup relation is designed for machine charms, and all the fields within
+the relation, including `fileset`, `run-before-backup`, `run-after-backup`,
+`run-before-restore`, and `run-after-restore` — point to files on the requirer
+unit. To provide the backup relation, the provider charm must have a way to
+access and execute those files on the requirer unit to perform the backup.
+
 On the provider side, the backup relation contains no data.
 
 ## Backup Requirer Charm Using the `BackupRequirer` Class
@@ -66,7 +72,7 @@ class FooCharm(ops.CharmBase):
 ## Backup Requirer Charm Using the `BackupDynamicRequirer` Class
 
 In some rare cases, the charm does not know the exact backup
-specification at runtime—for example, when the backup fileset depends on
+specification at build time, for example, when the backup fileset depends on
 charm configuration. In that case, you should use the
 `BackupDynamicRequirer` class. To use it, initialize the
 `BackupDynamicRequirer` class in the charm constructor. Unlike the
@@ -226,8 +232,8 @@ class BackupSpec(BaseModel):
                 raise ValueError("path cannot start or end with whitespaces")
             if "," in str_path:
                 raise ValueError("path cannot contain commas")
-        if [str(p) for p in value if not p.is_absolute()]:
-            raise ValueError(f"all path in fileset must be absolute.")
+            if not path.is_absolute():
+                raise ValueError(f"all path in fileset must be absolute.")
         return value
 
     @field_serializer("fileset", mode="plain")

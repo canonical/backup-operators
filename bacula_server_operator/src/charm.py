@@ -265,6 +265,7 @@ class BaculaServerCharm(ops.CharmBase):
         if not self._bacula.is_initialized(db=db_config):
             self.unit.status = ops.MaintenanceStatus("initializing bacula database")
             self._bacula.initialize(db=db_config)
+        self.unit.status = ops.MaintenanceStatus("sync bacula config")
         relation_fd_list = self._list_relation_fd()
         try:
             self._bacula.apply(

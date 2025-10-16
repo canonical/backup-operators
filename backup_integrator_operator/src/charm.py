@@ -31,6 +31,8 @@ class BackupIntegratorCharm(ops.CharmBase):
         self.framework.observe(self.on.backup_relation_created, self._reconcile)
         self.framework.observe(self.on.backup_relation_changed, self._reconcile)
         self.framework.observe(self.on.config_changed, self._reconcile)
+        self.framework.observe(self.on.leader_changed, self._reconcile)
+        self.framework.observe(self.on.leader_settings_changed, self._reconcile)
         self.framework.observe(self.on.upgrade_charm, self._reconcile)
 
     def _save_script(self, config_option: str) -> pathlib.Path | None:
@@ -55,14 +57,14 @@ class BackupIntegratorCharm(ops.CharmBase):
 
     def _reconcile(self, _: ops.EventBase) -> None:
         """Reconciles the charm."""
+        if self.model.get_relation("backup") is None:
+            self.unit.status = ops.WaitingStatus("waiting for backup relation")
+            return
         fileset_config = typing.cast(str, self.config.get("fileset", "")).strip()
         if not fileset_config:
             self.unit.status = ops.BlockedStatus("missing fileset config")
             return
         fileset = [file.strip() for file in fileset_config.split(",") if file.strip()]
-        if self.model.get_relation("backup") is None:
-            self.unit.status = ops.WaitingStatus("waiting for backup relation")
-            return
         if not self.unit.is_leader():
             self.unit.status = ops.ActiveStatus()
             return

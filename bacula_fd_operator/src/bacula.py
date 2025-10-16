@@ -3,6 +3,7 @@
 
 """A helper library for managing bacula-fd"""
 
+import shutil
 from pathlib import Path
 
 import jinja2
@@ -20,7 +21,7 @@ def is_installed() -> bool:
     Returns:
         True if bacula-fd is installed.
     """
-    return Path("/usr/sbin/bacula-fd").exists()
+    return bool(shutil.which("bacula-fd"))
 
 
 def install() -> None:
@@ -73,5 +74,3 @@ def config_reload(
     if config == read_config():
         return
     BACULA_FD_CONFIG_FILE.write_text(config)
-    import uuid
-()
