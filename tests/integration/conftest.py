@@ -28,7 +28,9 @@ def find_charm_file(pytestconfig, name: str) -> str | None:
     Returns:
         The path to the charm file.
     """
-    charm_files = pytestconfig.getoption("--charm-file", default=[])
+    charm_files = pytestconfig.getoption("--charm-file")
+    if not charm_files:
+        return None
     for file in charm_files:
         if file.endswith(name):
             return file
@@ -41,8 +43,8 @@ def backup_integrator_charm_file_fixture(pytestconfig) -> str:
     file = find_charm_file(pytestconfig, "backup-integrator_ubuntu@24.04-amd64.charm")
     if file:
         return file
-    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-server-operator/")  # nosec
-    return "./backup-integrator-operator/backup-integrator_ubuntu@24.04-amd64.charm"
+    subprocess.check_call(["charmcraft", "pack"], cwd="./backup_integrator_operator/")  # nosec
+    return "./backup_integrator_operator/backup-integrator_ubuntu@24.04-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_fd_charm_file")
@@ -51,8 +53,8 @@ def bacula_fd_charm_file_fixture(pytestconfig) -> str:
     file = find_charm_file(pytestconfig, "bacula-fd_ubuntu@24.04-amd64.charm")
     if file:
         return file
-    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-fd-operator/")  # nosec
-    return "./bacula-fd-operator/bacula-fd_ubuntu@24.04-amd64.charm"
+    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula_fd_operator/")  # nosec
+    return "./bacula_fd_operator/bacula-fd_ubuntu@24.04-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_server_charm_file")
@@ -61,8 +63,8 @@ def bacula_server_charm_file_fixture(pytestconfig) -> str:
     file = find_charm_file(pytestconfig, "bacula-server_ubuntu@24.04-amd64.charm")
     if file:
         return file
-    subprocess.check_call(["charmcraft", "pack"], cwd="./backup-integrator-operator/")  # nosec
-    return "./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm"
+    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula_server_operator/")  # nosec
+    return "./bacula_server_operator/bacula-server_ubuntu@24.04-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="deploy_minio")
@@ -140,16 +142,9 @@ def deploy_charms_fixture(
     juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
     juju.deploy(bacula_fd_charm_file)
     juju.deploy(bacula_server_charm_file)
-    juju.deploy(
-        "postgresql",
-        "bacula-database",
-        channel="14/stable",
-    )
+    juju.deploy("postgresql", "bacula-database", channel="14/stable")
     juju.deploy("s3-integrator")
-    juju.wait(
-        lambda status: jubilant.all_agents_idle(status, "s3-integrator"),
-        timeout=7200,
-    )
+    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=7200)
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     juju.config(
         "s3-integrator",
@@ -172,7 +167,7 @@ def deploy_charms_fixture(
     juju.integrate("bacula-server", "s3-integrator")
     juju.integrate("bacula-server", "bacula-fd")
 
-    juju.wait(jubilant.all_active, timeout=7200)
+    juju.wait(jubilant.all_agents_idle, timeout=7200)
 
 
 @pytest.fixture(scope="module", name="setup_database")
