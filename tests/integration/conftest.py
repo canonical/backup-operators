@@ -19,6 +19,45 @@ import pytest
 from tests.integration import baculum
 
 
+def find_charm_file(pytestconfig, name: str) -> str | None:
+    """Find charm file from --charm-file input."""
+    charm_files = pytestconfig.getoption("--charm-file", default=[])
+    for file in charm_files:
+        if file.endswith(name):
+            return file
+    return None
+
+
+@pytest.fixture(scope="module", name="backup_integrator_charm_file")
+def backup_integrator_charm_file_fixture(pytestconfig) -> str:
+    """Get backup-integrator charm file."""
+    file = find_charm_file(pytestconfig, "backup-integrator_ubuntu@24.04-amd64.charm")
+    if file:
+        return file
+    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-server-operator/")  # nosec
+    return "./backup-integrator-operator/backup-integrator_ubuntu@24.04-amd64.charm"
+
+
+@pytest.fixture(scope="module", name="bacula_fd_charm_file")
+def bacula_fd_charm_file_fixture(pytestconfig) -> str:
+    """Get bacula-fd charm file."""
+    file = find_charm_file(pytestconfig, "bacula-fd_ubuntu@24.04-amd64.charm")
+    if file:
+        return file
+    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-fd-operator/")  # nosec
+    return "./bacula-fd-operator/bacula-fd_ubuntu@24.04-amd64.charm"
+
+
+@pytest.fixture(scope="module", name="bacula_server_charm_file")
+def bacula_server_charm_file_fixture(pytestconfig) -> str:
+    """Get bacula-server charm file."""
+    file = find_charm_file(pytestconfig, "bacula-server_ubuntu@24.04-amd64.charm")
+    if file:
+        return file
+    subprocess.check_call(["charmcraft", "pack"], cwd="./backup-integrator-operator/")  # nosec
+    return "./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm"
+
+
 @pytest.fixture(scope="module", name="deploy_minio")
 def deploy_minio_fixture(juju: jubilant.Juju):
     """Deploy the minio charm (using any-charm)."""
@@ -82,30 +121,18 @@ def deploy_minio_fixture(juju: jubilant.Juju):
 
 
 @pytest.fixture(scope="module", name="deploy_charms")
-def deploy_charms_fixture(juju: jubilant.Juju, deploy_minio):
+def deploy_charms_fixture(
+    juju: jubilant.Juju,
+    deploy_minio,
+    backup_integrator_charm_file,
+    bacula_fd_charm_file,
+    bacula_server_charm_file,
+):
     """Deploy backup charms."""
-    subprocess.check_call(["snapcraft", "pack"], cwd="./charmed-bacula-server/")  # nosec
-    try:
-        shutil.copy(
-            "./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm",
-            "./bacula-server-operator/src",
-        )
-    except shutil.SameFileError:
-        pass
-
-    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-server-operator/")  # nosec
-    subprocess.check_call(["charmcraft", "pack"], cwd="./bacula-fd-operator/")  # nosec
-    subprocess.check_call(["charmcraft", "pack"], cwd="./backup-integrator-operator/")  # nosec
-
     juju.deploy("ubuntu", base="ubuntu@24.04")
-    juju.deploy(
-        "./backup-integrator-operator/backup-integrator_ubuntu@24.04-amd64.charm",
-        config={"fileset": "/var/backups/"},
-    )
-    juju.deploy(
-        "./bacula-fd-operator/bacula-fd_ubuntu@24.04-amd64.charm",
-    )
-    juju.deploy("./bacula-server-operator/bacula-server_ubuntu@24.04-amd64.charm")
+    juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
+    juju.deploy(bacula_fd_charm_file)
+    juju.deploy(bacula_server_charm_file)
     juju.deploy(
         "postgresql",
         "bacula-database",
