@@ -3,7 +3,7 @@
 
 name: charmed-bacula-server
 base: core24
-version: 15.0.3
+version: 15.0.2
 summary: Bacula dir/sd + Baculum in a snap for the bacula-server charm
 description: >-
   Bacula Director, Storage Daemon, and the Baculum web GUI served by
@@ -248,7 +248,7 @@ parts:
   bacula:
     after: [ libs3 ]
     source: https://gitlab.bacula.org/bacula-community-edition/bacula-community.git
-    source-tag: Release-15.0.3
+    source-tag: Release-15.0.2
     source-type: git
     source-subdir: bacula
     source-depth: 1
@@ -307,7 +307,7 @@ parts:
 
   baculum:
     source: https://gitlab.bacula.org/bacula-community-edition/bacula-community.git
-    source-tag: Release-15.0.3
+    source-tag: Release-15.0.2
     source-type: git
     source-subdir: gui/baculum
     source-depth: 1
