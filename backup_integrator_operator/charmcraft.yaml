@@ -60,6 +60,7 @@ config:
 
 parts:
   charm:
+    charm-entrypoint: scripts/entrypoint
     build-snaps:
       - rustup
     override-build: |
