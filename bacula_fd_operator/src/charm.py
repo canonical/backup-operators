@@ -12,12 +12,12 @@ from pathlib import Path
 import ops
 from charms.backup_integrator.v0 import backup
 
-from . import bacula, relations
+from . import bacula, bacula_relation
 
 BACKUP_RELATION_NAME = "backup"
 BACULA_DIR_RELATION_NAME = "bacula-dir"
 PEER_RELATION_NAME = "bacula-peer"
-NOOP_SCRIPT = str((Path(__file__).parent / "noop.py").absolute())
+NOOP_SCRIPT = str((Path(__file__).parent.parent / "scripts/noop").absolute())
 
 
 class NotReadyError(Exception):
@@ -42,7 +42,7 @@ class BaculaFdCharm(ops.CharmBase):
         """
         super().__init__(*args)
         self._backup_provider = backup.BackupProvider(charm=self)
-        self._bacula_dir = relations.BaculaRequirer(charm=self)
+        self._bacula_dir = bacula_relation.BaculaRequirer(charm=self)
 
         self.framework.observe(self.on.config_changed, self._reconcile_event)
         self.framework.observe(self.on.upgrade_charm, self._reconcile_event)

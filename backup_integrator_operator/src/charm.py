@@ -10,6 +10,7 @@ import pathlib
 import typing
 
 import ops
+import pydantic
 from charms.backup_integrator.v0.backup import BackupDynamicRequirer
 
 logger = logging.getLogger(__name__)
@@ -76,9 +77,11 @@ class BackupIntegratorCharm(ops.CharmBase):
                 run_before_restore=self._save_script("run-before-restore"),
                 run_after_restore=self._save_script("run-after-restore"),
             )
-        except ValueError:
+        except pydantic.ValidationError as exc:
             logger.exception("invalid charm configuration")
-            self.unit.status = ops.BlockedStatus("invalid config, see juju debug-log")
+            errors = exc.errors()
+            error_fields = [str(e["loc"][0]) for e in errors if e.get("loc")]
+            self.unit.status = ops.BlockedStatus(f"invalid config: {', '.join(error_fields)}")
             return
         self.unit.status = ops.ActiveStatus()
 

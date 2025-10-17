@@ -17,7 +17,7 @@ import urllib.parse
 import ops
 from charms.data_platform_libs.v0 import data_interfaces, s3
 
-from . import bacula, relations
+from . import bacula, bacula_relation
 
 PEER_RELATION_NAME = "bacula-peer"
 BACULUM_CHARM_USERNAME = "charm-admin"
@@ -54,7 +54,7 @@ class BaculaServerCharm(ops.CharmBase):
             bucket_name=self.app.name,
         )
         self._bacula = bacula.Bacula()
-        self._bacula_dir_relation = relations.BaculaProvider(charm=self)
+        self._bacula_dir_relation = bacula_relation.BaculaProvider(charm=self)
 
         self.framework.observe(self.on.postgresql_relation_changed, self._reconcile_event)
         self.framework.observe(self.on.postgresql_relation_broken, self._reconcile_event)
@@ -240,7 +240,7 @@ class BaculaServerCharm(ops.CharmBase):
         unit_names.sort(key=lambda name: int(name.split("/")[-1]))
         return self.unit.name == unit_names[0]
 
-    def _list_relation_fd(self) -> list[relations.BaculaFdInfo]:
+    def _list_relation_fd(self) -> list[bacula_relation.BaculaFdInfo]:
         """List all established bacula-dir relations.
 
         Returns:

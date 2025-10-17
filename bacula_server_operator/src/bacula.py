@@ -20,7 +20,7 @@ import jinja2
 import psycopg2
 from charms.operator_libs_linux.v2 import snap
 
-from . import relations
+from . import bacula_relation
 
 TEMPLATES_DIR = (Path(__file__).parent / "templates").absolute()
 BACULA_SERVER_SNAP_COMMON = Path("/var/snap/charmed-bacula-server/common")
@@ -430,7 +430,7 @@ class Bacula:
         db_config: DbConfig,
         s3_config: S3Config,
         baculum_api_config: BaculumApiConfig,
-        relation_fd_list: list[relations.BaculaFdInfo],
+        relation_fd_list: list[bacula_relation.BaculaFdInfo],
     ) -> None:
         """Apply bacula service configurations.
 
