@@ -73,3 +73,4 @@ def config_reload(
     if config == read_config():
         return
     BACULA_FD_CONFIG_FILE.write_text(config, encoding="utf-8")
+    restart()
