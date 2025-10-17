@@ -63,6 +63,7 @@ class BaculaServerCharm(ops.CharmBase):
         self.framework.observe(self.on.config_changed, self._reconcile_event)
         self.framework.observe(self.on.upgrade_charm, self._reconcile_event)
         self.framework.observe(self.on.secret_changed, self._reconcile_event)
+        self.framework.observe(self.on.secret_remove, self._reconcile_event)
 
         self.framework.observe(self.on.bacula_peer_relation_created, self._reconcile_event)
         self.framework.observe(self.on.bacula_peer_relation_changed, self._reconcile_event)

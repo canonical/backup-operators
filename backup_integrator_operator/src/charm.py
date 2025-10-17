@@ -70,7 +70,7 @@ class BackupIntegratorCharm(ops.CharmBase):
             self.unit.status = ops.ActiveStatus()
             return
         try:
-            self._requirer.request_backup(
+            self._requirer.require_backup(
                 fileset=fileset,
                 run_before_backup=self._save_script("run-before-backup"),
                 run_after_backup=self._save_script("run-after-backup"),

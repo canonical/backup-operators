@@ -86,13 +86,16 @@ def test_schedule_config(bacula_fd_charm, schedule) -> None:
     """
     ctx = ops.testing.Context(bacula_fd_charm)
     secret = ops.testing.Secret(tracked_content={"password": "foobar"})
+    backup_relation = ops.testing.Relation(
+        endpoint="backup", remote_app_data={"fileset": "/var/backups"}
+    )
     state_in = ops.testing.State(
         leader=True,
         secrets=[secret],
         config={"schedule": schedule},
         relations=[
             ops.testing.PeerRelation(endpoint="bacula-peer"),
-            ops.testing.Relation(endpoint="backup", remote_app_data={"fileset": "/var/backups"}),
+            backup_relation,
             ops.testing.Relation(
                 endpoint="bacula-dir",
                 local_unit_data={"schedule": "Level=Full sun at 01:00"},
@@ -102,7 +105,7 @@ def test_schedule_config(bacula_fd_charm, schedule) -> None:
         ],
     )
 
-    state_out = ctx.run(ctx.on.config_changed(), state_in)
+    state_out = ctx.run(ctx.on.relation_changed(backup_relation), state_in)
     if schedule:
         assert state_out.get_relation(99).local_unit_data["schedule"] == schedule
     else:

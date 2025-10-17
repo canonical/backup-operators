@@ -78,10 +78,10 @@ charm configuration. In that case, you should use the
 `BackupDynamicRequirer` class in the charm constructor. Unlike the
 `BackupRequirer` class, the backup specification is not provided during
 initialization. Instead, you must call
-`BackupDynamicRequirer.request_backup` within an event handler to
+`BackupDynamicRequirer.require_backup` within an event handler to
 provide the information dynamically. You can only call
-`BackupDynamicRequirer.request_backup` on the leader unit. If
-`BackupDynamicRequirer.request_backup` is run on a non-leader unit,
+`BackupDynamicRequirer.require_backup` on the leader unit. If
+`BackupDynamicRequirer.require_backup` is run on a non-leader unit,
 an `ops.RelationDataAccessError` will be raised.
 
 ```python
@@ -105,7 +105,7 @@ class BarCharm(ops.CharmBase):
         if not fileset:
             self.unit.status = ops.WaitingStatus("waiting for fileset config")
             return
-        self._requirer.request_backup(fileset=fileset)
+        self._requirer.require_backup(fileset=fileset)
 
 ```
 
@@ -297,6 +297,10 @@ class BackupSpec(BaseModel):
             "run_after_backup",
             "run_before_restore",
             "run_after_restore",
+            "run-before-backup",
+            "run-after-backup",
+            "run-before-restore",
+            "run-after-restore",
         ]:
             if key not in kwargs:
                 continue
@@ -306,8 +310,32 @@ class BackupSpec(BaseModel):
         return cls.model_validate(kwargs)
 
 
-class BackupProvider:
+class BackupRequiredEvent(ops.RelationEvent):
+    """Backup is required from the backup requirer."""
+
+    def __init__(
+        self,
+        handle: ops.Handle,
+        relation: ops.Relation,
+        backup_spec: BackupSpec,
+        app: Optional[ops.Application] = None,
+        unit: Optional[ops.Unit] = None,
+    ):
+        """Initialize a BackupRequiredEvent."""
+        super().__init__(handle=handle, relation=relation, app=app, unit=unit)
+        self.backup_spec = backup_spec
+
+
+class BackupProviderEvents(ops.ObjectEvents):
+    """BackupProvider events."""
+
+    backup_required = ops.EventSource(BackupRequiredEvent)
+
+
+class BackupProvider(ops.Object):
     """Backup provider helper class."""
+
+    on = BackupProviderEvents()
 
     def __init__(
         self,
@@ -321,8 +349,27 @@ class BackupProvider:
             charm: The provider charm instance.
             relation_name: The name of the backup relation.
         """
+        super().__init__(parent=charm, key=relation_name)
         self._charm = charm
         self._relation_name = relation_name
+        self.framework.observe(
+            self._charm.on[self._relation_name].relation_changed, self._on_relation_changed
+        )
+
+    def _on_relation_changed(self, event: ops.RelationChangedEvent) -> None:
+        """Handle relation-changed events."""
+        try:
+            spec = self.get_backup_spec(event.relation)
+        except ValueError:
+            logger.exception(f"invalid data in {self._relation_name} relation")
+            return
+        if spec is not None:
+            self.on.backup_required.emit(
+                relation=event.relation,
+                app=event.app,
+                unit=event.unit,
+                backup_spec=spec,
+            )
 
     def get_backup_spec(self, relation: ops.Relation) -> Optional[BackupSpec]:
         """Retrieve the backup spec for the given relation.
@@ -358,7 +405,7 @@ class BackupDynamicRequirer:
         self._charm = charm
         self._relation_name = relation_name
 
-    def _request_backup(self, spec: BackupSpec) -> None:
+    def _require_backup(self, spec: BackupSpec) -> None:
         """Update the backup requirement in the relation data.
 
         Args:
@@ -373,7 +420,7 @@ class BackupDynamicRequirer:
             logger.info("request backup with %s", data)
             relation_data.update(data)
 
-    def request_backup(
+    def require_backup(
         self,
         fileset: List[Union[str, Path]],
         run_before_backup: Optional[Union[str, Path]] = None,
@@ -406,7 +453,7 @@ class BackupDynamicRequirer:
             run_before_restore=run_before_restore,
             run_after_restore=run_after_restore,
         )
-        self._request_backup(spec)
+        self._require_backup(spec)
 
 
 class BackupRequirer:
@@ -463,4 +510,4 @@ class BackupRequirer:
     def _set_relation_data(self, _: ops.EventBase) -> None:
         """Charm relation handler."""
         if self._charm.unit.is_leader():
-            self._dynamic_requirer._request_backup(spec=self._spec)
+            self._dynamic_requirer._require_backup(spec=self._spec)
