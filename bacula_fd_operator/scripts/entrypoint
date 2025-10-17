@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+exec python3 -m src

@@ -71,6 +71,7 @@ actions:
 
 parts:
   charm:
+    charm-entrypoint: scripts/entrypoint
     charm-binary-python-packages: [ "psycopg2-binary" ]
     build-snaps:
       - rustup

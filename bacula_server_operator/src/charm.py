@@ -319,7 +319,3 @@ class BaculaServerCharm(ops.CharmBase):
         password = secrets.token_urlsafe(16)
         self._bacula.update_baculum_web_user(username, password)
         event.set_results({"username": username, "password": password})
-
-
-if __name__ == "__main__":  # pragma: nocover
-    ops.main.main(BaculaServerCharm)

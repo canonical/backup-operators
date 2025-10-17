@@ -167,7 +167,7 @@ def deploy_charms_fixture(
     juju.integrate("bacula-server", "s3-integrator")
     juju.integrate("bacula-server", "bacula-fd")
 
-    juju.wait(jubilant.all_agents_idle, timeout=7200)
+    juju.wait(jubilant.all_active, timeout=7200)
 
 
 @pytest.fixture(scope="module", name="setup_database")
