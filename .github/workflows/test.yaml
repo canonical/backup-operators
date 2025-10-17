@@ -13,8 +13,6 @@ jobs:
     with:
       juju-channel: '3/stable'
       provider: 'lxd'
-      tmate-debug: true
-      tmate-timeout: 180
   snap-tests:
     name: Build charmed-bacula-server snap
     uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v35.0.2
