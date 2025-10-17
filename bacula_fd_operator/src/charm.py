@@ -90,10 +90,6 @@ class BaculaFdCharm(ops.CharmBase):
         self.framework.observe(self.on.bacula_dir_relation_changed, self._reconcile_event)
         self.framework.observe(self.on.bacula_dir_relation_broken, self._reconcile_event)
 
-        self.framework.observe(
-            self.on.bacula_dir_relation_broken, self._on_bacula_dir_relation_broken
-        )
-
     def _get_peer_data(self) -> dict[str, str] | None:
         """Get data stored in the peer relation and initialize it if not exist.
 
@@ -203,18 +199,6 @@ class BaculaFdCharm(ops.CharmBase):
             self.unit.status = ops.WaitingStatus(str(exc))
         except UnrecoverableCharmError as exc:
             self.unit.status = ops.BlockedStatus(str(exc))
-
-    def _on_bacula_dir_relation_broken(self, event: ops.RelationBrokenEvent) -> None:
-        """Handle bacula-dir relation broken event.
-
-        Args:
-            event: relation broken event.
-        """
-        try:
-            secret = self.model.get_secret(label=f"relation-{event.relation.id}")
-        except (ops.SecretNotFoundError, ops.ModelError):
-            return
-        secret.remove_all_revisions()
 
 
 if __name__ == "__main__":  # pragma: nocover

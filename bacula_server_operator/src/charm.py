@@ -79,6 +79,10 @@ class BaculaServerCharm(ops.CharmBase):
         self.framework.observe(self.on.create_api_user_action, self._on_create_api_user)
         self.framework.observe(self.on.create_web_user_action, self._on_create_web_user)
 
+        self.framework.observe(
+            self.on.bacula_dir_relation_broken, self._on_bacula_dir_relation_broken
+        )
+
     def _dump_relation(self, name: str) -> str:
         """Create a debug string representation of the give integration.
 
@@ -320,3 +324,15 @@ class BaculaServerCharm(ops.CharmBase):
         password = secrets.token_urlsafe(16)
         self._bacula.update_baculum_web_user(username, password)
         event.set_results({"username": username, "password": password})
+
+    def _on_bacula_dir_relation_broken(self, event: ops.RelationBrokenEvent) -> None:
+        """Handle bacula-dir relation broken event.
+
+        Args:
+            event: relation broken event.
+        """
+        try:
+            secret = self.model.get_secret(label=f"relation-{event.relation.id}")
+        except (ops.SecretNotFoundError, ops.ModelError):
+            return
+        secret.remove_all_revisions()
