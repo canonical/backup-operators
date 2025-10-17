@@ -1,0 +1,72 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+type: charm
+subordinate: true
+name: backup-integrator
+title: Backup integrator
+summary: A integrator charm to require backup on behalf of other charms.
+links:
+  documentation: https://discourse.charmhub.io
+  issues: https://github.com/canonical/backup-operators/issues
+  source: https://github.com/canonical/backup-operators
+  contact: https://launchpad.net/~canonical-is-devops
+
+description: |
+  The backup integrator charm is a subordinate charm that requires 
+  backups on behalf of charms that do not implement the backup relation
+  themselves.
+
+requires:
+  backup:
+    interface: backup
+  juju-info:
+    interface: juju-info
+    scope: container
+
+platforms:
+  ubuntu@24.04:amd64:
+
+config:
+  options:
+    fileset:
+      description: >
+        A comma-separated list of files to be backed up. Paths must be absolute.
+      type: string
+    run-before-backup:
+      description: >
+        The content of a script to run before starting the backup operation.
+        If this script fails, the backup operation will be canceled.
+        You should include a shebang in your script.
+      type: string
+    run-after-backup:
+      description: >
+        The content of a script to run after completing the backup operation.
+        This script will still run even if the backup operation fails.
+        You should include a shebang in your script.
+      type: string
+    run-before-restore:
+      description: >
+        The content of a script to run before starting the restore operation.
+        If this script fails, the restore operation will be canceled.
+        You should include a shebang in your script.
+      type: string
+    run-after-restore:
+      description: >
+        The content of a script to run after completing the restore operation.
+        This script will still run even if the restore operation fails.
+        You should include a shebang in your script.
+      type: string
+
+parts:
+  charm:
+    charm-entrypoint: scripts/entrypoint
+    build-snaps:
+      - rustup
+    override-build: |
+      rustup default stable
+      craftctl default
+    build-packages:
+      - libffi-dev
+      - libssl-dev
+      - pkg-config

@@ -1,0 +1,19 @@
+Director {
+  Name = charm-bacula-dir
+  Password = {{ bacula.fd_password }}
+}
+
+FileDaemon {
+  Name = charm-bacula-fd
+  FDport = 9102
+  WorkingDirectory = /opt/bacula/working
+  Pid Directory = /opt/bacula/run
+  Maximum Concurrent Jobs = 20
+  Plugin Directory = /opt/bacula/plugins
+  FDAddress = 127.0.0.1
+}
+
+Messages {
+  Name = Standard
+  director = client1-dir = all, !skipped, !restored, !verified, !saved
+}

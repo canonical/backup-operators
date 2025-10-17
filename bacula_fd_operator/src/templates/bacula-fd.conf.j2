@@ -1,0 +1,19 @@
+Director {
+  Name = {{ director_name }}
+  Password = "{{ director_password }}"
+}
+
+FileDaemon {
+  Name = {{ name }}
+  FDport = {{ port }}
+  WorkingDirectory = /var/lib/bacula
+  Pid Directory = /run/bacula
+  Maximum Concurrent Jobs = 20
+  Plugin Directory = /usr/lib/bacula
+  FDAddress = {{ host }}
+}
+
+Messages {
+  Name = Standard
+  director = {{ director_name }} = all, !skipped, !restored, !verified, !saved
+}

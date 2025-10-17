@@ -24,4 +24,7 @@ header:
     - 'pyproject.toml'
     - 'zap_rules.tsv'
     - '**/*.md.j2'
+    - '**/lib/**'
+    - '**/templates/**'
+    - 'charmed_bacula_server/snap/hooks/**'
   comment: on-failure

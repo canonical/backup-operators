@@ -1,0 +1,46 @@
+Storage {
+  Name = charm-bacula-sd
+  SDPort = 9103
+  WorkingDirectory = "/opt/bacula/working"
+  Pid Directory = "/opt/bacula/working"
+  Plugin Directory = "/opt/bacula/plugins"
+  Maximum Concurrent Jobs = 20
+  SDAddress = {{ bacula.sd_address }}
+}
+
+Cloud {
+  Name           = charm-s3-cloud
+  Driver         = S3
+  HostName       = "{{ s3.address }}"
+  BucketName     = "{{ s3.bucket }}"
+  AccessKey      = "{{ s3.access_key }}"
+  SecretKey      = "{{ s3.secret_key }}"
+  Protocol       = {{ s3.protocol }}
+  UriStyle       = {{ s3.uri_style }}
+  Truncate Cache = AfterUpload
+  Upload         = EachPart
+}
+
+Device {
+  Name              = charm-s3-storage
+  Media Type        = CloudType
+  Device Type       = Cloud
+  Cloud             = charm-s3-cloud
+  Archive Device    = /opt/bacula/archive
+  Maximum Part Size = 10MB
+  LabelMedia        = yes
+  Random Access     = yes
+  AutomaticMount    = yes
+  RemovableMedia    = no
+  AlwaysOpen        = no
+}
+
+Director {
+  Name = charm-bacula-dir
+  Password = "{{ bacula.sd_password }}"
+}
+
+Messages {
+  Name = Standard
+  director = charm-bacula-dir = all
+}

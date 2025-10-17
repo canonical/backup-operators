@@ -1,0 +1,69 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+type: charm
+subordinate: true
+name: bacula-fd
+title: Bacula file daemon
+summary: Bacula file daemon charm.
+links:
+  documentation: https://discourse.charmhub.io
+  issues: https://github.com/canonical/is-charms-template-repo/issues
+  source: https://github.com/canonical/is-charms-template-repo
+  contact: https://launchpad.net/~canonical-is-devops
+
+description: |
+  A subordinate charm for installing and managing Bacula file daemon.
+
+platforms:
+  ubuntu@24.04:amd64:
+
+peers:
+  bacula-peer:
+    interface: bacula_peer
+
+provides:
+  backup:
+    interface: backup
+    limit: 1
+
+requires:
+  bacula-dir:
+    interface: bacula_dir
+    limit: 1
+  juju-info:
+    interface: juju-info
+    limit: 1
+    scope: container
+
+config:
+  options:
+    port:
+      description: |
+        Listen port for the bacula file daemon.
+      default: 9102
+      type: int
+    schedule:
+      description: |
+        Defines when the backup job is to be run.
+        If not provided, the backup job will only run manually.
+        The detailed format of the schedule string is defined at https://docs.baculasystems.com/BETechnicalReference/Director/DirectorResourceTypes/ScheduleResource/index.html#director-schedule-run.
+        
+        You can provide multiple schedule strings separated by commas.
+        For example, a schedule that performs a full backup on Sunday and incremental backups from Monday to Saturday is:
+        `Level=Full sun at 01:00, Level=Incremental mon-sat at 01:00`
+      default: ""
+      type: string
+
+parts:
+  charm:
+    charm-entrypoint: scripts/entrypoint
+    build-snaps:
+      - rustup
+    override-build: |
+      rustup default stable
+      craftctl default
+    build-packages:
+      - libffi-dev
+      - libssl-dev
+      - pkg-config
