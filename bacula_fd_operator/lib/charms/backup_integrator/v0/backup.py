@@ -124,20 +124,12 @@ class ProviderCharm(ops.CharmBase):
         super().__init__(*args)
         self._provider = BackupProvider(charm=self)
         self.framework.observe(
-            self.on._backup_relation_changed,
-            self._on_backup_relation_changed,
+            self._provider.on.backup_required,
+            self._on_backup_required,
         )
 
-    def _on_backup_relation_changed(self, _):
-        backup_relation = self.model.get_relation("backup")
-        if not backup_relation:
-            self.unit.status = ops.WaitingStatus("invalid backup relation data")
-            return
-        try:
-            backup_spec = self._provider.get_backup_spec(backup_relation)
-        except ValueError:
-            self.unit.status = ops.BlockedStatus("invalid backup relation data")
-            return
+    def _on_backup_required(self, event):
+        backup_spec = event.backup_spec
         # do something with backup_spec
         ...
 

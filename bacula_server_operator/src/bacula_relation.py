@@ -136,7 +136,8 @@ class BaculaProvider:
             password_secret_id = data.get("password")
             if password_secret_id is None:
                 password_secret = self._charm.app.add_secret(
-                    content={"password": secrets.token_urlsafe(32)}
+                    content={"password": secrets.token_urlsafe(32)},
+                    label=f"relation-{relation.id}",
                 )
                 password_secret.grant(relation)
                 password_secret_id = password_secret.id

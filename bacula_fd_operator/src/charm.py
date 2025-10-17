@@ -10,6 +10,7 @@ import typing
 from pathlib import Path
 
 import ops
+import pydantic
 from charms.backup_integrator.v0 import backup
 
 from . import bacula, bacula_relation
@@ -26,6 +27,34 @@ class NotReadyError(Exception):
 
 class UnrecoverableCharmError(Exception):
     """Unrecoverable Charm failure."""
+
+
+class PeerRelationNotReadyError(NotReadyError):
+    """Peer relation is not ready."""
+
+
+class PeerRelationDataNotReadyError(NotReadyError):
+    """Peer relation data is not ready."""
+
+
+class BackupRelationNotReadyError(NotReadyError):
+    """Backup relation is not ready."""
+
+
+class BackupRelationDataNotReadyError(NotReadyError):
+    """Backup relation data is not ready."""
+
+
+class BaculaDirRelationNotReadyError(NotReadyError):
+    """bacula-dir relation not ready."""
+
+
+class BaculaDirRelationDataNotReadyError(NotReadyError):
+    """bacula-dir relation data not ready."""
+
+
+class InvalidBackupRelationDataError(UnrecoverableCharmError):
+    """Invalid backup relation data."""
 
 
 logger = logging.getLogger(__name__)
@@ -61,6 +90,10 @@ class BaculaFdCharm(ops.CharmBase):
         self.framework.observe(self.on.bacula_dir_relation_changed, self._reconcile_event)
         self.framework.observe(self.on.bacula_dir_relation_broken, self._reconcile_event)
 
+        self.framework.observe(
+            self.on.bacula_dir_relation_broken, self._on_bacula_dir_relation_broken
+        )
+
     def _get_peer_data(self) -> dict[str, str] | None:
         """Get data stored in the peer relation and initialize it if not exist.
 
@@ -71,22 +104,22 @@ class BaculaFdCharm(ops.CharmBase):
         if not peer_relation:
             return None
         data = peer_relation.data[self.app]
-        peer_relation_factory = {
-            "name": lambda charm: "-".join(
+        default_peer_data = {
+            "name": "-".join(
                 [
                     "relation",
-                    charm.model.name,
-                    charm.unit.name.replace("/", "-"),
-                    charm.model.uuid.split("-")[-1],
+                    self.model.name,
+                    self.unit.name.replace("/", "-"),
+                    self.model.uuid.split("-")[-1],
                     "fd",
                 ]
             ),
         }
-        if set(data.keys()) != set(peer_relation_factory.keys()):
+        if set(data.keys()) != set(default_peer_data.keys()):
             if self.unit.is_leader():
-                for key, factory in peer_relation_factory.items():
+                for key, value in default_peer_data.items():
                     if key not in data:
-                        data[key] = factory(self)
+                        data[key] = value
                 return dict(data)
             return {}
         return dict(data)
@@ -108,7 +141,7 @@ class BaculaFdCharm(ops.CharmBase):
         """
         peer_relation = self.model.get_relation(PEER_RELATION_NAME)
         if not peer_relation:
-            raise NotReadyError("waiting for peer relation")
+            raise PeerRelationNotReadyError("waiting for peer relation")
         return peer_relation.data[self.unit]["ingress-address"]
 
     def _reconcile(self) -> None:
@@ -119,21 +152,25 @@ class BaculaFdCharm(ops.CharmBase):
             self.unit.status = ops.ActiveStatus()
         peer_data = self._get_peer_data()
         if not peer_data:
-            raise NotReadyError("waiting for peer data to be initialized")
+            raise PeerRelationDataNotReadyError("waiting for peer data to be initialized")
         name = peer_data["name"]
         backup_relation = self.model.get_relation(BACKUP_RELATION_NAME)
         if not backup_relation:
-            raise NotReadyError("waiting for backup relation")
+            raise BackupRelationNotReadyError("waiting for backup relation")
         try:
             backup_spec = self._backup_provider.get_backup_spec(backup_relation)
-        except ValueError as exc:
+        except pydantic.ValidationError as exc:
             logger.exception("invalid backup relation data")
-            raise UnrecoverableCharmError("invalid backup relation data") from exc
+            errors = exc.errors()
+            error_fields = [str(e["loc"][0]) for e in errors if e.get("loc")]
+            raise InvalidBackupRelationDataError(
+                f"invalid backup relation data: {', '.join(error_fields)}"
+            ) from exc
         if not backup_spec:
-            raise NotReadyError("waiting for backup relation data")
+            raise BackupRelationDataNotReadyError("waiting for backup relation data")
         bacula_dir = self.model.get_relation(BACULA_DIR_RELATION_NAME)
         if not bacula_dir:
-            raise NotReadyError("waiting for bacula-dir relation")
+            raise BaculaDirRelationNotReadyError("waiting for bacula-dir relation")
         port = typing.cast(int, self.config.get("port", 9102))
         self.unit.set_ports(port)
         self._bacula_dir.send_to_bacula_dir(
@@ -148,7 +185,7 @@ class BaculaFdCharm(ops.CharmBase):
         )
         dir_data = self._bacula_dir.receive_from_bacula_dir()
         if not dir_data:
-            raise NotReadyError("waiting for bacula-dir relation data")
+            raise BaculaDirRelationDataNotReadyError("waiting for bacula-dir relation data")
         bacula.config_reload(
             name=name,
             host=self._get_unit_address(),
@@ -166,6 +203,18 @@ class BaculaFdCharm(ops.CharmBase):
             self.unit.status = ops.WaitingStatus(str(exc))
         except UnrecoverableCharmError as exc:
             self.unit.status = ops.BlockedStatus(str(exc))
+
+    def _on_bacula_dir_relation_broken(self, event: ops.RelationBrokenEvent) -> None:
+        """Handle bacula-dir relation broken event.
+
+        Args:
+            event: relation broken event.
+        """
+        try:
+            secret = self.model.get_secret(label=f"relation-{event.relation.id}")
+        except (ops.SecretNotFoundError, ops.ModelError):
+            return
+        secret.remove_all_revisions()
 
 
 if __name__ == "__main__":  # pragma: nocover
