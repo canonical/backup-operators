@@ -294,7 +294,7 @@ parts:
       - --with-zstd
       - --with-openssl
       - --with-postgresql
-      - --with-s3=../../libs3/install
+      - --with-s3=/root/parts/libs3/install
       - --with-aws
       - --with-lzo
       - --with-scriptdir=/opt/bacula/scripts
