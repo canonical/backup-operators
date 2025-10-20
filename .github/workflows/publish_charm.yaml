@@ -1,14 +1,79 @@
 name: Publish to edge
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
-  publish-to-edge:
-    uses: canonical/operator-workflows/.github/workflows/publish_charm.yaml@main
-    secrets: inherit
-    with:
-      channel: latest/edge
+  find-charms:
+    name: Find Charms
+    runs-on: ubuntu-latest
+    outputs:
+      charm-dirs: ${{ steps.charm-dirs.outputs.charm-dirs }}
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - id: charm-dirs
+        run: |
+          echo charm-dirs=`find -name charmcraft.yaml | xargs dirname | jq --raw-input --slurp 'split("\n") | map(select(. != ""))'` >> $GITHUB_OUTPUT
+
+  publish-charm:
+    needs: [ find-charms ]
+    strategy:
+      fail-fast: false
+      matrix:
+        charm-dir: ${{ fromJSON(needs.find-charms.outputs.charm-dirs) }}
+    name: Publish Charm (${{ matrix.charm-dir }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - name: change directory
+        run: |
+          TEMP_DIR=$(mktemp -d)
+          cp -rp ./${{ matrix.charm-dir }}/. $TEMP_DIR
+          rm -rf .* * || :
+          cp -rp $TEMP_DIR/. .
+          rm -rf $TEMP_DIR
+      - name: setup lxd
+        uses: canonical/setup-lxd@v0.1.3
+      - name: build charm
+        id: charmcraft
+        run: |
+          sudo snap install --channel latest/stable --classic charmcraft
+          charmcraft pack --verbosity trace
+          echo charms=`ls *.charm` >> $GITHUB_OUTPUT
+      - run: |
+          echo charmcraft pack:
+          echo ${{ steps.charmcraft.outputs.charms }}
+      - id: charm-name
+        run: |
+          echo charm-name=`yq -r .name charmcraft.yaml` >> $GITHUB_OUTPUT
+      - if: github.event_name == 'push'
+        name: publish charm
+        uses: canonical/charming-actions/upload-charm@2.7.0
+        with:
+          credentials: ${{ secrets.CHARMHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          built-charm-path: ${{ steps.charmcraft.outputs.charms }}
+          tag-prefix: ${{ steps.charm-name.outputs.charm-name }}
+
+  publish-charm-libs:
+    name: Release charm libs
+    runs-on: ubuntu-24.04
+    needs: [ publish-charm ]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - name: change directory
+        run: |
+          TEMP_DIR=$(mktemp -d)
+          cp -rp ./backup_integrator_operator/. $TEMP_DIR
+          rm -rf .* * || :
+          cp -rp $TEMP_DIR/. .
+          rm -rf $TEMP_DIR
+      - uses: canonical/charming-actions/release-libraries@2.7.0
+        name: Release libs
+        with:
+          credentials: ${{ secrets.CHARMHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
