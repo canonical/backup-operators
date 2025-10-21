@@ -16,8 +16,6 @@ jobs:
     with:
       juju-channel: '3/stable'
       provider: 'lxd'
-      self-hosted-runner: true
-      self-hosted-runner-label: "edge"
   snap-tests:
     name: Build charmed-bacula-server snap
     uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v35.0.2
