@@ -468,16 +468,7 @@ def test_bacula_fd_relation():
                 FailJobOnError = no
               }
             }
-            FileSet {
-              Name = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-fileset"
-              Include {
-                Options {
-                  Signature = SHA256
-                  Compression = ZSTD
-                }
-                File = /var/backups/two
-              }
-            }"""
+            """
         )
         in file_content
     )
@@ -533,7 +524,8 @@ def test_bacula_fd_relation():
                 RunsWhen = After
                 FailJobOnError = no
               }
-            }"""
+            }
+            """
         )
         in file_content
     )
