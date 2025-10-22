@@ -1,0 +1,170 @@
+Director {
+  Name = charm-bacula-dir
+  DIRport = 9101
+  QueryFile = "/opt/bacula/scripts/query.sql"
+  WorkingDirectory = "/opt/bacula/working"
+  PidDirectory = "/opt/bacula/working"
+  Maximum Concurrent Jobs = 20
+  Password = {{ bacula.dir_password }}
+  Messages = charm-daemon-messages
+  DirAddress = 127.0.0.1
+}
+
+Storage {
+  Name        = charm-s3-storage
+  Address     = {{ bacula.dir_address }}
+  SDPort      = 9103
+  Password    = {{ bacula.sd_password }}
+  Device      = charm-s3-storage
+  Media Type  = CloudType
+}
+
+Pool {
+  Name = charm-cloud-pool
+  Pool Type = Backup
+  Recycle = yes
+  AutoPrune = yes
+  Maximum Volume Jobs = 1
+  Volume Retention = {{ bacula.volume_retention }}
+  Label Format = "{{ name }}-vol-${Year}${Month:p/2/0/r}${Day:p/2/0/r}-${Job}-${NumVols}"
+}
+
+Schedule {
+  Name = charm-cloud-upload-schedule
+  Run = daily at 01:00
+}
+
+Job {
+    Name = charm-cloud-upload
+    Type = Admin
+    Client = charm-bacula-fd
+    Schedule = charm-cloud-upload-schedule
+    RunScript {
+        RunsOnClient = No
+        RunsWhen = Always
+        Console = "cloud upload storage=charm-s3-storage allpools"
+        Console = "cloud truncate storage=charm-s3-storage allpools"
+    }
+    Storage = charm-s3-storage
+    Messages = charm-daemon-messages
+    Pool = charm-cloud-pool
+    Fileset = charm-empty-fileset
+}
+
+FileSet {
+  Name = charm-empty-fileset
+  Include { File = /dev/null }
+}
+
+Client {
+  Name = charm-bacula-fd
+  Address = 127.0.0.1
+  FDPort = 9102
+  Catalog = charm-catalog
+  Password = "{{ bacula.fd_password }}"
+  File Retention = {{ bacula.file_retention }}
+  Job Retention = {{ bacula.job_retention }}
+}
+
+Catalog {
+  Name = charm-catalog
+  dbname = "{{ db.name }}"
+  DB Address = "{{ db.host }}"
+  DB Port = {{ db.port }}
+  dbuser = "{{ db.username }}"
+  dbpassword = "{{ db.password }}"
+}
+
+Messages {
+  Name = charm-daemon-messages
+  # mailcommand = "/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula daemon message\" %r"
+  # mail = root = all, !skipped
+  console = all, !skipped, !saved
+  append = "/opt/bacula/log/bacula.log" = all, !skipped
+}
+
+{% for relation_fd in relation_fd_list %}
+FileSet {
+  Name = "{{ relation_fd.name }}-fileset"
+  Include {
+    Options {
+      Signature = SHA256
+      Compression = ZSTD
+    }
+    {% for file in relation_fd.fileset %}
+    File = {{ file }}
+    {% endfor %}
+  }
+}
+
+Client {
+  Name = "{{ relation_fd.name }}-fd"
+  Address = "{{ relation_fd.host }}"
+  FDPort = {{ relation_fd.port }}
+  Catalog = charm-catalog
+  Password = "{{ relation_fd.password }}"
+  File Retention = {{ bacula.file_retention }}
+  Job Retention  = {{ bacula.job_retention }}
+  AutoPrune = yes
+}
+
+{% if relation_fd.schedule %}
+Schedule {
+  Name = "{{ relation_fd.name }}-schedule"
+  Run = daily at 01:00
+}
+{% endif %}
+
+Job {
+  Name = "{{ relation_fd.name }}-backup"
+  Type = Backup
+  Client  = "{{ relation_fd.name }}-fd"
+  FileSet = "{{ relation_fd.name }}-fileset"
+  Storage = charm-s3-storage
+  Messages = charm-daemon-messages
+  Pool = charm-cloud-pool
+{% if relation_fd.schedule %}
+  Schedule = charm-cloud-upload-schedule
+{% endif %}
+
+  RunScript {
+    Command = "{{ relation_fd.client_run_before_backup }}"
+    RunsOnClient = yes
+    RunsWhen = Before
+    FailJobOnError = yes
+  }
+
+  RunScript {
+    Command = "{{ relation_fd.client_run_after_backup }}"
+    RunsOnClient = yes
+    RunsWhen = After
+    FailJobOnError = no
+  }
+}
+
+Job {
+  Name = "{{ relation_fd.name }}-restore"
+  Type = Restore
+  Client  = "{{ relation_fd.name }}-fd"
+  FileSet = "{{ relation_fd.name }}-fileset"
+  Storage = charm-s3-storage
+  Messages = charm-daemon-messages
+  Pool = charm-cloud-pool
+
+  Where = /
+  Replace = IfNewer
+
+  RunScript {
+    Command = "{{ relation_fd.client_run_before_restore }}"
+    RunsOnClient = yes
+    RunsWhen = Before
+    FailJobOnError = yes
+  }
+  RunScript {
+    Command = "{{ relation_fd.client_run_after_restore }}"
+    RunsOnClient = yes
+    RunsWhen = After
+    FailJobOnError = no
+  }
+}
+{% endfor %}

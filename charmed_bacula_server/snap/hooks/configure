@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+set -e
+
+mkdir -p "$SNAP_DATA/apache2/run/" "$SNAP_DATA/apache2/lock" "$SNAP_DATA/apache2/log"

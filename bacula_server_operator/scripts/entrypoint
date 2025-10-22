@@ -1,4 +1,5 @@
+#!/usr/bin/env bash
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Backup charm unit tests."""
+exec python3 -m src

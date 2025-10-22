@@ -1,0 +1,85 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+# This file configures Charmcraft.
+# See https://canonical-charmcraft.readthedocs-hosted.com/stable/howto/manage-charmcraft/ 
+# for guidance.
+
+type: charm
+name: bacula-server
+title: Bacula Server
+summary: Bacula Server (bacula-dir, bacula-sd, baculum) charm.
+links:
+  documentation: https://discourse.charmhub.io
+  issues: https://github.com/canonical/is-charms-template-repo/issues
+  source: https://github.com/canonical/is-charms-template-repo
+  contact: https://launchpad.net/~canonical-is-devops
+
+description: >-
+  The bacula-server charm helps install and manage Bacula server components,
+  including the Bacula Director, Bacula Storage Daemon, and Baculum.
+
+platforms:
+  ubuntu@24.04:amd64:
+
+peers:
+  bacula-peer:
+    interface: bacula_peer
+
+provides:
+  bacula-dir:
+    interface: bacula_dir
+
+requires:
+  postgresql:
+    interface: postgresql_client
+    optional: false
+    limit: 1
+  s3:
+    interface: s3
+    optional: false
+    limit: 1
+
+config:
+  options:
+    file-retention:
+      default: "1 year"
+      type: string
+
+    job-retention:
+      default: "1 year"
+      type: string
+
+    volume-retention:
+      default: "1 year"
+      type: string
+
+actions:
+  create-web-user:
+    params:
+      username:
+        type: string
+    required:
+      - username
+    additionalProperties: false
+  create-api-user:
+    params:
+      username:
+        type: string
+    required:
+      - username
+    additionalProperties: false
+
+parts:
+  charm:
+    charm-entrypoint: scripts/entrypoint
+    charm-binary-python-packages: [ "psycopg2-binary" ]
+    build-snaps:
+      - rustup
+    override-build: |
+      rustup default stable
+      craftctl default
+    build-packages:
+      - libffi-dev
+      - libssl-dev
+      - pkg-config
+      - libpq-dev
