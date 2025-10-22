@@ -111,7 +111,9 @@ Client {
 {% if relation_fd.schedule %}
 Schedule {
   Name = "{{ relation_fd.name }}-schedule"
-  Run = daily at 01:00
+{% for schedule in relation_fd.schedule %}
+  Run = {{ schedule }}
+{% endfor %}
 }
 {% endif %}
 

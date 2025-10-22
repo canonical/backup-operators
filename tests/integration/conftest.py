@@ -140,7 +140,10 @@ def deploy_charms_fixture(
     """Deploy backup charms."""
     juju.deploy("ubuntu", base="ubuntu@24.04")
     juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
-    juju.deploy(bacula_fd_charm_file)
+    juju.deploy(
+        bacula_fd_charm_file,
+        config={"schedule": "Level=Full sun at 01:00, Level=Incremental mon-sat at 01:00"},
+    )
     juju.deploy(bacula_server_charm_file)
     juju.deploy("postgresql", "bacula-database", channel="14/stable")
     juju.deploy("s3-integrator")
