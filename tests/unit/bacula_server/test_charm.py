@@ -5,7 +5,7 @@
 # pylint: disable=line-too-long,no-member
 
 """bacula-server charm unit tests."""
-
+import re
 import textwrap
 
 import ops.testing
@@ -366,4 +366,166 @@ def test_bacula_dir_config():
             }}
             """
         ).strip()
+    )
+
+
+def test_bacula_fd_relation():
+    """
+    arrange: integrate bacula-server charm with a postgresql and s3 relation.
+    act: integrate the bacula-server with two bacula-fd charm.
+    assert: the charm should create a bacula-dir.conf with corresponding bacula-fd entries.
+    """
+    ctx = ops.testing.Context(BaculaServerCharm)
+    state_in = ops.testing.State(
+        leader=True,
+        relations=[
+            ops.testing.PeerRelation(endpoint="bacula-peer"),
+            make_postgresql_relation(),
+            make_s3_relation(),
+            ops.testing.Relation(
+                endpoint="bacula-dir",
+                remote_app_name="bacula-fd-one",
+                remote_units_data={
+                    0: {
+                        "name": "relation-test-bacula-bacula-fd-one-0-2e79074dc082-fd",
+                        "fileset": "/var/backups/one",
+                        "port": "9102",
+                        "client-run-before-backup": "/opt/backup-integrator-charm/backup-integrator-0/scripts/run-before-backup",
+                        "client-run-after-backup": "/opt/backup-integrator-charm/backup-integrator-0/scripts/run-after-backup",
+                        "client-run-before-restore": "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop",
+                        "client-run-after-restore": "/opt/backup-integrator-charm/backup-integrator-0/scripts/run-after-restore",
+                        "ingress-address": "10.0.1.1",
+                    }
+                },
+            ),
+            ops.testing.Relation(
+                endpoint="bacula-dir",
+                remote_app_name="bacula-fd-two",
+                remote_units_data={
+                    0: {
+                        "name": "relation-test-bacula-bacula-fd-two-0-2e79074dc082-fd",
+                        "fileset": "/var/backups/two",
+                        "port": "9102",
+                        "client-run-before-backup": "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop",
+                        "client-run-after-backup": "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop",
+                        "client-run-before-restore": "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop",
+                        "client-run-after-restore": "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop",
+                        "schedule": "Level=Full sun at 01:00,Level=Incremental mon-sat at 01:00",
+                        "ingress-address": "10.0.2.1",
+                    }
+                },
+            ),
+        ],
+    )
+    ctx.run(ctx.on.config_changed(), state_in)
+    file = bacula.BACULA_SERVER_SNAP_COMMON / "opt/bacula/etc/bacula-dir.conf"
+    file_content = file.read_text(encoding="utf-8")
+    file_content = re.sub(r"(?m)^\s*(?:\r?\n|$)", "", file_content)
+    assert (
+        textwrap.dedent(
+            """\
+            Job {
+              Name = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-backup"
+              Type = Backup
+              Client  = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-fd"
+              FileSet = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-fileset"
+              Storage = charm-s3-storage
+              Messages = charm-daemon-messages
+              Pool = charm-cloud-pool
+              RunScript {
+                Command = "/opt/backup-integrator-charm/backup-integrator-0/scripts/run-before-backup"
+                RunsOnClient = yes
+                RunsWhen = Before
+                FailJobOnError = yes
+              }
+              RunScript {
+                Command = "/opt/backup-integrator-charm/backup-integrator-0/scripts/run-after-backup"
+                RunsOnClient = yes
+                RunsWhen = After
+                FailJobOnError = no
+              }
+            }
+            Job {
+              Name = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-restore"
+              Type = Restore
+              Client  = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-fd"
+              FileSet = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-fileset"
+              Storage = charm-s3-storage
+              Messages = charm-daemon-messages
+              Pool = charm-cloud-pool
+              Where = /
+              Replace = IfNewer
+              RunScript {
+                Command = "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop"
+                RunsOnClient = yes
+                RunsWhen = Before
+                FailJobOnError = yes
+              }
+              RunScript {
+                Command = "/opt/backup-integrator-charm/backup-integrator-0/scripts/run-after-restore"
+                RunsOnClient = yes
+                RunsWhen = After
+                FailJobOnError = no
+              }
+            }
+            """
+        )
+        in file_content
+    )
+    assert (
+        textwrap.dedent(
+            """\
+            Schedule {
+              Name = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-schedule"
+              Run = Level=Full sun at 01:00
+              Run = Level=Incremental mon-sat at 01:00
+            }
+            Job {
+              Name = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-backup"
+              Type = Backup
+              Client  = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-fd"
+              FileSet = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-fileset"
+              Storage = charm-s3-storage
+              Messages = charm-daemon-messages
+              Pool = charm-cloud-pool
+              Schedule = charm-cloud-upload-schedule
+              RunScript {
+                Command = "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop"
+                RunsOnClient = yes
+                RunsWhen = Before
+                FailJobOnError = yes
+              }
+              RunScript {
+                Command = "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop"
+                RunsOnClient = yes
+                RunsWhen = After
+                FailJobOnError = no
+              }
+            }
+            Job {
+              Name = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-restore"
+              Type = Restore
+              Client  = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-fd"
+              FileSet = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-fileset"
+              Storage = charm-s3-storage
+              Messages = charm-daemon-messages
+              Pool = charm-cloud-pool
+              Where = /
+              Replace = IfNewer
+              RunScript {
+                Command = "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop"
+                RunsOnClient = yes
+                RunsWhen = Before
+                FailJobOnError = yes
+              }
+              RunScript {
+                Command = "/var/lib/juju/agents/unit-bacula-fd-one-0/charm/scripts/noop"
+                RunsOnClient = yes
+                RunsWhen = After
+                FailJobOnError = no
+              }
+            }
+            """
+        )
+        in file_content
     )
