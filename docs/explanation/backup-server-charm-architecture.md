@@ -1,4 +1,4 @@
-# Charm architecture: Bacula Server charm
+# Charm architecture: Bacula server charm
 
 The Bacula Server charm is a machine charm that installs and manages all Bacula server components, including the Bacula Director, the Bacula Storage Daemon, and the Baculum web UI. Together, they provide backup orchestration, backup storage for Bacula backup agents, and a user interface for operators.
 

@@ -59,14 +59,14 @@ juju deploy bacula-server --channel edge
 ## Deploy and integrate S3 storage <a name="deploy-and-integrate-s3"></a>
 
 The Bacula server charm requires S3-compatible storage as the backup
-destination. For testing, we'll deploy MinIO and use the [
+destination. For testing, we'll deploy minio and use the [
 `s3-integrator`](https://charmhub.io/s3-integrator) charm to provide S3
 storage.
 
-### Deploy MinIO
+### Deploy minio
 
-We will use Docker to run MinIO. Run the following commands **inside the
-Multipass VM** to install Docker and start MinIO.
+We will use Docker to run minio. Run the following commands **inside the
+Multipass VM** to install Docker and start minio.
 
 Install Docker:
 
@@ -83,9 +83,9 @@ sudo iptables -I DOCKER-USER -i lxdbr0 -j ACCEPT
 sudo iptables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 ```
 
-Start the MinIO container:
+Start the minio container:
 ```
-sudo docker run -d --name minio -p 9000:9000 -p 9001:9001 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data --console-address ":9001"
+sudo docker run -d --name minio -p 9000:9000 -p 9001:9001 -e minio_ROOT_USER=minioadmin -e minio_ROOT_PASSWORD=minioadmin minio/minio server /data --console-address ":9001"
 ```
 
 Create the Bacula bucket:
@@ -210,7 +210,7 @@ added a s3 storage and a database, and accessed the application.
 You can clean up your Juju environment by following this guide: 
 [Tear down your test environment](https://canonical-juju.readthedocs-hosted.com/en/3.6/user/howto/manage-your-deployment/manage-your-deployment-environment/#tear-things-down)
 
-And cleanup the minio docker image by running the following command:
+And cleanup the minio Docker image by running the following command:
 
 ```
 docker rm -f minio

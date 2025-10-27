@@ -52,6 +52,8 @@ required changes.
 `http://<bacula-server-ip>:9095/web/restore/` provides the restore
 wizard, which is an interactive way of setting up a restoration.
 
+<!-- vale Canonical.013-Spell-out-numbers-below-10 = NO -->
+
 ### Step 1 - Select source backup client
 
 Select the backup client that owns the backup you want to
@@ -78,7 +80,11 @@ function correctly.
 Select the destination client that the files need to be
 restored to by choosing the corresponding restore job.
 
+<!-- vale Canonical.007-Headings-sentence-case = NO -->
 ### Step 6 - Finish
+<!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 Click "Run restore" to start the restoration. The restoration time can
 vary depending on the backup size and network connectivity.
+
+<!-- vale Canonical.013-Spell-out-numbers-below-10 = YES -->

@@ -1,4 +1,6 @@
+<!-- vale Canonical.007-Headings-sentence-case = NO -->
 # Charm architecture: bacula-fd
+<!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 The bacula-fd charm is a subordinate charm that installs and
 manages the Bacula file daemon on target machines. Bacula-fd (Bacula

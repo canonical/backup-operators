@@ -1,6 +1,6 @@
 # Actions
 
-## bacula-server
+## Bacula server charm
 
 See [Actions](https://charmhub.io/bacula-server/actions).
 
