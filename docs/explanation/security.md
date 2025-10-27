@@ -16,6 +16,5 @@ the following non-default protections are omitted:
 
 # Backup integrator charm
 
-The Backup Integrator charm is a workload-less subordinate
-charm. There are no security vulnerabilities beyond Juju's intrinsic
-ones.
+The backup integrator charm is a workload-less subordinate
+charm. There are no security vulnerabilities beyond [Juju's intrinsic ones](https://documentation.ubuntu.com/juju/3.6/explanation/juju-security/).

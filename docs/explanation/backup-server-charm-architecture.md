@@ -20,7 +20,7 @@ the destination for backup files.
 C4Context
     title Container diagram for backup charms
 
-    System_Boundary(backup server, "Backup Server") {
+    System_Boundary(backup server, "Backup Server Model") {
         Container(s3-integrator, "S3 Integrator", "", "Provide backup destination")
         Container(bacula-server, "Bacula Server", "", "Backup server")
         Container(postgresql, "PostgreSQL", "", "Store backup metadata")
@@ -28,7 +28,7 @@ C4Context
         Rel(postgresql, bacula-server, "")
     }
 
-    System_Boundary(backup source, "Backup Source") {
+    System_Boundary(backup source, "Backup Source Model") {
         Container_Boundary(backup-source, "Backup Source") {
             Component(source, "", "Backup source principal charm")
             Component(backup-integrator, "", "Backup relation integrator")

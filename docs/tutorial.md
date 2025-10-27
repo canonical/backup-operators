@@ -193,11 +193,25 @@ username and password you just created. The IP address may vary in your
 deployment.
 
 If you deployed the test environment inside a Multipass VM, use `socat`
-to forward external traffic to the `bacula-server` with the following
-command:
+to forward external traffic to the `bacula-server` by running the 
+following command inside the Multipass VM:
 
 ```
 socat TCP-LISTEN:9095,reuseaddr,fork TCP:10.212.71.247:9095
 ```
 
 Then access Baculum at `http://<multipass-vm-ip>:9095/web/`.
+
+## Clean up the environment
+
+Congratulations! You have successfully deployed the Bacula server charm,
+added a s3 storage and a database, and accessed the application.
+
+You can clean up your Juju environment by following this guide: 
+[Tear down your test environment](https://canonical-juju.readthedocs-hosted.com/en/3.6/user/howto/manage-your-deployment/manage-your-deployment-environment/#tear-things-down)
+
+And cleanup the minio docker image by running the following command:
+
+```
+docker rm -f minio
+```

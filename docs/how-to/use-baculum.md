@@ -80,4 +80,5 @@ restored to by choosing the corresponding restore job.
 
 ### Step 6 - Finish
 
-Click "Run restore" to start the restoration.
+Click "Run restore" to start the restoration. The restoration time can
+vary depending on the backup size and network connectivity.

@@ -1,15 +1,15 @@
-# How to integrate with the Backup Integrator charm
+# How to integrate with the backup integrator charm
 
-The Backup Integrator charm provides backup functionality to charms that
+The backup integrator charm provides backup functionality to charms that
 haven't, or cannot, implement the backup relation themselves.
 
-To use the Backup Integrator charm, integrate the Backup Integrator
+To use the backup integrator charm, integrate the backup integrator
 charm with the backup source using the `juju-info` relation. Then you
 can use the `backup` relation endpoint to request backups from
 backup-provider charms such as `bacula-fd`. Let's
 demonstrate by using the Ubuntu charm as an example.
 
-Deploy the charm and integrate with the Backup Integrator 
+Deploy the charm and integrate with the backup integrator 
 and Provider charms:
 
 ```
@@ -32,13 +32,13 @@ Integrate bacula-fd charm with the bacula-server charm:
 juju integrate bacula-fd bacula-server
 ```
 
-## Configure the Backup Integrator charm
+## Configure the backup integrator charm
 
-As the Backup Integrator charm is the requirer of backups, you need to
+As the backup integrator charm is the requirer of backups, you need to
 provide the specification of what to back up and how to back it up to
-the Backup Integrator charm. This is controlled by the `fileset`,
+the backup integrator charm. This is controlled by the `fileset`,
 `run-before-backup`, `run-after-backup`, `run-before-restore`, and
-`run-after-restore` configuration options on the Backup Integrator
+`run-after-restore` configuration options on the backup integrator
 charm.
 
 The `fileset` configuration describes what to back up; it's a
@@ -51,7 +51,7 @@ Each contains the content of a script that will run before or after a
 backup or restore. These scripts can be used to prepare backup files and
 to restore the service from a backup.
 
-The following is an example configuration for the Backup Integrator
+The following is an example configuration for the backup integrator
 charm on an imaginary PostgreSQL charm (not the
 real [`postgresql`](https://charmhub.io/postgresql) charm). It uses
 `pg_dump` to create a backup file of the database and `psql` to restore

@@ -1,9 +1,9 @@
 # Charm architecture: backup integrator
 
-The Backup Integrator charm is a subordinate charm that requires a backup
-provider charm on behalf of other charms. Usually this is necessary
-because the charm needs backup functionality but either has not
-implemented the backup relation itself or cannot implement it.
+The backup integrator charm is a subordinate charm that requires backup 
+on behalf of other charms. Usually this is necessary because the charm
+needs backup functionality but either has not implemented the backup
+relation itself or cannot implement it.
 
 The design and functionality of the backup integrator are very simple.
 Basically, it passes the backup integrator charm’s configuration values 
@@ -11,6 +11,44 @@ to the backup relation. For the `fileset` configuration, the backup
 integrator validates it before passing it to the relation. For the 
 `run-*` configurations, the backup integrator writes the configuration
 content to a local file and passes the filename to the backup relation.
+
+## High-level overview of backup charms deployment
+
+Here's a typical backup charm suite deployment in the machine charm
+environment. It deploys the bacula-server charm as the backup server,
+the bacula-fd charm as the backup agent, and the backup-integrator charm
+as the backup relation provider.
+
+The backup-integrator charm requests backups from the bacula-fd charm on
+behalf of the backup source charm `source`. The bacula-fd charm then
+integrates with the bacula-server charm to submit the backup files. The
+bacula-server charm is integrated with the PostgreSQL charm for storing
+backup metadata and with the s3-integrator charm to use S3 storage as
+the destination for backup files.
+
+```mermaid
+C4Context
+    title Container diagram for backup charms
+
+    System_Boundary(backup server, "Backup Server Model") {
+        Container(s3-integrator, "S3 Integrator", "", "Provide backup destination")
+        Container(bacula-server, "Bacula Server", "", "Backup server")
+        Container(postgresql, "PostgreSQL", "", "Store backup metadata")
+        Rel(s3-integrator, bacula-server, "")
+        Rel(postgresql, bacula-server, "")
+    }
+
+    System_Boundary(backup source, "Backup Source Model") {
+        Container_Boundary(backup-source, "Backup Source") {
+            Component(source, "", "Backup source principal charm")
+            Component(backup-integrator, "", "Backup relation integrator")
+            Component(bacula-fd, "", "Bacula file daemon")
+        }
+        Rel(source, backup-integrator, "")
+        Rel(backup-integrator, bacula-fd, "")
+    }
+    Rel(bacula-fd, bacula-server, "")
+```
 
 ## Juju events
 
