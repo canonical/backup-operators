@@ -68,20 +68,28 @@ storage.
 We will use Docker to run MinIO. Run the following commands **inside the
 Multipass VM** to install Docker and start MinIO.
 
-```
-# install docker
-sudo apt update && sudo apt install -y docker
+Install Docker:
 
-# update docker iptables for allowing LXD network traffic
-# required after every reboot
-# replace lxdbr0 with the actual LXD bridge name if it's not the default
+```
+sudo apt update && sudo apt install -y docker
+```
+
+Let's update Docker's iptables to allow LXD network traffic. This step is
+required after every reboot. If `lxdbr0` is not the name of your LXD bridge,
+replace it with the actual name.
+
+```
 sudo iptables -I DOCKER-USER -i lxdbr0 -j ACCEPT
 sudo iptables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+```
 
-# start the minio container
+Start the MinIO container:
+```
 sudo docker run -d --name minio -p 9000:9000 -p 9001:9001 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data --console-address ":9001"
+```
 
-# create the bacula bucket
+Create the Bacula bucket:
+```
 sudo docker exec minio mkdir -m 777 /data/bacula
 ```
 
@@ -89,7 +97,6 @@ When everything is set up, you should see output similar to the
 following from `juju status`:
 
 ```
-$ juju status
 Model            Controller  Cloud/Region         Version  SLA          Timestamp
 bacula-tutorial  lxd         localhost/localhost  3.6.2    unsupported  17:41:40+08:00
 

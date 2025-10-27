@@ -60,6 +60,10 @@ C4Container
         Rel(bacula-server-charm, bacula-sd, "config")
         Rel(bacula-server-charm, bacula-fd, "config")
         Rel(bacula-server-charm, baculum, "config")
+        UpdateRelStyle(bacula-server-charm, bacula-dir, $offsetY="-15", $offsetX="10")
+        UpdateRelStyle(bacula-server-charm, bacula-sd, $offsetY="-15", $offsetX="-30")
+        UpdateRelStyle(bacula-server-charm, bacula-fd, $offsetY="-15", $offsetX="-50")
+        UpdateRelStyle(bacula-server-charm, baculum, $offsetY="-20", $offsetX="-110")
     }
 ```
 

@@ -1,6 +1,6 @@
 # Charm architecture: backup integrator
 
-Backup Integrator charm is a subordinate charm that requires a backup
+The Backup Integrator charm is a subordinate charm that requires a backup
 provider charm on behalf of other charms. Usually this is necessary
 because the charm needs backup functionality but either has not
 implemented the backup relation itself or cannot implement it.

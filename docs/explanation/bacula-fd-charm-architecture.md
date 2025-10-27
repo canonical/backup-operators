@@ -1,6 +1,6 @@
 # Charm architecture: bacula-fd
 
-Bacula-fd charm is a very simple subordinate charm that installs and
+The bacula-fd charm is a subordinate charm that installs and
 manages the Bacula file daemon on target machines. Bacula-fd (Bacula
 File Daemon) is the backup agent that needs to be installed on machines
 requiring backups. The bacula-fd handles many important duties, such as
@@ -9,7 +9,7 @@ uploading backup files and downloading restored backup files.
 ## High-level overview of backup charms deployment
 
 Here's a typical backup charm suite deployment in the machine charm
-environment. It deploys the bacula-server charm as the backup server,
+environment. This deployment shows the bacula-server charm as the backup server,
 the bacula-fd charm as the backup agent, and the backup-integrator charm
 as the backup relation provider.
 

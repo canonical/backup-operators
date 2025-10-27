@@ -6,19 +6,29 @@ haven't, or cannot, implement the backup relation themselves.
 To use the Backup Integrator charm, integrate the Backup Integrator
 charm with the backup source using the `juju-info` relation. Then you
 can use the `backup` relation endpoint to request backups from
-backup-provider charms such as `bacula-fd`. For example:
+backup-provider charms such as `bacula-fd`. Let's
+demonstrate by using the Ubuntu charm as an example.
+
+Deploy the charm and integrate with the Backup Integrator 
+and Provider charms:
 
 ```
-# example backup source charm "ubuntu"
 juju deploy ubuntu
 
 juju integrate ubuntu:juju-info backup-integrator
 juju integrate backup-integrator:backup bacula-fd
+```
 
-# also attach the bacula-fd charm to the principal charm because a subordinate charm cannot be a principal charm for another subordinate charm
+Attach the bacula-fd charm to the principal charm because a
+subordinate charm cannot be a principal charm for another
+subordinate charm.
+
+```
 juju integrate ubuntu:juju-info bacula-fd
+```
 
-# integrate bacula-fd charm with the bacula-server charm
+Integrate bacula-fd charm with the bacula-server charm:
+```
 juju integrate bacula-fd bacula-server
 ```
 
@@ -43,7 +53,7 @@ to restore the service from a backup.
 
 The following is an example configuration for the Backup Integrator
 charm on an imaginary PostgreSQL charm (not the
-real [postgresql](https://charmhub.io/postgresql) charm). It uses
+real [`postgresql`](https://charmhub.io/postgresql) charm). It uses
 `pg_dump` to create a backup file of the database and `psql` to restore
 the database from that file during a restoration.
 

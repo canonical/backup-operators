@@ -4,7 +4,7 @@
 
 ### `bacula-dir`
 
-*Interface*: `bacula_dir`
+*Interface*: `bacula_dir`    
 *Supported charms*: [bacula-fd](https://charmhub.io/bacula-fd)
 
 The `bacula-dir` relation connects the `bacula-server` charm and the
@@ -18,7 +18,7 @@ juju integrate bacula-server bacula-fd:bacula-dir
 
 ### `postgresql`
 
-*Interface*: `postgresql_client`
+*Interface*: `postgresql_client`    
 *Supported
 charms*: [postgresql](https://charmhub.io/postgresql), [pgbouncer](https://charmhub.io/pgbouncer)
 
@@ -33,7 +33,7 @@ juju integrate bacula-server postgresql
 
 ### `s3`
 
-*Interface*: `s3`
+*Interface*: `s3`    
 *Supported charms*: [s3-integrator](https://charmhub.io/s3-integrator)
 
 The `s3` relation provides S3-compatible storage for the Bacula server
@@ -49,7 +49,7 @@ juju integrate bacula-server s3-integrator
 
 ### `bacula-dir`
 
-*Interface*: `bacula_dir`
+*Interface*: `bacula_dir`    
 *Supported charms*: [bacula-server](https://charmhub.io/bacula-server)
 
 The `bacula-dir` relation connects the `bacula-server` charm and the
@@ -63,7 +63,7 @@ juju integrate bacula-fd bacula-server:bacula-dir
 
 ### `backup`
 
-*Interface*: `backup`
+*Interface*: `backup`    
 *Supported
 charms*: [backup-integrator](https://charmhub.io/backup-integrator)
 
@@ -78,7 +78,7 @@ juju integrate bacula-fd backup-integrator:backup
 
 ### `juju-info`
 
-*Interface*: `juju-info`
+*Interface*: `juju-info`    
 *Supported charms*: Any machine charm
 
 The Bacula-fd charm uses the `juju-info` relation to attach itself to a
@@ -94,7 +94,7 @@ juju integrate bacula-fd ubuntu:juju-info
 
 ### `backup`
 
-*Interface*: `backup`
+*Interface*: `backup`    
 *Supported charms*: [bacula-fd](https://charmhub.io/bacula-fd)
 
 The Backup integrator charm implements the requirer side of the `backup`
@@ -108,7 +108,7 @@ juju integrate backup-integrator bacula-fd:backup
 
 ### `juju-info`
 
-*Interface*: `juju-info`
+*Interface*: `juju-info`    
 *Supported charms*: Any machine charm
 
 The Backup integrator charm uses the `juju-info` relation to attach
