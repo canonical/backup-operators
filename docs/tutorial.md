@@ -74,8 +74,10 @@ Install Docker:
 sudo apt update && sudo apt install -y docker
 ```
 
-Let's update Docker's iptables to allow LXD network traffic. This step is
-required after every reboot. If `lxdbr0` is not the name of your LXD bridge,
+Let's update Docker's iptables to allow LXD network traffic. This step
+is
+required after every reboot. If `lxdbr0` is not the name of your LXD
+bridge,
 replace it with the actual name.
 
 ```
@@ -84,11 +86,13 @@ sudo iptables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHE
 ```
 
 Start the minio container:
+
 ```
 sudo docker run -d --name minio -p 9000:9000 -p 9001:9001 -e minio_ROOT_USER=minioadmin -e minio_ROOT_PASSWORD=minioadmin minio/minio server /data --console-address ":9001"
 ```
 
 Create the Bacula bucket:
+
 ```
 sudo docker exec minio mkdir -m 777 /data/bacula
 ```
@@ -116,8 +120,10 @@ Machine  State    Address        Inst id        Base          AZ  Message
 The next step is to configure the `s3-integrator` charm. Run the
 following commands to configure it. All configuration values are static
 except the endpoint, which should be the LXD network gateway address (
-this varies depending on your setup). In this example it's
-`10.212.71.1`.
+this varies depending on your setup). You can infer the gateway address
+by substituting the last octet of the unit address shown in the
+`juju status` output with `1`. In this example, `10.212.71.247` becomes
+`10.212.71.1`, so the gateway IP address is `10.212.71.1`.
 
 ```
 juju config s3-integrator bucket=bacula endpoint=http://10.212.71.1:9000 s3-uri-style=path
@@ -193,7 +199,7 @@ username and password you just created. The IP address may vary in your
 deployment.
 
 If you deployed the test environment inside a Multipass VM, use `socat`
-to forward external traffic to the `bacula-server` by running the 
+to forward external traffic to the `bacula-server` by running the
 following command inside the Multipass VM:
 
 ```
@@ -207,7 +213,7 @@ Then access Baculum at `http://<multipass-vm-ip>:9095/web/`.
 Congratulations! You have successfully deployed the Bacula server charm,
 added S3 storage and a database, and accessed the application.
 
-You can clean up your Juju environment by following this guide: 
+You can clean up your Juju environment by following this guide:
 [Tear down your test environment](https://documentation.ubuntu.com/juju/3.6/howto/manage-your-juju-deployment/tear-down-your-juju-deployment-local-testing-and-development/)
 
 Clean up the minio Docker image by running the following command:
