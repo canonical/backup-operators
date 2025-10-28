@@ -21,3 +21,8 @@ jobs:
     uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v36.0.1
     with:
       path-to-snap-project-directory: ./charmed_bacula_server
+  allure-report:
+    if: always() && !cancelled()
+    needs:
+      - integration-tests
+    uses: canonical/operator-workflows/.github/workflows/allure_report.yaml@main
