@@ -5,7 +5,7 @@ The Bacula Server charm is a machine charm that installs and manages all Bacula 
 ## High-level overview of backup charms deployment
 
 Here's a typical backup charm suite deployment in the machine charm
-environment. It deploys the bacula-server charm as the backup server,
+environment. The deployment shows the bacula-server charm as the backup server,
 the bacula-fd charm as the backup agent, and the backup-integrator charm
 as the backup relation provider.
 

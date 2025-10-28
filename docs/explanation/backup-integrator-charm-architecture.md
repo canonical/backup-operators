@@ -31,9 +31,9 @@ C4Context
     title Container diagram for backup charms
 
     System_Boundary(backup server, "Backup Server Model") {
-        Container(s3-integrator, "S3 Integrator", "", "Provide backup destination")
-        Container(bacula-server, "Bacula Server", "", "Backup server")
-        Container(postgresql, "PostgreSQL", "", "Store backup metadata")
+        Container(s3-integrator, "S3 Integrator", "", "Provides backup destination")
+        Container(bacula-server, "Bacula Server", "", "Provides backup server")
+        Container(postgresql, "PostgreSQL", "", "Stores backup metadata")
         Rel(s3-integrator, bacula-server, "")
         Rel(postgresql, bacula-server, "")
     }

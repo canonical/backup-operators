@@ -14,7 +14,7 @@ walks you through the steps to deploy a basic Bacula server.
 
 [note]
 You can get a working setup by using a Multipass VM as outlined in
-the [Set up your test environment](https://canonical-juju.readthedocs-hosted.com/en/latest/user/howto/manage-your-deployment/manage-your-deployment-environment/#set-things-up)
+the [Set up your test environment](https://documentation.ubuntu.com/juju/latest/howto/manage-your-juju-deployment/set-up-your-juju-deployment-local-testing-and-development/index.html#set-things-up)
 guide.
 [/note]
 
@@ -205,12 +205,12 @@ Then access Baculum at `http://<multipass-vm-ip>:9095/web/`.
 ## Clean up the environment
 
 Congratulations! You have successfully deployed the Bacula server charm,
-added a s3 storage and a database, and accessed the application.
+added S3 storage and a database, and accessed the application.
 
 You can clean up your Juju environment by following this guide: 
-[Tear down your test environment](https://canonical-juju.readthedocs-hosted.com/en/3.6/user/howto/manage-your-deployment/manage-your-deployment-environment/#tear-things-down)
+[Tear down your test environment](https://documentation.ubuntu.com/juju/3.6/howto/manage-your-juju-deployment/tear-down-your-juju-deployment-local-testing-and-development/)
 
-And cleanup the minio Docker image by running the following command:
+Clean up the minio Docker image by running the following command:
 
 ```
 docker rm -f minio

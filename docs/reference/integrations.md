@@ -2,7 +2,7 @@
 
 ## Bacula server charm
 
-Following are integrations for the Bacula server charm.
+The following are relations for the Bacula server charm.
 
 ### `bacula-dir`
 
@@ -49,7 +49,7 @@ juju integrate bacula-server s3-integrator
 
 ## Bacula-fd charm
 
-Following are integrations for the Bacula-fd charm.
+The following are relations for the Bacula-fd charm.
 
 ### `bacula-dir`
 
@@ -96,7 +96,7 @@ juju integrate bacula-fd ubuntu:juju-info
 
 ## Backup integrator charm
 
-Following are integrations for the backup integrator charm.
+The following are relations for the backup integrator charm.
 
 ### `backup`
 
