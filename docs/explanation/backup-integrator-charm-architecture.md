@@ -6,7 +6,7 @@ needs backup functionality but either has not implemented the backup
 relation itself or cannot implement it.
 
 The design and functionality of the backup integrator are very simple.
-Basically, it passes the backup integrator charm’s configuration values 
+Basically, the charm passes the its configuration values 
 to the backup relation. For the `fileset` configuration, the backup 
 integrator validates it before passing it to the relation. For the 
 `run-*` configurations, the backup integrator writes the configuration
