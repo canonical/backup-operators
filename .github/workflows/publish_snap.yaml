@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build charmed-bacula-server snap
-    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v36.0.1
+    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v36.0.2
     with:
       path-to-snap-project-directory: ./charmed_bacula_server
 
@@ -19,7 +19,7 @@ jobs:
     name: Release charmed-bacula-server snap
     needs:
       - build
-    uses: canonical/data-platform-workflows/.github/workflows/release_snap.yaml@v36.0.1
+    uses: canonical/data-platform-workflows/.github/workflows/release_snap.yaml@v36.0.2
     with:
       path-to-snap-project-directory: ./charmed_bacula_server
       channel: latest/edge
