@@ -2,6 +2,8 @@ name: Tests
 
 on:
   pull_request:
+  schedule:
+  - cron: "0 15 * * SAT"
 
 jobs:
   unit-tests:
@@ -11,18 +13,20 @@ jobs:
       self-hosted-runner: true
       self-hosted-runner-label: "edge"
   integration-tests:
-    uses: canonical/operator-workflows/.github/workflows/integration_test.yaml@main
+    uses: 
+      canonical/operator-workflows/.github/workflows/integration_test.yaml@main
     secrets: inherit
     with:
       juju-channel: '3/stable'
       provider: 'lxd'
   snap-tests:
     name: Build charmed-bacula-server snap
-    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v36.0.1
+    uses: 
+      canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v36.0.1
     with:
       path-to-snap-project-directory: ./charmed_bacula_server
   allure-report:
-    if: always() && !cancelled()
+    if: ${{ (success() || failure()) && github.event_name == 'schedule' }}
     needs:
-      - integration-tests
+    - integration-tests
     uses: canonical/operator-workflows/.github/workflows/allure_report.yaml@main
