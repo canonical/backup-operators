@@ -46,7 +46,7 @@ C4Context
 
 The following diagram shows the architecture of the Bacula server charm:
 
-```mermaid
+```{mermaid}
 C4Container
     title Component diagram for bacula-server charm
 

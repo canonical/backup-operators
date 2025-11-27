@@ -5,7 +5,9 @@ myst:
 ---
 
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+
 # Backup Operators
+
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 Backup operators are a collection of [charms](https://documentation.ubuntu.com/juju/3.6/reference/charm/) that provide a highly integrated, low-operations backup solution for charms running in machine environments.

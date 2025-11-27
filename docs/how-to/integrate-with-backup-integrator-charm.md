@@ -30,6 +30,7 @@ juju integrate ubuntu:juju-info bacula-fd
 ```
 
 Integrate bacula-fd charm with the bacula-server charm:
+
 ```
 juju integrate bacula-fd bacula-server
 ```
@@ -60,6 +61,7 @@ real [`postgresql`](https://charmhub.io/postgresql) charm). It uses
 the database from that file during a restoration.
 
 <!-- vale Canonical.016-No-inline-comments = NO -->
+
 ```yaml
 fileset: /var/backups/postgresql
 run-before-backup: |
@@ -74,4 +76,5 @@ run-after-restore: |
   sudo -u postgres psql -d ubuntu -1 -f /var/backups/postgresql/ubuntu.dump
   sudo rm -f /var/backups/postgresql/ubuntu.dump
 ```
+
 <!-- vale Canonical.016-No-inline-comments = YES -->

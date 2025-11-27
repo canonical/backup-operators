@@ -1,7 +1,9 @@
 (explanation_bacula_fd_charm_architecture)=
 
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+
 # Charm architecture: bacula-fd
+
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 The bacula-fd charm is a subordinate charm that installs and
