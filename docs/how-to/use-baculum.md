@@ -1,3 +1,5 @@
+(how_to_use_baculum)=
+
 # How to use the Baculum web interface
 
 Baculum is the web interface for Bacula. The Bacula server charm manages

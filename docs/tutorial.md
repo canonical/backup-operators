@@ -1,3 +1,5 @@
+(tutorial)=
+
 # Deploy the Bacula server charm for the first time
 
 The `bacula-server` charm is the core of the Bacula backup charms. It

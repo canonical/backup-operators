@@ -1,3 +1,5 @@
+(explanation_bacula_fd_charm_architecture)=
+
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
 # Charm architecture: bacula-fd
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
@@ -22,7 +24,7 @@ bacula-server charm is integrated with the PostgreSQL charm for storing
 backup metadata and with the s3-integrator charm to use S3 storage as
 the destination for backup files.
 
-```mermaid
+```{mermaid}
 C4Context
     title Container diagram for backup charms
 

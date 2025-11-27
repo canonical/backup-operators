@@ -1,3 +1,5 @@
+(how_to_integrate_with_backup_integrator_charm)=
+
 # How to integrate with the backup integrator charm
 
 The backup integrator charm provides backup functionality to charms that

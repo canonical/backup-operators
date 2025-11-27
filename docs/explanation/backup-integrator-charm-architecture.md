@@ -1,3 +1,5 @@
+(explanation_backup_integrator_charm_architecture)=
+
 # Charm architecture: backup integrator
 
 The backup integrator charm is a subordinate charm that requires backup 
@@ -26,7 +28,7 @@ bacula-server charm is integrated with the PostgreSQL charm for storing
 backup metadata and with the s3-integrator charm to use S3 storage as
 the destination for backup files.
 
-```mermaid
+```{mermaid}
 C4Context
     title Container diagram for backup charms
 
