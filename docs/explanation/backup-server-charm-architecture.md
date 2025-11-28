@@ -74,8 +74,7 @@ C4Container
 1. [`config-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed):
    Monitors changes to the backup integrator configuration to update the
    relation data with the latest configuration values.
-2. [`leader-elected`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-elected),
-   [`leader-settings-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-settings-changed):
+2. `leader-elected`, `leader-settings-changed`:
    Monitors changes in the charm’s leadership. Since only the leader
    unit can modify application relation data, triggering a relation data
    update when leadership changes ensures the relation is updated
