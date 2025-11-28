@@ -1,3 +1,5 @@
+(reference_actions)=
+
 # Actions
 
 ## Bacula server charm

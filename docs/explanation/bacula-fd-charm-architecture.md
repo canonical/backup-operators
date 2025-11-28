@@ -1,5 +1,9 @@
+(explanation_bacula_fd_charm_architecture)=
+
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+
 # Charm architecture: bacula-fd
+
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 The bacula-fd charm is a subordinate charm that installs and
@@ -22,7 +26,7 @@ bacula-server charm is integrated with the PostgreSQL charm for storing
 backup metadata and with the s3-integrator charm to use S3 storage as
 the destination for backup files.
 
-```mermaid
+```{mermaid}
 C4Context
     title Container diagram for backup charms
 
@@ -51,8 +55,7 @@ C4Context
 1. [`config-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed):
    Monitors changes to the backup integrator configuration to update the
    relation data with the latest configuration values.
-2. [`leader-elected`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-elected),
-   [`leader-settings-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-settings-changed):
+2. `leader-elected`, `leader-settings-changed`:
    Monitors changes in the charm’s leadership. Since only the leader
    unit can modify application relation data, triggering a relation data
    update when leadership changes ensures the relation is updated

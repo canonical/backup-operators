@@ -1,3 +1,5 @@
+(explanation_backup_server_charm_architecture)=
+
 # Charm architecture: Bacula server charm
 
 The Bacula Server charm is a machine charm that installs and manages all Bacula server components, including the Bacula Director, the Bacula Storage Daemon, and the Baculum web UI. Together, they provide backup orchestration, backup storage for Bacula backup agents, and a user interface for operators.
@@ -16,7 +18,7 @@ bacula-server charm is integrated with the PostgreSQL charm for storing
 backup metadata and with the s3-integrator charm to use S3 storage as
 the destination for backup files.
 
-```mermaid
+```{mermaid}
 C4Context
     title Container diagram for backup charms
 
@@ -44,7 +46,7 @@ C4Context
 
 The following diagram shows the architecture of the Bacula server charm:
 
-```mermaid
+```{mermaid}
 C4Container
     title Component diagram for bacula-server charm
 
@@ -72,8 +74,7 @@ C4Container
 1. [`config-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed):
    Monitors changes to the backup integrator configuration to update the
    relation data with the latest configuration values.
-2. [`leader-elected`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-elected),
-   [`leader-settings-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-settings-changed):
+2. `leader-elected`, `leader-settings-changed`:
    Monitors changes in the charm’s leadership. Since only the leader
    unit can modify application relation data, triggering a relation data
    update when leadership changes ensures the relation is updated
@@ -100,7 +101,7 @@ C4Container
    Monitors changes, creation, and removal of the `backup` relation to
    update relation data when needed.
 7. [`secret-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-changed), 
-   [`secret-removed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-removed):
+   [`secret-removed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-remove):
    Monitors changes or removal of secrets inside relations to update
    configuration when needed.
 8. [`s3-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),

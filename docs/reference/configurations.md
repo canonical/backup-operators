@@ -1,3 +1,5 @@
+(reference_configurations)=
+
 # Configurations
 
 ## Bacula server charm

@@ -1,3 +1,5 @@
+(explanation_backup_integrator_charm_architecture)=
+
 # Charm architecture: backup integrator
 
 The backup integrator charm is a subordinate charm that requires backup 
@@ -26,7 +28,7 @@ bacula-server charm is integrated with the PostgreSQL charm for storing
 backup metadata and with the s3-integrator charm to use S3 storage as
 the destination for backup files.
 
-```mermaid
+```{mermaid}
 C4Context
     title Container diagram for backup charms
 
@@ -61,8 +63,7 @@ For this charm, the following Juju events are observed:
 2. [`config-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed):
    Monitors changes to the backup integrator configuration to update the
    relation data with the latest configuration values.
-3. [`leader-elected`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-elected), 
-   [`leader-settings-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#leader-settings-changed):
+3. `leader-elected`, `leader-settings-changed`:
    Monitors changes in the charm’s leadership. Since only the leader
    unit can modify application relation data, triggering a relation data
    update when leadership changes ensures the relation is updated
