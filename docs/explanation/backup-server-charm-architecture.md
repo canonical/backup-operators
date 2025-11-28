@@ -102,7 +102,7 @@ C4Container
    Monitors changes, creation, and removal of the `backup` relation to
    update relation data when needed.
 7. [`secret-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-changed), 
-   [`secret-removed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-removed):
+   [`secret-removed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-remove):
    Monitors changes or removal of secrets inside relations to update
    configuration when needed.
 8. [`s3-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),
