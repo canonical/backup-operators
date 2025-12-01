@@ -22,6 +22,36 @@ charms:
    the Bacula backup solution, including the Bacula Director, Bacula
    Storage Daemon, and Baculum.
 
+## Documentation
+
+Our documentation is stored in the `docs` directory.
+It is based on the Canonical starter pack and hosted on 
+[Read the Docs](https://about.readthedocs.com/). In structuring, the 
+documentation employs the [Diátaxis](https://diataxis.fr/) approach.
+
+You may open a pull request with your documentation changes, or you can
+[file a bug](https://github.com/canonical/backup-operators/issues) to
+provide constructive feedback or suggestions.
+
+To run the documentation locally before submitting your changes:
+
+```bash
+cd docs
+make run
+```
+
+GitHub runs automatic checks on the documentation to verify spelling, 
+validate links and style guide compliance.
+
+You can (and should) run the same checks locally:
+
+```bash
+make spelling
+make linkcheck
+make vale
+make lint-md
+```
+
 ## Project and community
 
 The backup operators project is a member of the Ubuntu family. It is an
