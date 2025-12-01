@@ -7,7 +7,7 @@ See [CONTRIBUTING.md](https://github.com/canonical/backup-operators/blob/main/CO
 for information on contributing to the source code.
 ```
 
-Our documentation is stored in the `docs` directory alongside the [source code on GitHub](https://github.com/canonical/wordpress-k8s-operator/).
+Our documentation is stored in the `docs` directory alongside the [source code on GitHub](https://github.com/canonical/backup-operators/).
 It is based on the Canonical starter pack
 and hosted on [Read the Docs](https://about.readthedocs.com/). In structuring,
 the documentation employs the [Diátaxis](https://diataxis.fr/) approach.
@@ -17,7 +17,7 @@ will bring you directly to the source on GitHub. Similarly, you may click on "Gi
 suggestions or feedback about any page in the documentation.
 
 On GitHub, you may open a pull request with your documentation changes, or you can
-[file a bug](https://github.com/canonical/wordpress-k8s-operator/issues) to provide constructive feedback or suggestions.
+[file a bug](https://github.com/canonical/backup-operators/issues) to provide constructive feedback or suggestions.
 
 For syntax help and guidelines,
 refer to the
