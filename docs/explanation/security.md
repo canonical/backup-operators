@@ -16,7 +16,7 @@ the following non-default protections are omitted:
   is unencrypted.
 * Volume encryption is disabled; backups stored in S3 are unencrypted.
 
-# Backup integrator charm
+## Backup integrator charm
 
 The backup integrator charm is a workload-less subordinate
-charm. There are no security vulnerabilities beyond [Juju's intrinsic ones](https://documentation.ubuntu.com/juju/3.6/explanation/juju-security/).
+charm. There are no security vulnerabilities beyond {ref}`Juju's intrinsic ones <juju:juju-security>`.

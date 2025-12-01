@@ -64,28 +64,27 @@ C4Context
    Triggered when the charm has been upgraded. This ensures that the new
    version of the backup integrator charm can update the relation data
    if needed.
-4. [`bacula-peer-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),  
-   [`bacula-peer-relation-created`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-created), 
 4. {ref}`bacula-peer-relation-changed <juju:hook-relation-changed>`,  
-{ref}`bacula-peer-relation-created <juju:hook-relation-created>`, 
-{ref}`bacula-peer-relation-departed <juju:hook-relation-departed>`:
+   {ref}`bacula-peer-relation-created <juju:hook-relation-created>`, 
+   {ref}`bacula-peer-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `bacula-peer` relation
    to update relation data when needed.
-5. [`bacula-dir-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),  
 5. {ref}`bacula-dir-relation-changed <juju:hook-relation-changed>`,  
-{ref}`bacula-dir-relation-broken <juju:hook-relation-broken>`:
+   {ref}`bacula-dir-relation-broken <juju:hook-relation-broken>`:
    Monitors changes, creation, and removal of the `bacula-dir` relation
    to update relation data when needed.
-6. [`backup-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),
-   [`backup-relation-broken`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-broken),
-   [`backup-relation-departed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-departed):
+6. {ref}`backup-relation-changed <juju:hook-relation-changed>`,
+   {ref}`backup-relation-broken <juju:hook-relation-broken>`,
+   {ref}`backup-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `backup` relation to
    update relation data when needed.
-7. [`secret-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-changed):
+7. {ref}`secret-changed <juju:hook-secret-changed>`:
    Monitors changes in secrets inside relations to update configuration
    when needed.
 
-> See more in the Juju docs: [Hook](https://documentation.ubuntu.com/juju/latest/user/reference/hook/)
+```{note}
+See more in the Juju docs: {ref}`juju:hook`
+```
 
 ## Charm code overview
 
@@ -97,7 +96,9 @@ are derived, provided
 by [Ops](https://ops.readthedocs.io/en/latest/index.html) (the Python
 framework for developing charms).
 
-> See more in the Juju docs: [Charm](https://documentation.ubuntu.com/juju/latest/user/reference/charm/)
+```{note}
+See more in the Juju docs: {ref}`juju:charm`
+```
 
 The `__init__` method of `BaculaFdCharm` ensures that the charm observes
 and handles all events relevant to its operation.

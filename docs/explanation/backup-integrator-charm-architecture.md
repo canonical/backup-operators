@@ -56,9 +56,8 @@ C4Context
 
 For this charm, the following Juju events are observed:
 
-1. [`backup-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed), 
 1. {ref}`backup-relation-changed <juju:hook-relation-changed>`, 
-{ref}`backup-relation-created <juju:hook-relation-created>`:
+   {ref}`backup-relation-created <juju:hook-relation-created>`:
    Monitors changes and creation of the `backup` relation to update
    relation data when needed.
 2. {ref}`config-changed <juju:hook-config-changed>`:

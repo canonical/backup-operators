@@ -83,42 +83,33 @@ C4Container
    Triggered when the charm has been upgraded. This ensures that the new
    version of the backup integrator charm can update the relation data
    if needed.
-4. [`bacula-peer-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),  
-   [`bacula-peer-relation-created`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-created), 
 4. {ref}`bacula-peer-relation-changed <juju:hook-relation-changed>`,  
-{ref}`bacula-peer-relation-created <juju:hook-relation-created>`, 
-{ref}`bacula-peer-relation-departed <juju:hook-relation-departed>`:
+   {ref}`bacula-peer-relation-created <juju:hook-relation-created>`, 
+   {ref}`bacula-peer-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `bacula-peer` relation
    to update relation data when needed.
-5. [`bacula-dir-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),  
-   [`bacula-dir-relation-broken`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-broken),
-   [`bacula-dir-relation-joined`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-broken),
 5. {ref}`bacula-dir-relation-changed <juju:hook-relation-changed>`,  
-{ref}`bacula-dir-relation-broken <juju:hook-relation-broken>`,
-{ref}`bacula-dir-relation-joined <juju:hook-relation-joined>`,
-{ref}`bacula-dir-relation-departed <juju:hook-relation-departed>`:
+   {ref}`bacula-dir-relation-broken <juju:hook-relation-broken>`,
+   {ref}`bacula-dir-relation-joined <juju:hook-relation-joined>`,
+   {ref}`bacula-dir-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `bacula-dir` relation
    to update relation data when needed. And cleanup resources when 
    relation is removed.
-6. [`backup-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),
-   [`backup-relation-broken`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-broken),
 6. {ref}`backup-relation-changed <juju:hook-relation-changed>`,
-{ref}`backup-relation-broken <juju:hook-relation-broken>`,
-{ref}`backup-relation-departed <juju:hook-relation-departed>`:
+   {ref}`backup-relation-broken <juju:hook-relation-broken>`,
+   {ref}`backup-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `backup` relation to
    update relation data when needed.
 7. {ref}`secret-changed <juju:hook-secret-changed>`, 
    {ref}`secret-removed <juju:hook-secret-remove>`:
    Monitors changes or removal of secrets inside relations to update
    configuration when needed.
-8. [`s3-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),
 8. {ref}`s3-relation-changed <juju:hook-relation-changed>`,
-{ref}`s3-relation-broken <juju:hook-relation-broken>`: 
+   {ref}`s3-relation-broken <juju:hook-relation-broken>`: 
    Monitors changes, creation, and removal of the `s3` relation to 
    update relation data when needed.
-9. [`postgres-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),
 9. {ref}`postgres-relation-changed <juju:hook-relation-changed>`,
-{ref}`postgres-relation-broken <juju:hook-relation-broken>`: 
+   {ref}`postgres-relation-broken <juju:hook-relation-broken>`: 
    Monitors changes, creation, and removal of the `postgres` relation to 
    update relation data when needed.
 
