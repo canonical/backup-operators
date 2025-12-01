@@ -1,5 +1,3 @@
-(how_to_contribution)=
-
 (how_to_contribute)=
 
 # How to contribute

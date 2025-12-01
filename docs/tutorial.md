@@ -18,7 +18,10 @@ walks you through the steps to deploy a basic Bacula server.
 You can get a working setup by using a Multipass VM as outlined in
 the [Set up your test environment](https://documentation.ubuntu.com/juju/latest/howto/manage-your-juju-deployment/set-up-your-juju-deployment-local-testing-and-development/index.html#set-things-up)
 guide.
-[/note]
+```{note}
+You can get a working setup by using a Multipass VM as outlined in
+the [Set up your test environment](https://documentation.ubuntu.com/juju/latest/howto/manage-your-juju-deployment/set-up-your-juju-deployment-local-testing-and-development/index.html#set-things-up)
+guide.
 
 ## What you'll do
 
@@ -39,7 +42,8 @@ multipass shell my-juju-vm
 
 [note]
 If you're working locally, you don't need to do this step.
-[/note]
+```{note}
+If you're working locally, you don't need to do this step.
 
 To manage resources and separate this tutorial's workload from your
 usual work, create a new model on the LXD controller with the following

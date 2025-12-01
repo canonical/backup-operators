@@ -57,10 +57,11 @@ C4Context
 For this charm, the following Juju events are observed:
 
 1. [`backup-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed), 
-   [`backup-relation-created`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-created):
+1. {ref}`backup-relation-changed <juju:hook-relation-changed>`, 
+{ref}`backup-relation-created <juju:hook-relation-created>`:
    Monitors changes and creation of the `backup` relation to update
    relation data when needed.
-2. [`config-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed):
+2. {ref}`config-changed <juju:hook-config-changed>`:
    Monitors changes to the backup integrator configuration to update the
    relation data with the latest configuration values.
 3. `leader-elected`, `leader-settings-changed`:
@@ -68,12 +69,13 @@ For this charm, the following Juju events are observed:
    unit can modify application relation data, triggering a relation data
    update when leadership changes ensures the relation is updated
    regardless of leader status during relation establishment.
-4. [`upgrade-charm`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#upgrade-charm):
+4. {ref}`upgrade-charm <juju:hook-upgrade-charm>`:
    Triggered when the charm has been upgraded. This ensures that the new
    version of the backup integrator charm can update the relation data
    if needed.
 
-> See more in the Juju docs: [Hook](https://documentation.ubuntu.com/juju/latest/user/reference/hook/)
+```{note}
+See more in the Juju docs: {ref}`juju:hook`
 
 ## Charm code overview
 
@@ -85,7 +87,8 @@ are derived, provided
 by [Ops](https://ops.readthedocs.io/en/latest/index.html) (the Python
 framework for developing charms).
 
-> See more in the Juju docs: [Charm](https://documentation.ubuntu.com/juju/latest/user/reference/charm/)
+```{note}
+See more in the Juju docs: {ref}`juju:charm`
 
 The `__init__` method of `BackupIntegratorCharm` ensures that the charm
 observes and handles all events relevant to its operation.

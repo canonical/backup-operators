@@ -8,11 +8,11 @@ myst:
 
 # How-to guides
 
-Description TBD
+The following guides cover key processes and common tasks for managing and using the backup charms.
 
 ```{toctree}
 :maxdepth: 1
-contribution.md
-integrate-with-backup-integrator-charm.md
-use-baculum.md
+Contribute <contribution.md>
+Integrate with the backup integrator <integrate-with-backup-integrator-charm.md>
+Use the Baculum web interface <use-baculum.md>
 ```

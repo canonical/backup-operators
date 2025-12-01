@@ -52,7 +52,7 @@ C4Context
 
 ## Juju events
 
-1. [`config-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed):
+1. {ref}`config-changed <juju:hook-config-changed>`:
    Monitors changes to the backup integrator configuration to update the
    relation data with the latest configuration values.
 2. `leader-elected`, `leader-settings-changed`:
@@ -60,17 +60,20 @@ C4Context
    unit can modify application relation data, triggering a relation data
    update when leadership changes ensures the relation is updated
    regardless of leader status during relation establishment.
-3. [`upgrade-charm`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#upgrade-charm):
+3. {ref}`upgrade-charm <juju:hook-upgrade-charm>`:
    Triggered when the charm has been upgraded. This ensures that the new
    version of the backup integrator charm can update the relation data
    if needed.
 4. [`bacula-peer-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),  
    [`bacula-peer-relation-created`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-created), 
-   [`bacula-peer-relation-departed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-departed):
+4. {ref}`bacula-peer-relation-changed <juju:hook-relation-changed>`,  
+{ref}`bacula-peer-relation-created <juju:hook-relation-created>`, 
+{ref}`bacula-peer-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `bacula-peer` relation
    to update relation data when needed.
 5. [`bacula-dir-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),  
-   [`bacula-dir-relation-broken`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-broken):
+5. {ref}`bacula-dir-relation-changed <juju:hook-relation-changed>`,  
+{ref}`bacula-dir-relation-broken <juju:hook-relation-broken>`:
    Monitors changes, creation, and removal of the `bacula-dir` relation
    to update relation data when needed.
 6. [`backup-relation-changed`](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed),
