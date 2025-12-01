@@ -16,3 +16,4 @@ See [Configurations](https://charmhub.io/backup-integrator/configurations).
 
 ```{note}
 Read more about configurations in the Juju docs: {ref}`juju:configuration`
+```

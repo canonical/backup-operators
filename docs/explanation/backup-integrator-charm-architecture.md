@@ -76,6 +76,7 @@ For this charm, the following Juju events are observed:
 
 ```{note}
 See more in the Juju docs: {ref}`juju:hook`
+```
 
 ## Charm code overview
 
@@ -89,6 +90,7 @@ framework for developing charms).
 
 ```{note}
 See more in the Juju docs: {ref}`juju:charm`
+```
 
 The `__init__` method of `BackupIntegratorCharm` ensures that the charm
 observes and handles all events relevant to its operation.

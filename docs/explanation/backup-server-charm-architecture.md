@@ -124,6 +124,7 @@ C4Container
 
 ```{note}
 See more in the Juju docs: {ref}`juju:hook`
+```
 
 ## Charm code overview
 
@@ -136,6 +137,7 @@ are derived, provided by [Ops](https://ops.readthedocs.io/en/latest/index.html)
 
 ```{note}
 See more in the Juju docs: {ref}`juju:charm`
+```
 
 The `__init__` method of `BaculaServerCharm` ensures that the charm observes
 and handles all events relevant to its operation.
