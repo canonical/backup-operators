@@ -4,8 +4,8 @@
 
 ## Bacula charms
 
-Please refer to the Bacula security document on Bacula security
-issues: [https://www.bacula.org/15.0.x-manuals/en/main/Bacula_Security_Issues.html](https://www.bacula.org/15.0.x-manuals/en/main/Bacula_Security_Issues.html)
+Please refer to the [Bacula security document](https://www.bacula.org/15.0.x-manuals/en/main/Bacula_Security_Issues.html)
+on Bacula security issues.
 
 In the current version of the Bacula charms (bacula-server, bacula-fd),
 the following non-default protections are omitted:
