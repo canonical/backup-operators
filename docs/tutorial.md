@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    "description lang=en": "The Bacula server charm tutorial that walks a user through setting up a basic Bacula server."
+---
+
 (tutorial)=
 
 # Deploy the Bacula server charm for the first time
