@@ -1,3 +1,5 @@
+(reference_configurations)=
+
 # Configurations
 
 ## Bacula server charm
@@ -12,4 +14,6 @@ See [Configurations](https://charmhub.io/bacula-fd/configurations).
 
 See [Configurations](https://charmhub.io/backup-integrator/configurations).
 
-> Read more about configurations in the Juju docs: [Configuration](https://documentation.ubuntu.com/juju/latest/user/reference/configuration/)
+```{note}
+Read more about configurations in the Juju docs: {ref}`juju:configuration`
+```
