@@ -20,8 +20,8 @@ For Site Reliability Engineers, backup operators offer a turnkey, out-of-the-box
 
 |                                                                                                               |                                                                                                       |
 |---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
-| [Tutorials](./tutorial.md)</br>  Get started - a hands-on introduction to using the charm for new users </br> | [How-to guides](./how-to/index.md) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](./reference/index.md) </br> Technical information - specifications, APIs, architecture            | [Explanation](./explanation/index.md) </br> Concepts - discussion and clarification of key topics     |
+| {ref}`Tutorial <tutorial>`</br>  Get started - a hands-on introduction to using the charm for new users </br> | {ref}`How-to guides <how_to>` </br> Step-by-step guides covering key operations and common tasks |
+| {ref}`Reference <reference>` </br> Technical information - specifications, APIs, architecture            | {ref}`Explanation <explanation>` </br> Concepts - discussion and clarification of key topics     |
 
 ## Contributing to this documentation
 
