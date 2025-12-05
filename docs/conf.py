@@ -231,12 +231,7 @@ templates_path = ["_templates"]
 # NOTE: If undefined, set to None, or empty,
 #       the sphinx_reredirects extension will be disabled.
 
-redirects = {
-    'reference/doc-cheat-sheet-myst/': '../myst-syntax-reference',
-    'reference/doc-cheat-sheet/': '../rst-syntax-reference',
-    'reference/style-guide-myst/': '../myst-syntax-reference',
-    'reference/style-guide/': '../rst-syntax-reference',
-}
+redirects = {}
 
 
 ###########################
