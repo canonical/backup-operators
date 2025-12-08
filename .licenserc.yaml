@@ -27,4 +27,6 @@ header:
     - '**/lib/**'
     - '**/templates/**'
     - 'charmed_bacula_server/snap/hooks/**'
+    - '.readthedocs.yaml'
+    - 'docs/**'
   comment: on-failure

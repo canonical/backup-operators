@@ -1,3 +1,11 @@
+---
+myst:
+  html_meta:
+    "description lang=en": "The Bacula server charm tutorial that walks a user through setting up a basic Bacula server."
+---
+
+(tutorial)=
+
 # Deploy the Bacula server charm for the first time
 
 The `bacula-server` charm is the core of the Bacula backup charms. It
@@ -8,15 +16,16 @@ walks you through the steps to deploy a basic Bacula server.
 
 * A workstation (for example, a laptop) with AMD64 architecture.
 * Juju 3 installed. For more information about installing Juju,
-  see [Get started with Juju](https://canonical-juju.readthedocs-hosted.com/en/3.6/user/tutorial/).
+  see {ref}`Get started with Juju <juju:tutorial>`.
 * A Juju controller bootstrapped to LXD, for example:
   `juju bootstrap localhost tutorial-controller`
 
-[note]
+
+```{note}
 You can get a working setup by using a Multipass VM as outlined in
-the [Set up your test environment](https://documentation.ubuntu.com/juju/latest/howto/manage-your-juju-deployment/set-up-your-juju-deployment-local-testing-and-development/index.html#set-things-up)
+the {ref}`Set up your test environment <juju:set-things-up>`
 guide.
-[/note]
+```
 
 ## What you'll do
 
@@ -35,9 +44,9 @@ To work inside the Multipass VM, log in with the following command:
 multipass shell my-juju-vm
 ```
 
-[note]
+```{note}
 If you're working locally, you don't need to do this step.
-[/note]
+```
 
 To manage resources and separate this tutorial's workload from your
 usual work, create a new model on the LXD controller with the following
@@ -214,7 +223,7 @@ Congratulations! You have successfully deployed the Bacula server charm,
 added S3 storage and a database, and accessed the application.
 
 You can clean up your Juju environment by following this guide:
-[Tear down your test environment](https://documentation.ubuntu.com/juju/3.6/howto/manage-your-juju-deployment/tear-down-your-juju-deployment-local-testing-and-development/)
+{ref}`Tear down your test environment <juju:tear-things-down>`
 
 Clean up the minio Docker image by running the following command:
 

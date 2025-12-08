@@ -2,3 +2,5 @@ Bacula
 Baculum
 minio
 iptables
+sudo
+conntrack

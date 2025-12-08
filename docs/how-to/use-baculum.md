@@ -1,3 +1,5 @@
+(how_to_use_baculum)=
+
 # How to use the Baculum web interface
 
 Baculum is the web interface for Bacula. The Bacula server charm manages
@@ -81,7 +83,9 @@ Select the destination client that the files need to be
 restored to by choosing the corresponding restore job.
 
 <!-- vale Canonical.007-Headings-sentence-case = NO -->
+
 ### Step 6 - Finish
+
 <!-- vale Canonical.007-Headings-sentence-case = YES -->
 
 Click "Run restore" to start the restoration. The restoration time can
