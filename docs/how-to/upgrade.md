@@ -28,7 +28,7 @@ After confirming the PostgreSQL backup is complete, upgrade the `bacula-server` 
 juju refresh bacula-server
 ```
 
-# Verify the upgrade
+## Verify the upgrade
 
 After upgrading, verify that the charms are functioning correctly with the `juju status` command. 
 The upgraded charms must be in active and idle state.
