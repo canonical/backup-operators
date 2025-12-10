@@ -14,7 +14,7 @@ jobs:
       self-hosted-runner-label: "edge"
   integration-tests:
     uses: 
-      canonical/operator-workflows/.github/workflows/integration_test.yaml@skip_integ
+      canonical/operator-workflows/.github/workflows/integration_test.yaml@main
     secrets: inherit
     with:
       juju-channel: '3/stable'
