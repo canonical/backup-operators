@@ -15,4 +15,5 @@ The following guides cover key processes and common tasks for managing and using
 Contribute <contribution.md>
 Integrate with the backup integrator <integrate-with-backup-integrator-charm.md>
 Use the Baculum web interface <use-baculum.md>
+Upgrade <upgrade.md>
 ```
