@@ -25,7 +25,7 @@ jobs:
     with:
       juju-channel: "3/stable"
       provider: "lxd"
-      extra-arguments: "--bacula-fdbase=${{ matrix.base }}"
+      extra-arguments: "--bacula-fd-base=${{ matrix.base }}"
   snap-tests:
     name: Build charmed-bacula-server snap
     uses: 
