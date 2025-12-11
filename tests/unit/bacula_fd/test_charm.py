@@ -20,7 +20,9 @@ def test_no_backup_relation(bacula_fd_charm) -> None:
     ctx = ops.testing.Context(bacula_fd_charm)
     state_in = ops.testing.State(
         leader=True,
-        relations=[ops.testing.PeerRelation(endpoint="bacula-peer")],
+        relations=[
+            ops.testing.SubordinateRelation(endpoint="juju-info", remote_app_name="principal")
+        ],
     )
     state_out = ctx.run(ctx.on.config_changed(), state_in)
     assert state_out.unit_status.name == "waiting"
@@ -37,7 +39,7 @@ def test_no_bacula_dir_relation(bacula_fd_charm) -> None:
     state_in = ops.testing.State(
         leader=True,
         relations=[
-            ops.testing.PeerRelation(endpoint="bacula-peer"),
+            ops.testing.SubordinateRelation(endpoint="juju-info", remote_app_name="principal"),
             ops.testing.Relation(endpoint="backup", remote_app_data={"fileset": "/var/backups"}),
         ],
     )
@@ -60,7 +62,7 @@ def test_port_config(bacula_fd_charm) -> None:
         secrets=[secret],
         config={"port": 12345},
         relations=[
-            ops.testing.PeerRelation(endpoint="bacula-peer"),
+            ops.testing.SubordinateRelation(endpoint="juju-info", remote_app_name="principal"),
             ops.testing.Relation(endpoint="backup", remote_app_data={"fileset": "/var/backups"}),
             ops.testing.Relation(
                 endpoint="bacula-dir",
@@ -94,11 +96,14 @@ def test_schedule_config(bacula_fd_charm, schedule) -> None:
         secrets=[secret],
         config={"schedule": schedule},
         relations=[
-            ops.testing.PeerRelation(endpoint="bacula-peer"),
+            ops.testing.SubordinateRelation(endpoint="juju-info", remote_app_name="principal"),
             backup_relation,
             ops.testing.Relation(
                 endpoint="bacula-dir",
-                local_unit_data={"schedule": "Level=Full sun at 01:00"},
+                local_unit_data={
+                    "schedule": "Level=Full sun at 01:00",
+                    "ingress-address": "10.1.2.1",
+                },
                 remote_app_data={"name": "bacula-dir", "password": secret.id},
                 id=99,
             ),
@@ -125,7 +130,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
         leader=True,
         secrets=[secret],
         relations=[
-            ops.testing.PeerRelation(endpoint="bacula-peer"),
+            ops.testing.SubordinateRelation(endpoint="juju-info", remote_app_name="principal"),
             ops.testing.Relation(endpoint="backup", remote_app_data={"fileset": "/var/backups"}),
             ops.testing.Relation(
                 endpoint="bacula-dir",
@@ -146,7 +151,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
             }
 
             FileDaemon {
-              Name = relation-test-bacula-bacula-fd-0-000000000000-fd
+              Name = relation-test-bacula-principal-0-000000000000-fd
               FDport = 9102
               WorkingDirectory = /var/lib/bacula
               Pid Directory = /run/bacula
