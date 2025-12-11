@@ -11,3 +11,4 @@ def pytest_addoption(parser):
         parser: Pytest parser.
     """
     parser.addoption("--charm-file", action="append")
+    parser.addoption("--bacula-fd-base", action="store", default="ubuntu@24.04")

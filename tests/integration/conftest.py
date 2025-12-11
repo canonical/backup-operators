@@ -50,11 +50,12 @@ def backup_integrator_charm_file_fixture(pytestconfig) -> str:
 @pytest.fixture(scope="module", name="bacula_fd_charm_file")
 def bacula_fd_charm_file_fixture(pytestconfig) -> str:
     """Get bacula-fd charm file."""
-    file = find_charm_file(pytestconfig, "bacula-fd_ubuntu@24.04-amd64.charm")
+    base = pytestconfig.getoption("--bacula-fd-base")
+    file = find_charm_file(pytestconfig, f"bacula-fd_{base}-amd64.charm")
     if file:
         return file
     subprocess.check_call(["charmcraft", "pack"], cwd="./bacula_fd_operator/")  # nosec
-    return "./bacula_fd_operator/bacula-fd_ubuntu@24.04-amd64.charm"
+    return f"./bacula_fd_operator/bacula-fd_{base}-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_server_charm_file")
