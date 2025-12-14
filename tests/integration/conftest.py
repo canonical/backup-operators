@@ -148,7 +148,7 @@ def deploy_charms_fixture(
     juju.deploy(bacula_server_charm_file)
     juju.deploy("postgresql", "bacula-database", channel="14/stable")
     juju.deploy("s3-integrator")
-    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=7200)
+    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=600)
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     juju.config(
         "s3-integrator",
@@ -171,7 +171,7 @@ def deploy_charms_fixture(
     juju.integrate("bacula-server", "s3-integrator")
     juju.integrate("bacula-server", "bacula-fd")
 
-    juju.wait(jubilant.all_active, timeout=7200)
+    juju.wait(jubilant.all_active, timeout=1200)
 
 
 @pytest.fixture(scope="module", name="setup_database")
