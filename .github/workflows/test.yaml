@@ -25,7 +25,7 @@ jobs:
     with:
       juju-channel: "3/stable"
       provider: "lxd"
-      extra-arguments: "--bacula-fd-base=${{ matrix.base }}"
+      extra-arguments: "--base=${{ matrix.base }}"
       tmate-debug: true
       tmate-timeout: 180
   snap-tests:

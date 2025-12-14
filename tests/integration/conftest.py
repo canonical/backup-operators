@@ -37,30 +37,30 @@ def find_charm_file(pytestconfig, name: str) -> str | None:
     return None
 
 
+@pytest.fixture(scope="module", name="base")
+def base_fixture(pytestconfig) -> str:
+    """Get bacula-fd charm base."""
+    return pytestconfig.getoption("--base")
+
+
 @pytest.fixture(scope="module", name="backup_integrator_charm_file")
-def backup_integrator_charm_file_fixture(pytestconfig) -> str:
+def backup_integrator_charm_file_fixture(pytestconfig, base) -> str:
     """Get backup-integrator charm file."""
-    file = find_charm_file(pytestconfig, "backup-integrator_ubuntu@24.04-amd64.charm")
+    file = find_charm_file(pytestconfig, f"backup-integrator_{base}-amd64.charm")
     if file:
         return file
     subprocess.check_call(["charmcraft", "pack"], cwd="./backup_integrator_operator/")  # nosec
-    return "./backup_integrator_operator/backup-integrator_ubuntu@24.04-amd64.charm"
-
-
-@pytest.fixture(scope="module", name="bacula_fd_base")
-def bacula_fd_base_fixture(pytestconfig) -> str:
-    """Get bacula-fd charm base."""
-    return pytestconfig.getoption("--bacula-fd-base")
+    return f"./backup_integrator_operator/backup-integrator_{base}-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_fd_charm_file")
-def bacula_fd_charm_file_fixture(pytestconfig, bacula_fd_base) -> str:
+def bacula_fd_charm_file_fixture(pytestconfig, base) -> str:
     """Get bacula-fd charm file."""
-    file = find_charm_file(pytestconfig, f"bacula-fd_{bacula_fd_base}-amd64.charm")
+    file = find_charm_file(pytestconfig, f"bacula-fd_{base}-amd64.charm")
     if file:
         return file
     subprocess.check_call(["charmcraft", "pack"], cwd="./bacula_fd_operator/")  # nosec
-    return f"./bacula_fd_operator/bacula-fd_{bacula_fd_base}-amd64.charm"
+    return f"./bacula_fd_operator/bacula-fd_{base}-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_server_charm_file")
