@@ -142,10 +142,10 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
     backup_integrator_charm_file,
     bacula_fd_charm_file,
     bacula_server_charm_file,
-    bacula_fd_base,
+    base,
 ):
     """Deploy backup charms."""
-    juju.deploy("ubuntu", base=bacula_fd_base)
+    juju.deploy("ubuntu", base=base)
     juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
     juju.deploy(
         bacula_fd_charm_file,
