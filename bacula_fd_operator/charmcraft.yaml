@@ -59,6 +59,8 @@ config:
 parts:
   charm:
     charm-entrypoint: scripts/entrypoint
+    charm-binary-python-packages:
+      - pydantic
     build-snaps:
       - rustup
     override-build: |
