@@ -47,15 +47,20 @@ def backup_integrator_charm_file_fixture(pytestconfig) -> str:
     return "./backup_integrator_operator/backup-integrator_ubuntu@24.04-amd64.charm"
 
 
+@pytest.fixture(scope="module", name="bacula_fd_base")
+def bacula_fd_base_fixture(pytestconfig) -> str:
+    """Get bacula-fd charm base."""
+    return pytestconfig.getoption("--bacula-fd-base")
+
+
 @pytest.fixture(scope="module", name="bacula_fd_charm_file")
-def bacula_fd_charm_file_fixture(pytestconfig) -> str:
+def bacula_fd_charm_file_fixture(pytestconfig, bacula_fd_base) -> str:
     """Get bacula-fd charm file."""
-    base = pytestconfig.getoption("--bacula-fd-base")
-    file = find_charm_file(pytestconfig, f"bacula-fd_{base}-amd64.charm")
+    file = find_charm_file(pytestconfig, f"bacula-fd_{bacula_fd_base}-amd64.charm")
     if file:
         return file
     subprocess.check_call(["charmcraft", "pack"], cwd="./bacula_fd_operator/")  # nosec
-    return f"./bacula_fd_operator/bacula-fd_{base}-amd64.charm"
+    return f"./bacula_fd_operator/bacula-fd_{bacula_fd_base}-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_server_charm_file")
@@ -131,15 +136,16 @@ def deploy_minio_fixture(juju: jubilant.Juju):
 
 
 @pytest.fixture(scope="module", name="deploy_charms")
-def deploy_charms_fixture(
+def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     juju: jubilant.Juju,
     deploy_minio,
     backup_integrator_charm_file,
     bacula_fd_charm_file,
     bacula_server_charm_file,
+    bacula_fd_base,
 ):
     """Deploy backup charms."""
-    juju.deploy("ubuntu", base="ubuntu@24.04")
+    juju.deploy("ubuntu", base=bacula_fd_base)
     juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
     juju.deploy(
         bacula_fd_charm_file,
