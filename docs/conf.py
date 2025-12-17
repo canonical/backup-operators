@@ -226,8 +226,11 @@ templates_path = ["_templates"]
 # NOTE: If undefined, set to None, or empty,
 #       the sphinx_reredirects extension will be disabled.
 
-redirects = {}
-
+redirects = {
+    "explanation/backup-integrator-charm-architecture": "reference/backup-integrator-charm-architecture",
+    "explanation/backup-server-charm-architecture": "reference/backup-server-charm-architecture",
+    "explanation/bacula-fd-charm-architecture": "reference/bacula-fd-charm-architecture",
+}
 
 ###########################
 # Link checker exceptions #
