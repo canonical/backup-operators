@@ -79,6 +79,19 @@ def test_list_jobs(baculum):
     assert len(baculum.list_job_names()) == 3
 
 
+def test_client_name(baculum):
+    """
+    arrange: deploy and integrate backup charms.
+    act: get client names using baculum API
+    assert: client names should contain the principal charm name.
+    """
+    clients = baculum.list_clients()
+    for client in clients:
+        client_name = client["name"]
+        if client_name.startswith("relation"):
+            assert "ubuntu" in client_name
+
+
 def test_connect_client(baculum):
     """
     arrange: deploy and integrate backup charms.

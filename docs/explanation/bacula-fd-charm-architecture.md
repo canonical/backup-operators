@@ -64,21 +64,16 @@ C4Context
    Triggered when the charm has been upgraded. This ensures that the new
    version of the backup integrator charm can update the relation data
    if needed.
-4. {ref}`bacula-peer-relation-changed <juju:hook-relation-changed>`,  
-   {ref}`bacula-peer-relation-created <juju:hook-relation-created>`, 
-   {ref}`bacula-peer-relation-departed <juju:hook-relation-departed>`:
-   Monitors changes, creation, and removal of the `bacula-peer` relation
-   to update relation data when needed.
-5. {ref}`bacula-dir-relation-changed <juju:hook-relation-changed>`,  
+4. {ref}`bacula-dir-relation-changed <juju:hook-relation-changed>`,  
    {ref}`bacula-dir-relation-broken <juju:hook-relation-broken>`:
    Monitors changes, creation, and removal of the `bacula-dir` relation
    to update relation data when needed.
-6. {ref}`backup-relation-changed <juju:hook-relation-changed>`,
+5. {ref}`backup-relation-changed <juju:hook-relation-changed>`,
    {ref}`backup-relation-broken <juju:hook-relation-broken>`,
    {ref}`backup-relation-departed <juju:hook-relation-departed>`:
    Monitors changes, creation, and removal of the `backup` relation to
    update relation data when needed.
-7. {ref}`secret-changed <juju:hook-secret-changed>`:
+6. {ref}`secret-changed <juju:hook-secret-changed>`:
    Monitors changes in secrets inside relations to update configuration
    when needed.
 
