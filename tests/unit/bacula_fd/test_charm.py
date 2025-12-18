@@ -157,7 +157,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
 
             Messages {
               Name = Standard
-              director = bacula-dir = all, !skipped, !restored, !verified, !saved
+              director = bacula-dir = all, !skipped, !restored, !saved
             }
             """
         ).strip()
