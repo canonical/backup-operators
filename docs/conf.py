@@ -186,14 +186,9 @@ slug = 'backup-operators'
 
 html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "/")
 
-# URL scheme. Add language and version scheme elements.
-# When configured with RTD variables, check for RTD environment so manual runs succeed:
+# sphinx-sitemap uses html_baseurl to generate the full URL for each page:
 
-if 'READTHEDOCS_VERSION' in os.environ:
-    version = os.environ["READTHEDOCS_VERSION"]
-    sitemap_url_scheme = '{version}{link}'
-else:
-    sitemap_url_scheme = 'MANUAL/{link}'
+sitemap_url_scheme = '{link}'
 
 # Include `lastmod` dates in the sitemap:
 
@@ -231,8 +226,11 @@ templates_path = ["_templates"]
 # NOTE: If undefined, set to None, or empty,
 #       the sphinx_reredirects extension will be disabled.
 
-redirects = {}
-
+redirects = {
+    "explanation/backup-integrator-charm-architecture": "reference/backup-integrator-charm-architecture",
+    "explanation/backup-server-charm-architecture": "reference/backup-server-charm-architecture",
+    "explanation/bacula-fd-charm-architecture": "reference/bacula-fd-charm-architecture",
+}
 
 ###########################
 # Link checker exceptions #

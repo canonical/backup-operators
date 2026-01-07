@@ -12,8 +12,5 @@ The following guides cover key processes and common tasks for managing and using
 
 ```{toctree}
 :maxdepth: 1
-backup-integrator-charm-architecture.md
-backup-server-charm-architecture.md
-bacula-fd-charm-architecture.md
 security.md
 ```

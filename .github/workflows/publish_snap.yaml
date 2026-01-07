@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build charmed-bacula-server snap
-    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v40.0.0
+    uses: canonical/data-platform-workflows/.github/workflows/build_snap.yaml@v40.0.2
     with:
       path-to-snap-project-directory: ./charmed_bacula_server
 
@@ -19,12 +19,12 @@ jobs:
     name: Release charmed-bacula-server snap
     needs:
       - build
-    uses: canonical/data-platform-workflows/.github/workflows/release_snap.yaml@v40.0.0
+    uses: canonical/data-platform-workflows/.github/workflows/release_snap.yaml@v40.0.2
     with:
       path-to-snap-project-directory: ./charmed_bacula_server
       channel: latest/edge
       artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
     secrets:
-      snap-store-token: ${{ secrets.SNAP_STORE_TOKEN }}
+      snap-store-token: ${{ secrets.SNAPSTORE_TOKEN }}
     permissions:
       contents: write  # Needed to create git tags

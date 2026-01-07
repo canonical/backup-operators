@@ -13,6 +13,9 @@ The pages in this section contain technical information for topics relevant to b
 ```{toctree}
 :maxdepth: 1
 actions.md
+backup-integrator-charm-architecture.md
+backup-server-charm-architecture.md
+bacula-fd-charm-architecture.md
 configurations.md
 integrations.md
 ```
