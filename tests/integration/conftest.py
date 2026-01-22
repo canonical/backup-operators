@@ -37,24 +37,30 @@ def find_charm_file(pytestconfig, name: str) -> str | None:
     return None
 
 
+@pytest.fixture(scope="module", name="base")
+def base_fixture(pytestconfig) -> str:
+    """Get bacula-fd charm base."""
+    return pytestconfig.getoption("--base")
+
+
 @pytest.fixture(scope="module", name="backup_integrator_charm_file")
-def backup_integrator_charm_file_fixture(pytestconfig) -> str:
+def backup_integrator_charm_file_fixture(pytestconfig, base) -> str:
     """Get backup-integrator charm file."""
-    file = find_charm_file(pytestconfig, "backup-integrator_ubuntu@24.04-amd64.charm")
+    file = find_charm_file(pytestconfig, f"backup-integrator_{base}-amd64.charm")
     if file:
         return file
     subprocess.check_call(["charmcraft", "pack"], cwd="./backup_integrator_operator/")  # nosec
-    return "./backup_integrator_operator/backup-integrator_ubuntu@24.04-amd64.charm"
+    return f"./backup_integrator_operator/backup-integrator_{base}-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_fd_charm_file")
-def bacula_fd_charm_file_fixture(pytestconfig) -> str:
+def bacula_fd_charm_file_fixture(pytestconfig, base) -> str:
     """Get bacula-fd charm file."""
-    file = find_charm_file(pytestconfig, "bacula-fd_ubuntu@24.04-amd64.charm")
+    file = find_charm_file(pytestconfig, f"bacula-fd_{base}-amd64.charm")
     if file:
         return file
     subprocess.check_call(["charmcraft", "pack"], cwd="./bacula_fd_operator/")  # nosec
-    return "./bacula_fd_operator/bacula-fd_ubuntu@24.04-amd64.charm"
+    return f"./bacula_fd_operator/bacula-fd_{base}-amd64.charm"
 
 
 @pytest.fixture(scope="module", name="bacula_server_charm_file")
@@ -130,15 +136,16 @@ def deploy_minio_fixture(juju: jubilant.Juju):
 
 
 @pytest.fixture(scope="module", name="deploy_charms")
-def deploy_charms_fixture(
+def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     juju: jubilant.Juju,
     deploy_minio,
     backup_integrator_charm_file,
     bacula_fd_charm_file,
     bacula_server_charm_file,
+    base,
 ):
     """Deploy backup charms."""
-    juju.deploy("ubuntu", base="ubuntu@24.04")
+    juju.deploy("ubuntu", base=base)
     juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
     juju.deploy(
         bacula_fd_charm_file,
@@ -147,7 +154,7 @@ def deploy_charms_fixture(
     juju.deploy(bacula_server_charm_file)
     juju.deploy("postgresql", "bacula-database", channel="14/stable")
     juju.deploy("s3-integrator")
-    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=7200)
+    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=600)
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     juju.config(
         "s3-integrator",
@@ -170,7 +177,7 @@ def deploy_charms_fixture(
     juju.integrate("bacula-server", "s3-integrator")
     juju.integrate("bacula-server", "bacula-fd")
 
-    juju.wait(jubilant.all_active, timeout=7200)
+    juju.wait(jubilant.all_active, timeout=1200)
 
 
 @pytest.fixture(scope="module", name="setup_database")

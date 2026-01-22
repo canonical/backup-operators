@@ -174,7 +174,7 @@ def test_bacula_fd_config():
 
             Messages {{
               Name = Standard
-              director = client1-dir = all, !skipped, !restored, !verified, !saved
+              director = client1-dir = all, !skipped, !restored, !saved
             }}
             """
         ).strip()
