@@ -19,10 +19,6 @@ platforms:
   ubuntu@24.04:amd64:
   ubuntu@22.04:amd64:
 
-peers:
-  bacula-peer:
-    interface: bacula_peer
-
 provides:
   backup:
     interface: backup

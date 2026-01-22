@@ -79,46 +79,12 @@ class BaculaFdCharm(ops.CharmBase):
         self.framework.observe(self.on.leader_elected, self._reconcile_event)
         self.framework.observe(self.on.leader_settings_changed, self._reconcile_event)
 
-        self.framework.observe(self.on.bacula_peer_relation_created, self._reconcile_event)
-        self.framework.observe(self.on.bacula_peer_relation_changed, self._reconcile_event)
-        self.framework.observe(self.on.bacula_peer_relation_departed, self._reconcile_event)
-
         self.framework.observe(self._backup_provider.on.backup_required, self._reconcile_event)
         self.framework.observe(self.on.backup_relation_departed, self._reconcile_event)
         self.framework.observe(self.on.backup_relation_broken, self._reconcile_event)
 
         self.framework.observe(self.on.bacula_dir_relation_changed, self._reconcile_event)
         self.framework.observe(self.on.bacula_dir_relation_broken, self._reconcile_event)
-
-    def _get_peer_data(self) -> dict[str, str] | None:
-        """Get data stored in the peer relation and initialize it if not exist.
-
-        Returns:
-            peer data stored in the peer relation, None if peer relation doesn't exist yet.
-        """
-        peer_relation = self.model.get_relation(PEER_RELATION_NAME)
-        if not peer_relation:
-            return None
-        data = peer_relation.data[self.app]
-        default_peer_data = {
-            "name": "-".join(
-                [
-                    "relation",
-                    self.model.name,
-                    self.unit.name.replace("/", "-"),
-                    self.model.uuid.split("-")[-1],
-                    "fd",
-                ]
-            ),
-        }
-        if set(data.keys()) != set(default_peer_data.keys()):
-            if self.unit.is_leader():
-                for key, value in default_peer_data.items():
-                    if key not in data:
-                        data[key] = value
-                return dict(data)
-            return {}
-        return dict(data)
 
     def _load_schedule(self) -> list[str]:
         """Load the backup schedule configuration.
@@ -135,10 +101,31 @@ class BaculaFdCharm(ops.CharmBase):
         Returns:
             The IP address of the unit.
         """
-        peer_relation = self.model.get_relation(PEER_RELATION_NAME)
-        if not peer_relation:
-            raise PeerRelationNotReadyError("waiting for peer relation")
-        return peer_relation.data[self.unit]["ingress-address"]
+        bacula_dir_relation = self.model.get_relation(BACULA_DIR_RELATION_NAME)
+        if not bacula_dir_relation:
+            raise PeerRelationNotReadyError("waiting for bacula-dir relation")
+        return bacula_dir_relation.data[self.unit]["ingress-address"]
+
+    def _get_name(self) -> str:
+        """Derive the bacula-fd name from the unit name of the backup-requirer charm.
+
+        Returns:
+            bacula-fd name
+        """
+        juju_info = self.model.get_relation("juju-info")
+        if not juju_info:
+            raise NotReadyError("waiting for juju-info relation")
+        if len(juju_info.units) != 1:
+            raise UnrecoverableCharmError("unexpected juju-info state detected")
+        return "-".join(
+            [
+                "relation",
+                self.model.name,
+                list(juju_info.units)[0].name.replace("/", "-"),
+                self.model.uuid.split("-")[-1],
+                "fd",
+            ]
+        )
 
     def _reconcile(self) -> None:
         """Reconcile the charm."""
@@ -146,10 +133,6 @@ class BaculaFdCharm(ops.CharmBase):
             self.unit.status = ops.WaitingStatus("installing bacula-fd")
             bacula.install()
             self.unit.status = ops.ActiveStatus()
-        peer_data = self._get_peer_data()
-        if not peer_data:
-            raise PeerRelationDataNotReadyError("waiting for peer data to be initialized")
-        name = peer_data["name"]
         backup_relation = self.model.get_relation(BACKUP_RELATION_NAME)
         if not backup_relation:
             raise BackupRelationNotReadyError("waiting for backup relation")
@@ -170,7 +153,7 @@ class BaculaFdCharm(ops.CharmBase):
         port = typing.cast(int, self.config.get("port", 9102))
         self.unit.set_ports(port)
         self._bacula_dir.send_to_bacula_dir(
-            name=name,
+            name=self._get_name(),
             port=port,
             fileset=",".join(map(str, backup_spec.fileset)),
             schedule=",".join(self._load_schedule()),
@@ -183,7 +166,7 @@ class BaculaFdCharm(ops.CharmBase):
         if not dir_data:
             raise BaculaDirRelationDataNotReadyError("waiting for bacula-dir relation data")
         bacula.config_reload(
-            name=name,
+            name=self._get_name(),
             host=self._get_unit_address(),
             port=port,
             director_name=dir_data.name,
