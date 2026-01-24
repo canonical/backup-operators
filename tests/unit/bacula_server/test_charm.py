@@ -5,6 +5,7 @@
 # pylint: disable=line-too-long,no-member
 
 """bacula-server charm unit tests."""
+
 import re
 import textwrap
 
@@ -153,10 +154,7 @@ def test_bacula_fd_config():
     peer_data = state_out.get_relation(1).local_app_data
     peer_secret_data = state_out.get_secret(id=peer_data["passwords"]).tracked_content
     file = bacula.BACULA_SERVER_SNAP_COMMON / "opt/bacula/etc/bacula-fd.conf"
-    assert (
-        file.read_text().strip()
-        == textwrap.dedent(
-            f"""\
+    assert file.read_text().strip() == textwrap.dedent(f"""\
             Director {{
               Name = charm-bacula-dir
               Password = {peer_secret_data['fd-password']}
@@ -176,9 +174,7 @@ def test_bacula_fd_config():
               Name = Standard
               director = client1-dir = all, !skipped, !restored, !saved
             }}
-            """
-        ).strip()
-    )
+            """).strip()
 
 
 def test_bacula_sd_config():
@@ -201,10 +197,7 @@ def test_bacula_sd_config():
     peer_data = state_out.get_relation(1).local_app_data
     peer_secret_data = state_out.get_secret(id=peer_data["passwords"]).tracked_content
     file = bacula.BACULA_SERVER_SNAP_COMMON / "opt/bacula/etc/bacula-sd.conf"
-    assert (
-        file.read_text().strip()
-        == textwrap.dedent(
-            f"""\
+    assert file.read_text().strip() == textwrap.dedent(f"""\
             Storage {{
               Name = charm-bacula-sd
               SDPort = 9103
@@ -251,9 +244,7 @@ def test_bacula_sd_config():
               Name = Standard
               director = charm-bacula-dir = all
             }}
-            """
-        ).strip()
-    )
+            """).strip()
 
 
 def test_bacula_dir_config():
@@ -276,10 +267,7 @@ def test_bacula_dir_config():
     peer_data = state_out.get_relation(1).local_app_data
     peer_secret_data = state_out.get_secret(id=peer_data["passwords"]).tracked_content
     file = bacula.BACULA_SERVER_SNAP_COMMON / "opt/bacula/etc/bacula-dir.conf"
-    assert (
-        file.read_text().strip()
-        == textwrap.dedent(
-            f"""\
+    assert file.read_text().strip() == textwrap.dedent(f"""\
             Director {{
               Name = charm-bacula-dir
               DIRport = 9101
@@ -364,9 +352,7 @@ def test_bacula_dir_config():
               console = all, !skipped, !saved
               append = "/opt/bacula/log/bacula.log" = all, !skipped
             }}
-            """
-        ).strip()
-    )
+            """).strip()
 
 
 def test_bacula_fd_relation():
@@ -421,9 +407,7 @@ def test_bacula_fd_relation():
     file = bacula.BACULA_SERVER_SNAP_COMMON / "opt/bacula/etc/bacula-dir.conf"
     file_content = file.read_text(encoding="utf-8")
     file_content = re.sub(r"(?m)^\s*(?:\r?\n|$)", "", file_content)
-    assert (
-        textwrap.dedent(
-            """\
+    assert textwrap.dedent("""\
             Job {
               Name = "relation-test-bacula-bacula-fd-one-0-2e79074dc082-backup"
               Type = Backup
@@ -468,13 +452,8 @@ def test_bacula_fd_relation():
                 FailJobOnError = no
               }
             }
-            """
-        )
-        in file_content
-    )
-    assert (
-        textwrap.dedent(
-            """\
+            """) in file_content
+    assert textwrap.dedent("""\
             Schedule {
               Name = "relation-test-bacula-bacula-fd-two-0-2e79074dc082-schedule"
               Run = Level=Full sun at 01:00
@@ -525,7 +504,4 @@ def test_bacula_fd_relation():
                 FailJobOnError = no
               }
             }
-            """
-        )
-        in file_content
-    )
+            """) in file_content

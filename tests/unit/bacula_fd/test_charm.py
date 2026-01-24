@@ -141,10 +141,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
 
     state_out = ctx.run(ctx.on.config_changed(), state_in)
     assert state_out.unit_status.name == "active"
-    assert (
-        bacula_fd_operator.src.bacula.read_config().strip()
-        == textwrap.dedent(
-            """\
+    assert bacula_fd_operator.src.bacula.read_config().strip() == textwrap.dedent("""\
             Director {
               Name = bacula-dir
               Password = "foobar"
@@ -164,6 +161,4 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
               Name = Standard
               director = bacula-dir = all, !skipped, !restored, !saved
             }
-            """
-        ).strip()
-    )
+            """).strip()

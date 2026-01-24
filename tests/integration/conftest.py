@@ -76,8 +76,7 @@ def bacula_server_charm_file_fixture(pytestconfig) -> str:
 @pytest.fixture(scope="module", name="deploy_minio")
 def deploy_minio_fixture(juju: jubilant.Juju):
     """Deploy the minio charm (using any-charm)."""
-    any_charm = textwrap.dedent(
-        '''
+    any_charm = textwrap.dedent('''
         import os
         import subprocess
         import textwrap
@@ -125,8 +124,7 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                 subprocess.check_call(["systemctl", "enable", "--now", "minio"])
                 self.unit.set_ports(9000, 9001)
                 self.unit.status = ops.ActiveStatus()
-        '''
-    )
+        ''')
     juju.deploy(
         "any-charm",
         "minio",
@@ -244,25 +242,19 @@ def setup_database_fixture(juju: jubilant.Juju, deploy_charms):
     juju.config(
         "backup-integrator",
         {
-            "run-before-backup": textwrap.dedent(
-                """\
+            "run-before-backup": textwrap.dedent("""\
                 #!/bin/bash
                 sudo -u postgres pg_dump -d ubuntu -c -f /var/backups/postgresql/ubuntu.dump
-                """
-            ),
-            "run-after-backup": textwrap.dedent(
-                """\
+                """),
+            "run-after-backup": textwrap.dedent("""\
                 #!/bin/bash
                 sudo rm -f /var/backups/postgresql/ubuntu.dump
-                """
-            ),
-            "run-after-restore": textwrap.dedent(
-                """\
+                """),
+            "run-after-restore": textwrap.dedent("""\
                 #!/bin/bash
                 sudo -u postgres psql -d ubuntu -1 -f /var/backups/postgresql/ubuntu.dump
                 sudo rm -f /var/backups/postgresql/ubuntu.dump
-                """
-            ),
+                """),
         },
     )
 
