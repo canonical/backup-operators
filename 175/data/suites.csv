@@ -1,0 +1,21 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+    arrange: deploy and integrate backup charms.
+    arrange: run a backup and restore.
+    assert: the backup and restore should work as intended.
+    ","9366","test_backup_restore_database","tests.integration","2026-01-31","passed","2026-01-31","","test_charm","",""
+"
+    arrange: deploy and integrate backup charms.
+    act: get client names using baculum API
+    assert: client names should contain the principal charm name.
+    ","243","test_client_name","tests.integration","2026-01-31","passed","2026-01-31","","test_charm","",""
+"
+    arrange: deploy and integrate backup charms.
+    act: list bacula jobs using baculum API
+    assert: bacula-server should have the correct number of jobs
+    ","274","test_list_jobs","tests.integration","2026-01-31","passed","2026-01-31","","test_charm","",""
+"
+    arrange: deploy and integrate backup charms.
+    act: get client status using baculum API
+    assert: client should show normal status.
+    ","751","test_connect_client","tests.integration","2026-01-31","passed","2026-01-31","","test_charm","",""
