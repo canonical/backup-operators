@@ -227,9 +227,9 @@ templates_path = ["_templates"]
 #       the sphinx_reredirects extension will be disabled.
 
 redirects = {
-    "explanation/backup-integrator-charm-architecture": "reference/backup-integrator-charm-architecture",
-    "explanation/backup-server-charm-architecture": "reference/backup-server-charm-architecture",
-    "explanation/bacula-fd-charm-architecture": "reference/bacula-fd-charm-architecture",
+    "explanation/backup-integrator-charm-architecture": "/reference/backup-integrator-charm-architecture",
+    "explanation/backup-server-charm-architecture": "/reference/backup-server-charm-architecture",
+    "explanation/bacula-fd-charm-architecture": "/reference/bacula-fd-charm-architecture",
 }
 
 ###########################
