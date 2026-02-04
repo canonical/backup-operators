@@ -46,7 +46,7 @@ def make_postgresql_relation() -> ops.testing.Relation:
             "endpoints": "postgresql.test:5432",
             "database": "bacula_db",
             "username": "bacula_db_username",
-            "password": "bacula_db_password",
+            "password": "bacula_db_password",  # nosec
         },
     )
 
