@@ -1,0 +1,47 @@
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju status --model test-charm-94a844f2 --format json
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju ssh --model test-charm-94a844f2 ubuntu/0 'sudo -u postgres psql -P pager=off -d ubuntu -c '"'"'SELECT * FROM release;'"'"''
+[32mINFO    [0m integration.test_charm:test_charm.py:117 run backup job: relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup
+[32mINFO    [0m integration.test_charm:test_charm.py:119 run backup job output: run job="relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup" level="Full" fileset="relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fileset" client="relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd" storage="charm-s3-storage" pool="charm-cloud-pool" priority="10" accurate="no" yes
+Using Catalog "charm-catalog"
+Job queued. JobId=1
+
+[32mINFO    [0m integration.test_charm:test_charm.py:33 relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup job run status: {'jobid': 1, 'job': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup.2026-02-07_15.31.22_16', 'name': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup', 'type': 'B', 'level': 'F', 'clientid': 2, 'jobstatus': 'C', 'schedtime': '2026-02-07 15:31:22', 'starttime': '2026-02-07 15:31:22', 'endtime': None, 'realendtime': None, 'realstarttime': None, 'jobtdate': 1770478282, 'volsessionid': 0, 'volsessiontime': 0, 'jobfiles': 0, 'jobbytes': 0, 'readbytes': 0, 'joberrors': 0, 'jobmissingfiles': 0, 'poolid': 0, 'filesetid': 0, 'priorjobid': 0, 'priorjob': '', 'purgedfiles': 0, 'hasbase': 0, 'hascache': 0, 'reviewed': 0, 'comment': '', 'filetable': 'File', 'isvirtualfull': 0, 'compressratio': '0', 'rate': '0', 'lastreadstorageid': 0, 'lastreaddevice': '', 'writestorageid': 0, 'writedevice': '', 'statusinfo': '', 'encrypted': 0, 'client': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd', 'pool': None, 'fileset': None, 'content': None}
+[32mINFO    [0m integration.test_charm:test_charm.py:33 relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup job run status: {'jobid': 1, 'job': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup.2026-02-07_15.31.22_16', 'name': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup', 'type': 'B', 'level': 'F', 'clientid': 2, 'jobstatus': 'C', 'schedtime': '2026-02-07 15:31:22', 'starttime': '2026-02-07 15:31:22', 'endtime': None, 'realendtime': None, 'realstarttime': None, 'jobtdate': 1770478282, 'volsessionid': 0, 'volsessiontime': 0, 'jobfiles': 0, 'jobbytes': 0, 'readbytes': 0, 'joberrors': 0, 'jobmissingfiles': 0, 'poolid': 0, 'filesetid': 0, 'priorjobid': 0, 'priorjob': '', 'purgedfiles': 0, 'hasbase': 0, 'hascache': 0, 'reviewed': 0, 'comment': '', 'filetable': 'File', 'isvirtualfull': 0, 'compressratio': '0', 'rate': '0', 'lastreadstorageid': 0, 'lastreaddevice': '', 'writestorageid': 0, 'writedevice': '', 'statusinfo': '', 'encrypted': 0, 'client': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd', 'pool': None, 'fileset': None, 'content': None}
+[32mINFO    [0m integration.test_charm:test_charm.py:33 relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup job run status: {'jobid': 1, 'job': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup.2026-02-07_15.31.22_16', 'name': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup', 'type': 'B', 'level': 'F', 'clientid': 2, 'jobstatus': 'T', 'schedtime': '2026-02-07 15:31:22', 'starttime': '2026-02-07 15:31:24', 'endtime': '2026-02-07 15:31:24', 'realendtime': '2026-02-07 15:31:24', 'realstarttime': '2026-02-07 15:31:24', 'jobtdate': 1770478284, 'volsessionid': 1, 'volsessiontime': 1770478257, 'jobfiles': 3, 'jobbytes': 1994, 'readbytes': 1994, 'joberrors': 0, 'jobmissingfiles': 0, 'poolid': 1, 'filesetid': 2, 'priorjobid': 0, 'priorjob': '', 'purgedfiles': 0, 'hasbase': 0, 'hascache': 0, 'reviewed': 0, 'comment': '', 'filetable': 'File', 'isvirtualfull': 0, 'compressratio': '0', 'rate': '2', 'lastreadstorageid': 0, 'lastreaddevice': '', 'writestorageid': 1, 'writedevice': 'charm-s3-storage', 'statusinfo': '', 'encrypted': 0, 'client': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd', 'pool': 'charm-cloud-pool', 'fileset': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fileset', 'content': 'files'}
+[32mINFO    [0m integration.test_charm:test_charm.py:122 s3 objects: ['bacula-server-vol-20260207-relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup-0/part.1', 'bacula-server-vol-20260207-relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup-0/part.2']
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju ssh --model test-charm-94a844f2 ubuntu/0 'sudo -u postgres psql -d ubuntu -c '"'"'TRUNCATE release;'"'"''
+[32mINFO    [0m integration.test_charm:test_charm.py:126 truncate database table 'release': TRUNCATE TABLE
+
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju ssh --model test-charm-94a844f2 ubuntu/0 'sudo -u postgres psql -P pager=off -d ubuntu -c '"'"'SELECT * FROM release;'"'"''
+[32mINFO    [0m integration.test_charm:test_charm.py:131 run restore job output: restore client="relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd" jobid="1" fileset="relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fileset" select all done replace="always" restorejob="relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore" where="/" yes
+Using Catalog "charm-catalog"
++-------+-------+----------+----------+---------------------+----------------------------------------------------------------------------------------+
+| jobid | level | jobfiles | jobbytes | starttime           | volumename                                                                             |
++-------+-------+----------+----------+---------------------+----------------------------------------------------------------------------------------+
+| 1     | F     | 3        | 1994     | 2026-02-07 15:31:24 | bacula-server-vol-20260207-relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup-0 |
++-------+-------+----------+----------+---------------------+----------------------------------------------------------------------------------------+
+You have selected the following JobId: 1
+
+Building directory tree for JobId(s) 1 ...
+1 files inserted into the tree and marked for extraction.
+Bootstrap records written to /opt/bacula/working/charm-bacula-dir.restore.1.bsr
+
+The Job will require the following (*=>InChanger):
+   Volume(s)                 Storage(s)                SD Device(s)
+===========================================================================
+
+    bacula-server-vol-20260207-relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-backup-0 charm-s3-storage          charm-s3-storage
+
+Volumes marked with "*" are in the Autochanger.
+
+
+3 files selected to be restored.
+
+Using Catalog "charm-catalog"
+Job queued. JobId=2
+
+[32mINFO    [0m integration.test_charm:test_charm.py:33 relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore job run status: {'jobid': 2, 'job': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore.2026-02-07_15.31.26_33', 'name': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore', 'type': 'R', 'level': ' ', 'clientid': 2, 'jobstatus': 'C', 'schedtime': '2026-02-07 15:31:26', 'starttime': '2026-02-07 15:31:26', 'endtime': None, 'realendtime': None, 'realstarttime': None, 'jobtdate': 1770478286, 'volsessionid': 0, 'volsessiontime': 0, 'jobfiles': 0, 'jobbytes': 0, 'readbytes': 0, 'joberrors': 0, 'jobmissingfiles': 0, 'poolid': 0, 'filesetid': 0, 'priorjobid': 0, 'priorjob': '', 'purgedfiles': 0, 'hasbase': 0, 'hascache': 0, 'reviewed': 0, 'comment': '', 'filetable': 'File', 'isvirtualfull': 0, 'compressratio': '0', 'rate': '0', 'lastreadstorageid': 0, 'lastreaddevice': '', 'writestorageid': 0, 'writedevice': '', 'statusinfo': '', 'encrypted': 0, 'client': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd', 'pool': None, 'fileset': None, 'content': None}
+[32mINFO    [0m integration.test_charm:test_charm.py:33 relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore job run status: {'jobid': 2, 'job': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore.2026-02-07_15.31.26_33', 'name': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-restore', 'type': 'R', 'level': 'F', 'clientid': 2, 'jobstatus': 'T', 'schedtime': '2026-02-07 15:31:26', 'starttime': '2026-02-07 15:31:28', 'endtime': '2026-02-07 15:31:28', 'realendtime': '2026-02-07 15:31:28', 'realstarttime': '2026-02-07 15:31:28', 'jobtdate': 1770478288, 'volsessionid': 2, 'volsessiontime': 1770478257, 'jobfiles': 3, 'jobbytes': 1994, 'readbytes': 1994, 'joberrors': 0, 'jobmissingfiles': 0, 'poolid': 0, 'filesetid': 0, 'priorjobid': 0, 'priorjob': '', 'purgedfiles': 0, 'hasbase': 0, 'hascache': 0, 'reviewed': 0, 'comment': '', 'filetable': 'File', 'isvirtualfull': 0, 'compressratio': '0', 'rate': '2', 'lastreadstorageid': 1, 'lastreaddevice': 'charm-s3-storage', 'writestorageid': 0, 'writedevice': '', 'statusinfo': '', 'encrypted': 0, 'client': 'relation-test-charm-94a844f2-ubuntu-0-cf27607896aa-fd', 'pool': None, 'fileset': None, 'content': None}
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju ssh --model test-charm-94a844f2 ubuntu/0 'sudo -u postgres psql -P pager=off -d ubuntu -c '"'"'SELECT * FROM release;'"'"''
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju debug-log --model test-charm-94a844f2 --replay
+[32mINFO    [0m root:main.py:154 dropping jdl for model test-charm-94a844f2 to .logs/test-charm-94a844f2-jdl.txt
