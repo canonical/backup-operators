@@ -47,7 +47,7 @@ def make_postgresql_relation() -> ops.testing.Relation:
             "endpoints": "postgresql.test:5432",
             "database": "bacula_db",
             "username": "bacula_db_username",
-            "password": "bacula_db_password",
+            "password": "bacula_db_password",  # nosec: hardcoded_password_string
         },
     )
 
@@ -157,7 +157,7 @@ def test_bacula_fd_config():
     assert file.read_text().strip() == textwrap.dedent(f"""\
             Director {{
               Name = charm-bacula-dir
-              Password = {peer_secret_data['fd-password']}
+              Password = {peer_secret_data["fd-password"]}
             }}
 
             FileDaemon {{
@@ -284,7 +284,7 @@ def test_bacula_dir_config():
               Name        = charm-s3-storage
               Address     = 192.0.2.0
               SDPort      = 9103
-              Password    = {peer_secret_data['sd-password']}
+              Password    = {peer_secret_data["sd-password"]}
               Device      = charm-s3-storage
               Media Type  = CloudType
             }}
