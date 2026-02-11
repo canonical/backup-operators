@@ -3,6 +3,7 @@
 
 """bacula-fd unit tests."""
 
+import secrets
 import textwrap
 
 import ops.testing
@@ -56,7 +57,7 @@ def test_port_config(bacula_fd_charm) -> None:
     assert: port in bacula-fd.conf and relation should be updated.
     """
     ctx = ops.testing.Context(bacula_fd_charm)
-    secret = ops.testing.Secret(tracked_content={"password": "foobar"})
+    secret = ops.testing.Secret(tracked_content={"password": secrets.token_hex()})
     state_in = ops.testing.State(
         leader=True,
         secrets=[secret],
@@ -87,7 +88,7 @@ def test_schedule_config(bacula_fd_charm, schedule) -> None:
     assert: schedule in relation should be updated.
     """
     ctx = ops.testing.Context(bacula_fd_charm)
-    secret = ops.testing.Secret(tracked_content={"password": "foobar"})
+    secret = ops.testing.Secret(tracked_content={"password": secrets.token_hex()})
     backup_relation = ops.testing.Relation(
         endpoint="backup", remote_app_data={"fileset": "/var/backups"}
     )
@@ -124,7 +125,9 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
     assert: the bacula-fd charm should write the correct bacula-fd configuration file.
     """
     ctx = ops.testing.Context(bacula_fd_charm)
-    secret = ops.testing.Secret(tracked_content={"password": "foobar"})
+    secret = ops.testing.Secret(
+        tracked_content={"password": "foobar"}  # nosec: hardcoded_password_string
+    )
     state_in = ops.testing.State(
         model=ops.testing.Model(name="test-bacula", uuid="00000000-0000-0000-0000-000000000000"),
         leader=True,
@@ -141,10 +144,7 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
 
     state_out = ctx.run(ctx.on.config_changed(), state_in)
     assert state_out.unit_status.name == "active"
-    assert (
-        bacula_fd_operator.src.bacula.read_config().strip()
-        == textwrap.dedent(
-            """\
+    assert bacula_fd_operator.src.bacula.read_config().strip() == textwrap.dedent("""\
             Director {
               Name = bacula-dir
               Password = "foobar"
@@ -164,6 +164,4 @@ def test_bacula_fd_config(bacula_fd_charm) -> None:
               Name = Standard
               director = bacula-dir = all, !skipped, !restored, !saved
             }
-            """
-        ).strip()
-    )
+            """).strip()
