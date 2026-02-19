@@ -1,0 +1,17 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: Terraform modules tests
+
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - 'terraform-product/**'
+
+jobs:
+  terraform-tests:
+    uses: canonical/operator-workflows/.github/workflows/terraform_modules_test.yaml@main
+    secrets: inherit
+    with:
+      terraform-directories: '["terraform"]'
