@@ -242,7 +242,11 @@ redirects = {
 
 linkcheck_ignore = [
     "http://127.0.0.1:8000",
-    "https://github.com/canonical/ACME/*",
+    "https://github.com",
+    r"https://matrix\.to/.*",
+    "https://example.com",
+    # SourceForge domains often block linkcheck
+    r"https://.*\.sourceforge\.(net|io)/.*",
     "https://matrix.to/#/#charmhub-charmdev:ubuntu.com",
     ]
 
@@ -357,7 +361,7 @@ rst_prolog = """
 # Workaround for https://github.com/canonical/canonical-sphinx/issues/34
 
 if "discourse_prefix" not in html_context and "discourse" in html_context:
-    html_context["discourse_prefix"] = html_context["discourse"] + "/t/"
+    html_context["discourse_prefix"] = f"{html_context['discourse']}/t/"
 
 # Workaround for substitutions.yaml
 
@@ -367,6 +371,7 @@ if os.path.exists('./reuse/substitutions.yaml'):
 
 # Add configuration for intersphinx mapping
 
+# Map only the Sphinx documentation sets that you need to link to from your docs set.
 intersphinx_mapping = {
     'juju': ("https://documentation.ubuntu.com/juju/3.6/", None),
     'starter-pack': ('https://canonical-starter-pack.readthedocs-hosted.com/stable/', None),
