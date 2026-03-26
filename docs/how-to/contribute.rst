@@ -22,6 +22,21 @@ You may open a pull request with your documentation changes, or you can
 `file a bug <https://github.com/canonical/backup-operators/issues>`_
 to provide constructive feedback or suggestions.
 
+Automatic checks
+----------------
+
+GitHub runs automatic checks on the documentation
+to verify spelling, validate links and style guide compliance.
+
+You can (and should) run the same checks locally:
+
+.. code-block:: bash
+
+   make spelling
+   make linkcheck
+   make vale
+   make lint-md
+
 AI usage
 --------
 
