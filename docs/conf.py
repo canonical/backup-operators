@@ -230,6 +230,7 @@ redirects = {
     "explanation/backup-integrator-charm-architecture": "/reference/backup-integrator-charm-architecture",
     "explanation/backup-server-charm-architecture": "/reference/backup-server-charm-architecture",
     "explanation/bacula-fd-charm-architecture": "/reference/bacula-fd-charm-architecture",
+    "how-to/contribution": "/how-to/contribute",
 }
 
 ###########################
