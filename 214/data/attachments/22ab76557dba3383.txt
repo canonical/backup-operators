@@ -1,0 +1,2 @@
+[32mINFO    [0m jubilant:_juju.py:394 cli: juju debug-log --model test-charm-c389d752 --replay
+[32mINFO    [0m root:_main.py:137 dropping jdl for model test-charm-c389d752 to .logs/test-charm-c389d752-jdl.txt
