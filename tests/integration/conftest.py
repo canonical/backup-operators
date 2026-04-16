@@ -130,6 +130,7 @@ def deploy_minio_fixture(juju: jubilant.Juju):
         "minio",
         channel="latest/edge",
         config={"src-overwrite": json.dumps({"any_charm.py": any_charm})},
+        log=False,
     )
 
 
@@ -143,15 +144,16 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
     base,
 ):
     """Deploy backup charms."""
-    juju.deploy("ubuntu", base=base)
-    juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"})
+    juju.deploy("ubuntu", base=base, log=False)
+    juju.deploy(backup_integrator_charm_file, config={"fileset": "/var/backups/"}, log=False)
     juju.deploy(
         bacula_fd_charm_file,
         config={"schedule": "Level=Full sun at 01:00, Level=Incremental mon-sat at 01:00"},
+        log=False,
     )
-    juju.deploy(bacula_server_charm_file)
-    juju.deploy("postgresql", "bacula-database", channel="14/stable")
-    juju.deploy("s3-integrator")
+    juju.deploy(bacula_server_charm_file, log=False)
+    juju.deploy("postgresql", "bacula-database", channel="14/stable", log=False)
+    juju.deploy("s3-integrator", log=False)
     juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=600)
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     juju.config(
@@ -161,6 +163,7 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
             "bucket": "bacula",
             "s3-uri-style": "path",
         },
+        log=False,
     )
     juju.run(
         unit="s3-integrator/0",
@@ -256,6 +259,7 @@ def setup_database_fixture(juju: jubilant.Juju, deploy_charms):
                 sudo rm -f /var/backups/postgresql/ubuntu.dump
                 """),
         },
+        log=False,
     )
 
 
