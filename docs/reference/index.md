@@ -12,7 +12,7 @@ Technical specifications and architectural details for Baculum charms
 serve as authoritative look-up material when configuring,  extending,
 or integrating the charm.
 
-## Charm Configuration and operations
+## Charm configuration and operations
 
 Operators control charm behavior through configuration options and Juju
 actions. Understanding the overall charm architecture provides the 
@@ -30,7 +30,7 @@ architecture decisions made during charm creation.
 
 * [Backup integrator charm architecture](backup-integrator-charm-architecture.md)
 * [Bacula server charm architecture](bacula-server-charm-architecture.md)
-* [Bacula fd charm architecture](bacula-fd-charm-architecture.md)
+* [Bacula file daemon charm architecture](bacula-fd-charm-architecture.md)
 
 
 ```{toctree}
