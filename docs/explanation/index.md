@@ -8,7 +8,8 @@ myst:
 
 # Explanation
 
-The following guides cover key processes and common tasks for managing and using backup charms.
+This section provides additional context and deeper understanding of
+specific topics and concepts relevant to the WordPress charm.
 
 ```{toctree}
 :maxdepth: 1
