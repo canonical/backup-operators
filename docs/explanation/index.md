@@ -9,7 +9,7 @@ myst:
 # Explanation
 
 This section provides additional context and deeper understanding of
-specific topics and concepts relevant to the WordPress charm.
+specific topics and concepts relevant to the Backup charms.
 
 ```{toctree}
 :maxdepth: 1

@@ -19,19 +19,20 @@ using the web interface to start a backup or restoration. Or learn how
 to integrate Bacula charms with a legacy charm deployment using the
 backup-integrator charm.
 
-* [Use the Baculum web interface]
-* [Integrate with the backup integrator]
-* [Upgrade]
+* [Use the Baculum web interface](how_to_use_baculum)
+* [Integrate with the backup integrator](how_to_integrate_with_backup_integrator_charm)
 
-## Guide for developers
+## Maintenance and development
 
-Learn the guidelines and best practices before contributing to the
+Learn the guidelines and best practices for maintaining and contributing to the
 backup charm project.
 
-* [Contribute]
+* [Upgrade](how_to_upgrade)
+* [Contribute](how_to_contribute)
 
 ```{toctree}
 :maxdepth: 1
+:hidden:
 Contribute <contribution.md>
 Integrate with the backup integrator <integrate-with-backup-integrator-charm.md>
 Use the Baculum web interface <use-baculum.md>
