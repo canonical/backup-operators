@@ -16,7 +16,7 @@ or integrating the charm.
 
 Operators control charm behavior through configuration options and Juju
 actions. Here are the configuration and day-to-day operation related to
-backup charms.
+the Bacula charms.
 
 * [Actions](reference_actions)
 * [Configurations](reference_configurations)
