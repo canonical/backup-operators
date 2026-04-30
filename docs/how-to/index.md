@@ -25,7 +25,7 @@ backup-integrator charm.
 ## Maintenance and development
 
 Learn the guidelines and best practices for maintaining and contributing to the
-backup charm project.
+Bacula charms project.
 
 * [Upgrade](how_to_upgrade)
 * [Contribute](how_to_contribute)
