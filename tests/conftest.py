@@ -12,3 +12,6 @@ def pytest_addoption(parser):
     """
     parser.addoption("--charm-file", action="append")
     parser.addoption("--base", action="store", default="ubuntu@24.04")
+    parser.addoption("--model", action="store")
+    parser.addoption("--use-existing", action="store_true")
+    parser.addoption("--keep-models", action="store_true")
