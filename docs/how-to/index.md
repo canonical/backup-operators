@@ -32,9 +32,8 @@ Bacula charms project.
 
 ```{toctree}
 :maxdepth: 1
-:hidden:
-Contribute <contribution.md>
 Integrate with the backup integrator <integrate-with-backup-integrator-charm.md>
 Use the Baculum web interface <use-baculum.md>
 Upgrade <upgrade.md>
+Contribute <contribute.rst>
 ```
