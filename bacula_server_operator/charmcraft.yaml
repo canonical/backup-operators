@@ -9,7 +9,7 @@ name: bacula-server
 title: Bacula Server
 summary: Bacula Server (bacula-dir, bacula-sd, baculum) charm.
 links:
-  documentation: https://discourse.charmhub.io
+  documentation: https://canonical.com/juju/docs/backup-charms/
   issues: https://github.com/canonical/is-charms-template-repo/issues
   source: https://github.com/canonical/is-charms-template-repo
   contact: https://launchpad.net/~canonical-is-devops
