@@ -9,4 +9,6 @@ jobs:
       pull-requests: write
     uses: canonical/operator-workflows/.github/workflows/bot_pr_approval.yaml@main
     secrets: inherit
+    permissions:
+      pull-requests: write
 
