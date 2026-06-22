@@ -24,10 +24,10 @@ charms:
 
 ## Documentation
 
-Our documentation is stored in the `docs` directory and 
+Our documentation is stored in the `docs` directory and
 can be viewed at https://canonical.com/juju/docs/backup-charms/.
-It is based on the Canonical Sphinx Stack and hosted on 
-[Read the Docs](https://about.readthedocs.com/). In structuring, the 
+It is based on the Canonical Sphinx Stack and hosted on
+[Read the Docs](https://about.readthedocs.com/). In structuring, the
 documentation employs the [Diátaxis](https://diataxis.fr/) approach.
 
 You may open a pull request with your documentation changes, or you can
