@@ -38,7 +38,8 @@ jobs:
         rm -rf .* * || :
         cp -rp $TEMP_DIR/. .
         rm -rf $TEMP_DIR
-    - name: setup lxd
+    - if: github.event_name == 'push'
+      name: setup lxd
       uses: canonical/setup-lxd@v1
     - if: github.event_name == 'push'
       name: publish charm
