@@ -22,13 +22,14 @@ charms:
    the Bacula backup solution, including the Bacula Director, Bacula
    Storage Daemon, and Baculum.
 
-## Charmhub
+## Charmhub and Snapcraft
 
-| Charm name | Charmhub listing |
+| Name | Listing |
 |------------|------------------|
-| `backup-integrator` | https://charmhub.io/backup-integrator |
-| `bacula-server`     | https://charmhub.io/bacula-server     |
-| `bacula-fd`         | https://charmhub.io/bacula-fd         |
+| `backup-integrator`     | https://charmhub.io/backup-integrator      |
+| `bacula-server`         | https://charmhub.io/bacula-server          |
+| `bacula-fd`             | https://charmhub.io/bacula-fd              |
+| `charmed-bacula-server` | https://snapcraft.io/charmed-bacula-server |
 
 ## Documentation
 
