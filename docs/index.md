@@ -18,10 +18,31 @@ For Site Reliability Engineers, backup operators offer a turnkey, out-of-the-box
 
 ## In this documentation
 
-|                                                                                                               |                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
-| {ref}`Tutorial <tutorial>`</br>  Get started - a hands-on introduction to using the charm for new users </br> | {ref}`How-to guides <how_to>` </br> Step-by-step guides covering key operations and common tasks |
-| {ref}`Reference <reference>` </br> Technical information - specifications, APIs, architecture            | {ref}`Explanation <explanation>` </br> Concepts - discussion and clarification of key topics     |
+```{list-table}
+:header-rows: 1
+:widths: 10 25
+
+* -
+  -
+* - **Get started**
+  - {ref}`Deploy the Bacula server charm for the first time <tutorial>`
+* - **Deployment and operations**
+  - {ref}`Backup using backup-integrator <how_to_integrate_with_backup_integrator_charm>` | {ref}`Manage, schedule, and trigger backup using Baculum <how_to_use_baculum>`
+* - **Design**
+  - {ref}`Bacula and backup charms <explanation_bacula>`
+* - **Security**
+  - {ref}`Overview <explanation_security>`
+```
+
+## How this documentation is organized
+
+This documentation uses the
+[Diátaxis documentation structure](https://diataxis.fr/).
+
+* The {ref}`Tutorial <tutorial>` takes you step-by-step through a basic deployment of backup charms.
+* The {ref}`How-to guides <how_to>` assume you have basic familiarity with the backup charms. Learn more about setting up, using, maintaining, and contributing to this charm.
+* {ref}`Reference <reference>` provides a guide to actions, configurations, relations, and other technical details.
+* {ref}`Explanation <explanation>` provides additional context and deeper understanding of key concepts, such as the Bacula backup solution and security.
 
 ## Contributing to this documentation
 

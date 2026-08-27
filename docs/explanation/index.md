@@ -13,5 +13,6 @@ specific topics and concepts relevant to the Backup charms.
 
 ```{toctree}
 :maxdepth: 1
-security.md
+Bacula backup solution <bacula.md>
+Security <security.md>
 ```
