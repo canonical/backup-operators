@@ -29,7 +29,7 @@ For Site Reliability Engineers, backup operators offer a turnkey, out-of-the-box
 * - **Deployment and operations**
   - {ref}`Integrate and configure backup-integrator <how_to_integrate_with_backup_integrator_charm>` | {ref}`Manage, schedule, and trigger backup using Baculum <how_to_use_baculum>` | {ref}`Upgrade <how_to_upgrade>`
 * - **Design**
-  - {ref}`Bacula and backup charms <explanation_bacula>`
+  - {ref}`Bacula and backup charms architecture <reference_architecture>`
 * - **Security**
   - {ref}`Overview <explanation_security>`
 ```
@@ -41,8 +41,8 @@ This documentation uses the
 
 * The {ref}`Tutorial <tutorial>` takes you step-by-step through a basic deployment of backup charms.
 * The {ref}`How-to guides <how_to>` assume you have basic familiarity with the backup charms. Learn more about setting up, using, maintaining, and contributing to this project.
-* {ref}`Reference <reference>` provides a guide to actions, configurations, relations, and other technical details.
-* {ref}`Explanation <explanation>` provides additional context and deeper understanding of key concepts, such as the Bacula backup solution and security.
+* {ref}`Reference <reference>` provides a guide to actions, configurations, relations, charm architecture, and other technical details.
+* {ref}`Explanation <explanation>` provides additional context and deeper understanding of key concepts, such as security.
 
 ## Contributing to this documentation
 

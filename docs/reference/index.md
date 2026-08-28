@@ -27,18 +27,17 @@ the Bacula charms.
 Components and dependencies within the Bacula charms, along with the
 architecture decisions made during charm creation.
 
-* [Backup integrator charm architecture](explanation_backup_integrator_charm_architecture)
-* [Bacula server charm architecture](explanation_backup_server_charm_architecture)
-* [Bacula file daemon charm architecture](explanation_bacula_fd_charm_architecture)
+* [Backup charm architecture](reference_architecture)
+* [Backup integrator charm architecture](reference_backup_integrator_charm_architecture)
+* [Bacula server charm architecture](reference_bacula_server_charm_architecture)
+* [Bacula file daemon charm architecture](reference_bacula_fd_charm_architecture)
 
 
 ```{toctree}
 :maxdepth: 1
 :hidden:
 actions.md
-backup-integrator-charm-architecture.md
-bacula-server-charm-architecture.md
-bacula-fd-charm-architecture.md
+architecture/index.md
 configurations.md
 integrations.md
 ```
