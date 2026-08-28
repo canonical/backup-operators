@@ -13,5 +13,5 @@ specific topics and concepts relevant to the Backup charms.
 
 ```{toctree}
 :maxdepth: 1
-security.md
+Security <security.md>
 ```

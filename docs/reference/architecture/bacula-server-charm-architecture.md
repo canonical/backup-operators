@@ -1,4 +1,4 @@
-(explanation_backup_server_charm_architecture)=
+(reference_bacula_server_charm_architecture)=
 
 # Charm architecture: Bacula server charm
 
