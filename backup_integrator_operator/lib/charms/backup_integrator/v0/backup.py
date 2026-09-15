@@ -448,7 +448,7 @@ class BackupDynamicRequirer:
         self._require_backup(spec)
 
 
-class BackupRequirer:
+class BackupRequirer(ops.Object):
     """Backup requirer helper class."""
 
     def __init__(
@@ -479,6 +479,7 @@ class BackupRequirer:
                 will run after the restore operation completes.
             relation_name: The name of the backup relation.
         """
+        super().__init__(parent=charm, key=relation_name)
         self._charm = charm
         self._relation_name = relation_name
         self._spec = BackupSpec.new(
@@ -495,11 +496,11 @@ class BackupRequirer:
         """Listen on every charm event."""
         for attr in dir(self._charm.on):
             event = getattr(self._charm.on, attr)
-            if isinstance(event, ops.EventBase):
-                continue
-            self._charm.framework.observe(event, self._set_relation_data)
+            if isinstance(event, ops.framework.BoundEvent):
+                self.framework.observe(event, self._set_relation_data)
 
     def _set_relation_data(self, _: ops.EventBase) -> None:
         """Charm relation handler."""
         if self._charm.unit.is_leader():
             self._dynamic_requirer._require_backup(spec=self._spec)
+
