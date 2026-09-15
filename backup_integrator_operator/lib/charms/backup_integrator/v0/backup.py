@@ -448,7 +448,7 @@ class BackupDynamicRequirer:
         self._require_backup(spec)
 
 
-class BackupRequirer:
+class BackupRequirer(ops.Object):
     """Backup requirer helper class."""
 
     def __init__(
@@ -462,23 +462,7 @@ class BackupRequirer:
         run_after_restore: Optional[Union[str, Path]] = None,
         relation_name: str = DEFAULT_BACKUP_RELATION_NAME,
     ):
-        """Initialize the backup requirer.
-
-        Args:
-            charm: The requirer charm instance.
-            fileset: A list of absolute file or directory paths that need to be backed up.
-            run_before_backup: An optional absolute path to an executable that, if defined,
-                will run before the backup operation. If this command fails, the backup
-                operation will be canceled.
-            run_after_backup: An optional absolute path to an executable that, if defined,
-                will run after the backup operation completes.
-            run_before_restore: An optional absolute path to an executable that, if defined,
-                will run before the restore operation. If this command fails, the restore
-                operation will be canceled.
-            run_after_restore: An optional absolute path to an executable that, if defined,
-                will run after the restore operation completes.
-            relation_name: The name of the backup relation.
-        """
+        super().__init__(parent=charm, key=relation_name)
         self._charm = charm
         self._relation_name = relation_name
         self._spec = BackupSpec.new(
@@ -492,14 +476,11 @@ class BackupRequirer:
         self._listen_on_every_event()
 
     def _listen_on_every_event(self) -> None:
-        """Listen on every charm event."""
         for attr in dir(self._charm.on):
             event = getattr(self._charm.on, attr)
-            if isinstance(event, ops.EventBase):
-                continue
-            self._charm.framework.observe(event, self._set_relation_data)
+            if isinstance(event, ops.framework.BoundEvent):
+                self.framework.observe(event, self._set_relation_data)
 
     def _set_relation_data(self, _: ops.EventBase) -> None:
-        """Charm relation handler."""
         if self._charm.unit.is_leader():
             self._dynamic_requirer._require_backup(spec=self._spec)
