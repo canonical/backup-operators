@@ -12,8 +12,6 @@ import textwrap
 import typing
 from typing import Generator
 
-import boto3
-import botocore.config
 import jubilant
 import pytest
 
@@ -206,14 +204,24 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
         action="sync-s3-credentials",
         params={"access-key": "minioadmin", "secret-key": "minioadmin"},
     )
-    s3 = boto3.client(
-        "s3",
-        endpoint_url=f"http://{minio_address}:9000",
-        aws_access_key_id="minioadmin",  # nosec
-        aws_secret_access_key="minioadmin",  # nosec
-        config=botocore.config.Config(s3={"addressing_style": "path"}),
+    create_bucket = textwrap.dedent(
+        """\
+        /opt/moto/bin/python - <<'PY'
+        import boto3
+        import botocore.config
+
+        s3 = boto3.client(
+            "s3",
+            endpoint_url="http://127.0.0.1:9000",
+            aws_access_key_id="minioadmin",
+            aws_secret_access_key="minioadmin",
+            config=botocore.config.Config(s3={"addressing_style": "path"}),
+        )
+        s3.create_bucket(Bucket="bacula")
+        PY
+        """
     )
-    s3.create_bucket(Bucket="bacula")
+    juju.ssh("minio/0", create_bucket)
 
     juju.integrate("ubuntu:juju-info", "backup-integrator")
     juju.integrate("ubuntu:juju-info", "bacula-fd")
@@ -320,15 +328,3 @@ def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
     address = list(juju.status().apps["bacula-server"].units.values())[0].public_address
     return baculum.Baculum(f"http://{address}:9096/api/v2", username=username, password=password)
 
-
-@pytest.fixture(scope="module", name="s3")
-def s3_client(juju: jubilant.Juju, setup_database):
-    """Initialize a S3 client."""
-    minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
-    return boto3.client(
-        "s3",
-        endpoint_url=f"http://{minio_address}:9000",
-        aws_access_key_id="minioadmin",  # nosec
-        aws_secret_access_key="minioadmin",  # nosec
-        config=botocore.config.Config(s3={"addressing_style": "path"}),
-    )

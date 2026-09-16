@@ -5,6 +5,7 @@
 
 """Integration tests."""
 
+import json
 import logging
 import time
 
@@ -51,23 +52,36 @@ def select_table(juju) -> str:
     )
 
 
-def list_objects(s3, bucket) -> list[str]:
+def list_objects(juju: jubilant.Juju, bucket: str) -> list[str]:
     """List all objects in a s3 bucket.
 
     Args:
-        s3: S3 client.
+        juju: jubilant.Juju object.
         bucket: S3 bucket name.
 
     Returns:
         List of object names.
     """
-    paginator = s3.get_paginator("list_objects_v2")
-    pages = paginator.paginate(Bucket=bucket)
-    objects = []
-    for page in pages:
-        for obj in page.get("Contents", []):
-            objects.append(obj["Key"])
-    return objects
+    output = juju.ssh(
+        "minio/0",
+        f"""\
+/opt/moto/bin/python - <<'PY'
+import boto3
+import botocore.config
+import json
+
+s3 = boto3.client(
+    "s3",
+    endpoint_url="http://127.0.0.1:9000",
+    aws_access_key_id="minioadmin",
+    aws_secret_access_key="minioadmin",
+    config=botocore.config.Config(s3={{"addressing_style": "path"}}),
+)
+page = s3.list_objects_v2(Bucket={bucket!r})
+print(json.dumps([obj["Key"] for obj in page.get("Contents", [])]))
+PY""",
+    )
+    return json.loads(output)
 
 
 def test_list_jobs(baculum):
@@ -104,21 +118,21 @@ def test_connect_client(baculum):
         assert "Daemon started" in baculum.get_client_status(client_id=client["clientid"])
 
 
-def test_backup_restore_database(juju: jubilant.Juju, baculum, s3):
+def test_backup_restore_database(juju: jubilant.Juju, baculum):
     """
     arrange: deploy and integrate backup charms.
     arrange: run a backup and restore.
     assert: the backup and restore should work as intended.
     """
     assert "Noble Numbat" in select_table(juju)
-    assert len(list_objects(s3, "bacula")) == 0
+    assert len(list_objects(juju, "bacula")) == 0
 
     backup_job = [j for j in baculum.list_job_names() if j.endswith("-backup")][0]
     logger.info("run backup job: %s", backup_job)
     output = baculum.run_backup_job(name=backup_job)
     logger.info("run backup job output: %s", output)
     backup_job_run = wait_job_complete(baculum, backup_job)
-    objects = list_objects(s3, "bacula")
+    objects = list_objects(juju, "bacula")
     logger.info("s3 objects: %s", objects)
     assert len(objects) > 1
 
