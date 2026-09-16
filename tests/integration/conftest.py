@@ -208,8 +208,20 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
     )
     create_bucket = textwrap.dedent("""\
         /opt/moto/bin/python - <<'PY'
+        import socket
+        import time
+
         import boto3
         import botocore.config
+
+        for _ in range(60):
+            try:
+                with socket.create_connection(("127.0.0.1", 9000), timeout=2):
+                    break
+            except OSError:
+                time.sleep(2)
+        else:
+            raise SystemExit("moto server not listening on 127.0.0.1:9000")
 
         s3 = boto3.client(
             "s3",
