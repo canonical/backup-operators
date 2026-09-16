@@ -12,6 +12,8 @@ import textwrap
 import typing
 from typing import Generator
 
+import boto3
+import botocore.config
 import jubilant
 import pytest
 
@@ -115,8 +117,8 @@ def deploy_minio_fixture(juju: jubilant.Juju):
     any_charm = textwrap.dedent('''
         import os
         import subprocess
-        import sys
         import textwrap
+        import urllib.request
 
         import ops
 
@@ -128,14 +130,12 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                 self.framework.observe(self.on.install, self._on_install)
 
             def _on_install(self, _):
-                self.unit.status = ops.MaintenanceStatus("installing s3 test server")
-                subprocess.check_call(["apt-get", "update"])
-                subprocess.check_call(["apt-get", "install", "-y", "python3-venv"])
-                subprocess.check_call([sys.executable, "-m", "venv", "/opt/moto"])
-                subprocess.check_call(
-                    ["/opt/moto/bin/pip", "install", "moto[server]==5.0.28"]
+                self.unit.status = ops.MaintenanceStatus("downloading minio")
+                urllib.request.urlretrieve(
+                    "https://dl.min.io/server/minio/release/linux-amd64/minio", "/usr/bin/minio"
                 )
-                self.unit.status = ops.MaintenanceStatus("setting up s3 test server")
+                os.chmod("/usr/bin/minio", 0o755)
+                self.unit.status = ops.MaintenanceStatus("setting up minio")
                 service = textwrap.dedent(
                     """
                     [Unit]
@@ -147,7 +147,8 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                     Type=simple
                     Environment="MINIO_ROOT_USER=minioadmin"
                     Environment="MINIO_ROOT_PASSWORD=minioadmin"
-                    ExecStart=/opt/moto/bin/moto_server -H 0.0.0.0 -p 9000
+                    ExecStartPre=/usr/bin/mkdir -p /srv/bacula
+                    ExecStart=/usr/bin/minio server --console-address :9001 /srv
                     Restart=on-failure
                     RestartSec=5
 
@@ -159,7 +160,7 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                     f.write(service)
                 subprocess.check_call(["systemctl", "daemon-reload"])
                 subprocess.check_call(["systemctl", "enable", "--now", "minio"])
-                self.unit.set_ports(9000)
+                self.unit.set_ports(9000, 9001)
                 self.unit.status = ops.ActiveStatus()
         ''')
     juju.deploy(
@@ -189,9 +190,7 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
     juju.deploy(bacula_server_charm_file)
     juju.deploy("postgresql", "bacula-database", channel="14/stable")
     juju.deploy("s3-integrator")
-    juju.wait(
-        lambda status: jubilant.all_agents_idle(status, "s3-integrator", "minio"), timeout=600
-    )
+    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=600)
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     juju.config(
         "s3-integrator",
@@ -206,34 +205,6 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
         action="sync-s3-credentials",
         params={"access-key": "minioadmin", "secret-key": "minioadmin"},
     )
-    create_bucket = textwrap.dedent("""\
-        /opt/moto/bin/python - <<'PY'
-        import socket
-        import time
-
-        import boto3
-        import botocore.config
-
-        for _ in range(60):
-            try:
-                with socket.create_connection(("127.0.0.1", 9000), timeout=2):
-                    break
-            except OSError:
-                time.sleep(2)
-        else:
-            raise SystemExit("moto server not listening on 127.0.0.1:9000")
-
-        s3 = boto3.client(
-            "s3",
-            endpoint_url="http://127.0.0.1:9000",
-            aws_access_key_id="minioadmin",
-            aws_secret_access_key="minioadmin",
-            config=botocore.config.Config(s3={"addressing_style": "path"}),
-        )
-        s3.create_bucket(Bucket="bacula")
-        PY
-        """)
-    juju.ssh("minio/0", create_bucket)
 
     juju.integrate("ubuntu:juju-info", "backup-integrator")
     juju.integrate("ubuntu:juju-info", "bacula-fd")
@@ -339,3 +310,16 @@ def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
     ).results["password"]
     address = list(juju.status().apps["bacula-server"].units.values())[0].public_address
     return baculum.Baculum(f"http://{address}:9096/api/v2", username=username, password=password)
+
+
+@pytest.fixture(scope="module", name="s3")
+def s3_client(juju: jubilant.Juju, setup_database):
+    """Initialize a S3 client."""
+    minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
+    return boto3.client(
+        "s3",
+        endpoint_url=f"http://{minio_address}:9000",
+        aws_access_key_id="minioadmin",  # nosec
+        aws_secret_access_key="minioadmin",  # nosec
+        config=botocore.config.Config(s3={"addressing_style": "path"}),
+    )
