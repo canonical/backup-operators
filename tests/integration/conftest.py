@@ -206,8 +206,7 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
         action="sync-s3-credentials",
         params={"access-key": "minioadmin", "secret-key": "minioadmin"},
     )
-    create_bucket = textwrap.dedent(
-        """\
+    create_bucket = textwrap.dedent("""\
         /opt/moto/bin/python - <<'PY'
         import boto3
         import botocore.config
@@ -221,8 +220,7 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
         )
         s3.create_bucket(Bucket="bacula")
         PY
-        """
-    )
+        """)
     juju.ssh("minio/0", create_bucket)
 
     juju.integrate("ubuntu:juju-info", "backup-integrator")
