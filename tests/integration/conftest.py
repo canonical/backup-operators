@@ -117,8 +117,8 @@ def deploy_minio_fixture(juju: jubilant.Juju):
     any_charm = textwrap.dedent('''
         import os
         import subprocess
+        import sys
         import textwrap
-        import urllib.request
 
         import ops
 
@@ -130,12 +130,14 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                 self.framework.observe(self.on.install, self._on_install)
 
             def _on_install(self, _):
-                self.unit.status = ops.MaintenanceStatus("downloading minio")
-                urllib.request.urlretrieve(
-                    "https://dl.min.io/server/minio/release/linux-amd64/minio", "/usr/bin/minio"
+                self.unit.status = ops.MaintenanceStatus("installing s3 test server")
+                subprocess.check_call(["apt-get", "update"])
+                subprocess.check_call(["apt-get", "install", "-y", "python3-venv"])
+                subprocess.check_call([sys.executable, "-m", "venv", "/opt/moto"])
+                subprocess.check_call(
+                    ["/opt/moto/bin/pip", "install", "moto[server]==5.0.28"]
                 )
-                os.chmod("/usr/bin/minio", 0o755)
-                self.unit.status = ops.MaintenanceStatus("setting up minio")
+                self.unit.status = ops.MaintenanceStatus("setting up s3 test server")
                 service = textwrap.dedent(
                     """
                     [Unit]
@@ -147,8 +149,7 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                     Type=simple
                     Environment="MINIO_ROOT_USER=minioadmin"
                     Environment="MINIO_ROOT_PASSWORD=minioadmin"
-                    ExecStartPre=/usr/bin/mkdir -p /srv/bacula
-                    ExecStart=/usr/bin/minio server --console-address :9001 /srv
+                    ExecStart=/opt/moto/bin/moto_server -H 0.0.0.0 -p 9000
                     Restart=on-failure
                     RestartSec=5
 
@@ -160,7 +161,7 @@ def deploy_minio_fixture(juju: jubilant.Juju):
                     f.write(service)
                 subprocess.check_call(["systemctl", "daemon-reload"])
                 subprocess.check_call(["systemctl", "enable", "--now", "minio"])
-                self.unit.set_ports(9000, 9001)
+                self.unit.set_ports(9000)
                 self.unit.status = ops.ActiveStatus()
         ''')
     juju.deploy(
@@ -205,6 +206,14 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
         action="sync-s3-credentials",
         params={"access-key": "minioadmin", "secret-key": "minioadmin"},
     )
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=f"http://{minio_address}:9000",
+        aws_access_key_id="minioadmin",  # nosec
+        aws_secret_access_key="minioadmin",  # nosec
+        config=botocore.config.Config(s3={"addressing_style": "path"}),
+    )
+    s3.create_bucket(Bucket="bacula")
 
     juju.integrate("ubuntu:juju-info", "backup-integrator")
     juju.integrate("ubuntu:juju-info", "bacula-fd")
