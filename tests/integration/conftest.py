@@ -189,7 +189,9 @@ def deploy_charms_fixture(  # pylint: disable=too-many-arguments,too-many-positi
     juju.deploy(bacula_server_charm_file)
     juju.deploy("postgresql", "bacula-database", channel="14/stable")
     juju.deploy("s3-integrator")
-    juju.wait(lambda status: jubilant.all_agents_idle(status, "s3-integrator"), timeout=600)
+    juju.wait(
+        lambda status: jubilant.all_agents_idle(status, "s3-integrator", "minio"), timeout=600
+    )
     minio_address = list(juju.status().apps["minio"].units.values())[0].public_address
     juju.config(
         "s3-integrator",
@@ -327,4 +329,3 @@ def baculum_client(juju: jubilant.Juju, setup_database) -> baculum.Baculum:
     ).results["password"]
     address = list(juju.status().apps["bacula-server"].units.values())[0].public_address
     return baculum.Baculum(f"http://{address}:9096/api/v2", username=username, password=password)
-
