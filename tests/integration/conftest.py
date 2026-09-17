@@ -132,7 +132,10 @@ def deploy_minio_fixture(juju: jubilant.Juju):
             def _on_install(self, _):
                 self.unit.status = ops.MaintenanceStatus("downloading minio")
                 urllib.request.urlretrieve(
-                    "https://dl.min.io/server/minio/release/linux-amd64/minio", "/usr/bin/minio"
+                    "https://github.com/minio/minio/releases/download/"
+                    "RELEASE.2025-09-07T16-13-09Z/"
+                    "minio.linux-amd64.RELEASE.2025-09-07T16-13-09Z",
+                    "/usr/bin/minio",
                 )
                 os.chmod("/usr/bin/minio", 0o755)
                 self.unit.status = ops.MaintenanceStatus("setting up minio")
