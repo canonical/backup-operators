@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2026-09-25
+
+* Fixed the backup-integrator charm storing backup scripts only on the leader unit at a unit-specific path, causing backup and restore run scripts to fail with "No such file or directory"
+
 ## 2026-06-18
 
 * Migrate the RTD documentation under the Canonical domain

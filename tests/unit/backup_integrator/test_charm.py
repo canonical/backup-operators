@@ -87,6 +87,27 @@ def test_update_backup_relation(backup_integrator_charm, config) -> None:
             assert config[script] == Path(relation_data[script]).read_text(encoding="utf-8")
 
 
+def test_non_leader_saves_scripts(backup_integrator_charm, tmp_path) -> None:
+    """
+    arrange: integrate a non-leader unit of the charm with a backup provider
+    act: set the script charm configurations
+    assert: the scripts should be saved at the same unit-independent path
+    """
+    ctx = ops.testing.Context(backup_integrator_charm)
+    relation = ops.testing.Relation(endpoint="backup", id=2)
+    state_in = ops.testing.State(
+        config={"fileset": "/var/backups", "run-before-backup": "run-before-backup"},
+        relations=[ops.testing.SubordinateRelation(endpoint="juju-info", id=1), relation],
+        leader=False,
+    )
+
+    state_out = ctx.run(ctx.on.config_changed(), state_in)
+
+    assert state_out.unit_status.name == "active"
+    script = tmp_path / "backup-integrator" / "scripts" / "run-before-backup"
+    assert script.read_text(encoding="utf-8") == "run-before-backup"
+
+
 @pytest.mark.parametrize("fileset", ["var/backups", "/var/backups,etc,/var/backups/foobar"])
 def test_invalid_fileset(backup_integrator_charm, fileset: str) -> None:
     """
