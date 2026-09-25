@@ -48,9 +48,7 @@ class BackupIntegratorCharm(ops.CharmBase):
         content = typing.cast(str | None, self.config.get(config_option))
         if not content:
             return None
-        script_path = (
-            self._CHARM_OPT_DIR / self.app.name / "scripts" / config_option
-        )
+        script_path = self._CHARM_OPT_DIR / self.app.name / "scripts" / config_option
         script_path.parent.mkdir(parents=True, exist_ok=True)
         script_path.write_text(content, encoding="utf-8")
         script_path.chmod(0o755)
@@ -66,10 +64,10 @@ class BackupIntegratorCharm(ops.CharmBase):
             self.unit.status = ops.BlockedStatus("missing fileset config")
             return
         fileset = [file.strip() for file in fileset_config.split(",") if file.strip()]
-        run_before_backup = self._save_script("run-before-backup"),
-        run_after_backup = self._save_script("run-after-backup"),
-        run_before_restore = self._save_script("run-before-restore"),
-        run_after_restore = self._save_script("run-after-restore"),
+        run_before_backup = self._save_script("run-before-backup")
+        run_after_backup = self._save_script("run-after-backup")
+        run_before_restore = self._save_script("run-before-restore")
+        run_after_restore = self._save_script("run-after-restore")
         if not self.unit.is_leader():
             self.unit.status = ops.ActiveStatus()
             return
