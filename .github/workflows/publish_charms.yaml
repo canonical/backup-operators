@@ -50,7 +50,7 @@ jobs:
 
   publish-charm-libs:
     name: Release charm libs
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [publish-charm]
     if: github.event_name == 'push'
     steps:
