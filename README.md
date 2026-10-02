@@ -1,35 +1,52 @@
 # Backup operators
+This repository contains a collection of operators that handle backups in the Juju ecosystem. Its goal is to provide an easy-to-use, highly integrated backup solution for charms in Juju.
 
-This repository contains a collection of operators that handle backups
-in the Juju ecosystem. Its goal is to provide an easy-to-use, highly
-integrated backup solution for charms in Juju.
+For information about how to deploy, integrate, and manage the backup charms, see the official [Backup charms documentation](https://canonical.com/juju/docs/backup-charms/).
 
-This repository contains the source code for the following
-backup-related charms:
+## Repository layout
 
-1. `backup-integrator`: An integrator charm that requires backup
-   relation on behalf of other charms.
-2. `bacula-server`: A machine charm that installs and manages all server
-   components of the Bacula backup solution, including the Bacula
-   Director, Bacula Storage Daemon, and Baculum.
-3. `bacula-fd`: A subordinate charm that installs and manages the Bacula
-   File Daemon, which is the backup agent in the Bacula solution.
+```
+backup_integrator_operator/ # Juju charm: backup-integrator subordinate charm source
+bacula_fd_operator/         # Juju charm: bacula-fd subordinate Bacula File Daemon source
+bacula_server_operator/     # Juju charm: bacula-server principal Bacula server source
 
-The repository also holds the snapped workloads of the aforementioned
-charms:
+docs/                       # In-repository documentation source, including tutorial and how-to guides
 
-1. `charmed-bacula-server`: A snap containing all server components of
-   the Bacula backup solution, including the Bacula Director, Bacula
-   Storage Daemon, and Baculum.
+charmed_bacula_server/      # Snap packaging for the charmed-bacula-server workload
 
-## Charmhub and Snapcraft
+terraform/                  # Terraform Juju module for deploying the backup charm stack
+
+tests/                      # Shared unit and integration tests for the charms
+```
+
+## Components
+
+This repository contains three Juju charms and one snapped workload:
+
+| Component | Path | Role |  |
+| --- | --- | --- | --- |
+| `backup-integrator` | `backup_integrator_operator/` | An integrator charm that requires backup relation on behalf of other charms. |  |
+| `bacula-server` | `bacula_server_operator/` | A machine charm that installs and manages all server components of the Bacula backup solution, including the Bacula Director, Bacula Storage Daemon, and Baculum. |  |
+| `bacula-fd` | `bacula_fd_operator/` | A subordinate charm that installs and manages the Bacula File Daemon, which is the backup agent in the Bacula solution. |  |
+| `charmed-bacula-server` | `charmed_bacula_server/` | A snap containing all server components of the Bacula backup solution, including the Bacula Director, Bacula Storage Daemon, and Baculum. |  |
+
+
+### Charmhub and Snapcraft
 
 | Name | Listing |
-|------------|------------------|
-| `backup-integrator`     | https://charmhub.io/backup-integrator      |
-| `bacula-server`         | https://charmhub.io/bacula-server          |
-| `bacula-fd`             | https://charmhub.io/bacula-fd              |
+| --- | --- |
+| `backup-integrator` | https://charmhub.io/backup-integrator |
+| `bacula-server` | https://charmhub.io/bacula-server |
+| `bacula-fd` | https://charmhub.io/bacula-fd |
 | `charmed-bacula-server` | https://snapcraft.io/charmed-bacula-server |
+
+## Get started
+
+Start with the in-repository tutorial at [`docs/tutorial.md`](docs/tutorial.md). It walks through a basic `bacula-server` deployment, including Juju setup assumptions, S3 storage, PostgreSQL integration, Baculum credentials, and cleanup.
+
+## Integrations
+
+See [`docs/reference/integrations.md`](docs/reference/integrations.md). 
 
 ## Documentation
 
@@ -50,7 +67,7 @@ cd docs
 make run
 ```
 
-GitHub runs automatic checks on the documentation to verify spelling, 
+GitHub runs automatic checks on the documentation to verify spelling,
 validate links and style guide compliance.
 
 You can (and should) run the same checks locally:
@@ -64,12 +81,14 @@ make lint-md
 
 ## Project and community
 
-The backup operators project is a member of the Ubuntu family. It is an
-open source project that warmly welcomes community projects,
-contributions, suggestions, fixes and constructive feedback.
+The backup operators project is a member of the Ubuntu family. It is an open source project that welcomes community projects, contributions, suggestions, fixes, and constructive feedback.
 
 * [Code of conduct](https://ubuntu.com/community/code-of-conduct)
 * [Get support](https://discourse.charmhub.io/)
 * [Issues](https://github.com/canonical/backup-operators/issues)
 * [Matrix](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
-* [Contribute](https://github.com/canonical/backup-operators/blob/main/CONTRIBUTING.md)
+* [Contributing](https://github.com/canonical/backup-operators/blob/main/CONTRIBUTING.md)
+
+## Licensing and trademark
+
+See [`LICENSE`](LICENSE).
