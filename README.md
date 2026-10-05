@@ -1,7 +1,10 @@
 # Backup operators
-This repository contains a collection of operators that handle backups in the Juju ecosystem. Its goal is to provide an easy-to-use, highly integrated backup solution for charms in Juju.
+This repository contains a collection of operators that handle backups
+in the Juju ecosystem. Its goal is to provide an easy-to-use, highly
+integrated backup solution for charms in Juju.
 
-For information about how to deploy, integrate, and manage the backup charms, see the official [Backup charms documentation](https://canonical.com/juju/docs/backup-charms/).
+For information about how to deploy, integrate, and manage the backup
+charms, see the official [Backup charms documentation](https://canonical.com/juju/docs/backup-charms/).
 
 ## Repository layout
 
@@ -23,12 +26,12 @@ tests/                      # Shared unit and integration tests
 
 This repository contains three Juju charms and one snapped workload:
 
-| Component | Path | Role |  |
+| Component | Path | Role |
 | --- | --- | --- | --- |
-| `backup-integrator` | `backup_integrator_operator/` | An integrator charm that requires backup relation on behalf of other charms. |  |
-| `bacula-server` | `bacula_server_operator/` | A machine charm that installs and manages all server components of the Bacula backup solution, including the Bacula Director, Bacula Storage Daemon, and Baculum. |  |
-| `bacula-fd` | `bacula_fd_operator/` | A subordinate charm that installs and manages the Bacula File Daemon, which is the backup agent in the Bacula solution. |  |
-| `charmed-bacula-server` | `charmed_bacula_server/` | A snap containing all server components of the Bacula backup solution, including the Bacula Director, Bacula Storage Daemon, and Baculum. |  |
+| `backup-integrator` | `backup_integrator_operator/` | An integrator charm that requires backup relation on behalf of other charms. |
+| `bacula-server` | `bacula_server_operator/` | A machine charm that installs and manages all server components of the Bacula backup solution, including the Bacula Director, Bacula Storage Daemon, and Baculum. |
+| `bacula-fd` | `bacula_fd_operator/` | A subordinate charm that installs and manages the Bacula File Daemon, which is the backup agent in the Bacula solution. |
+| `charmed-bacula-server` | `charmed_bacula_server/` | A snap containing all server components of the Bacula backup solution, including the Bacula Director, Bacula Storage Daemon, and Baculum. |
 
 
 ### Charmhub and Snapcraft
@@ -42,7 +45,9 @@ This repository contains three Juju charms and one snapped workload:
 
 ## Get started
 
-Start with the in-repository tutorial at [`docs/tutorial.md`](docs/tutorial.md). It walks through a basic `bacula-server` deployment, including Juju setup assumptions, S3 storage, PostgreSQL integration, Baculum credentials, and cleanup.
+Start with the in-repository tutorial at [`docs/tutorial.md`](docs/tutorial.md).
+It walks through a basic `bacula-server` deployment, including setup,
+S3 storage, PostgreSQL integration, Baculum credentials, and cleanup.
 
 ## Integrations
 
@@ -81,7 +86,9 @@ make lint-md
 
 ## Project and community
 
-The backup operators project is a member of the Ubuntu family. It is an open source project that welcomes community projects, contributions, suggestions, fixes, and constructive feedback.
+The backup operators project is a member of the Ubuntu family. It is an
+open source project that welcomes community projects,
+contributions, suggestions, fixes, and constructive feedback.
 
 * [Code of conduct](https://ubuntu.com/community/code-of-conduct)
 * [Get support](https://discourse.charmhub.io/)
