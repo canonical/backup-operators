@@ -2,21 +2,39 @@
 # See LICENSE file for licensing details.
 
 name: Terraform modules release
+
 on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '**/terraform/**'
-      - '.github/workflows/terraform_modules_release.yaml'
+      - "terraform/**"
+      - ".github/workflows/terraform_modules_release.yaml"
   push:
     branches:
       - main
     paths:
-      - '**/terraform/**'
-      - '.github/workflows/terraform_modules_release.yaml'
+      - "terraform/**"
+      - ".github/workflows/terraform_modules_release.yaml"
 
 jobs:
-  terraform:
-    uses: canonical/operator-workflows/.github/workflows/terraform_modules_release.yaml@030c5b20a0bb880dcf1ed326bff0fc16b6eb6ac1 # main
+  backup-integrator-terraform:
+    uses: canonical/operator-workflows/.github/workflows/terraform_modules_release.yaml@030c5b20a0bb880dcf1ed326bff0fc16b6eb6ac1  # main
     permissions:
       contents: write
+    with:
+      tag-prefix: backup-integrator-tf-
+      major-version-file: terraform/charm/backup_integrator/MAJOR_VERSION
+  bacula-fd-terraform:
+    uses: canonical/operator-workflows/.github/workflows/terraform_modules_release.yaml@030c5b20a0bb880dcf1ed326bff0fc16b6eb6ac1  # main
+    permissions:
+      contents: write
+    with:
+      tag-prefix: bacula-fd-tf-
+      major-version-file: terraform/charm/bacula_fd/MAJOR_VERSION
+  bacula-server-terraform:
+    uses: canonical/operator-workflows/.github/workflows/terraform_modules_release.yaml@030c5b20a0bb880dcf1ed326bff0fc16b6eb6ac1  # main
+    permissions:
+      contents: write
+    with:
+      tag-prefix: bacula-server-tf-
+      major-version-file: terraform/charm/bacula_server/MAJOR_VERSION
