@@ -22,8 +22,8 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.requires.value.endpoint == "backup"
-    error_message = "backup-integrator module should provide 'requires.value' output"
+    condition     = output.requires.backup.endpoint == "backup"
+    error_message = "backup-integrator module should provide 'requires.backup' output"
   }
 
   assert {

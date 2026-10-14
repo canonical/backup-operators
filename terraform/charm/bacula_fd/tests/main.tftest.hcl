@@ -22,13 +22,13 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.provides.value.endpoint == "backup"
-    error_message = "bacula-fd module should provide 'provides.value' output"
+    condition     = output.provides.backup.endpoint == "backup"
+    error_message = "bacula-fd module should provide 'provides.backup' output"
   }
 
   assert {
-    condition     = output.requires.value.endpoint == "bacula-dir"
-    error_message = "bacula-fd module should provide 'requires.value' output"
+    condition     = output.requires.bacula_dir.endpoint == "bacula-dir"
+    error_message = "bacula-fd module should provide 'requires.bacula_dir' output"
   }
 
   assert {

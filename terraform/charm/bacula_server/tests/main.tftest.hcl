@@ -22,13 +22,13 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.provides.value.endpoint == "bacula-dir"
-    error_message = "bacula-server module should provide 'provides.value' output"
+    condition     = output.provides.bacula_dir.endpoint == "bacula-dir"
+    error_message = "bacula-server module should provide 'provides.bacula_dir' output"
   }
 
   assert {
-    condition     = output.requires.value.endpoint == "postgresql"
-    error_message = "bacula-server module should provide 'requires.value' output"
+    condition     = output.requires.postgresql.endpoint == "postgresql"
+    error_message = "bacula-server module should provide 'requires.postgresql' output"
   }
 
   assert {
