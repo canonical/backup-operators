@@ -18,6 +18,7 @@ header:
     - 'CODEOWNERS'
     - 'LICENSE'
     - '**/MAJOR_VERSION'
+    - '**/uv.lock'
     - 'trivy.yaml'
     - 'pyproject.toml'
     - 'zap_rules.tsv'
