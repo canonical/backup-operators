@@ -17,4 +17,4 @@ jobs:
     with:
       k8s-controller: false
       lxd-controller: true
-      terraform-directories: '["terraform/charm/backup_integrator", "terraform/charm/bacula_fd", "terraform/charm/bacula_server"]'
+      terraform-directories: '["terraform/charm/backup_integrator", "terraform/charm/bacula_fd", "terraform/charm/bacula_server", "terraform/product"]'

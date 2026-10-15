@@ -42,3 +42,12 @@ jobs:
     with:
       tag-prefix: bacula-server-tf-
       major-version-file: terraform/charm/bacula_server/MAJOR_VERSION
+  backup-server-terraform:
+    needs: bacula-server-terraform
+    if: ${{ !cancelled() }}
+    uses: canonical/operator-workflows/.github/workflows/terraform_modules_release.yaml@030c5b20a0bb880dcf1ed326bff0fc16b6eb6ac1  # main
+    permissions:
+      contents: write
+    with:
+      tag-prefix: backup-server-tf-
+      major-version-file: terraform/product/MAJOR_VERSION
