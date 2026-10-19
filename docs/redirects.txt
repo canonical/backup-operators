@@ -1,0 +1,16 @@
+# Client-side page redirects. Each mapping takes the format:
+#
+#     "<old path>" "<current path>"
+#
+# Paths must be represented as source files relative to the root of the docs directory.
+# The old path must be a file that doesn't exist in the source. The current path must be
+# a file that does exist in the source. Redirecting to a specific section is not supported.
+
+"explanation/backup-integrator-charm-architecture.md" "reference/architecture/backup-integrator-charm-architecture.md"
+"explanation/backup-server-charm-architecture.md" "reference/architecture/bacula-server-charm-architecture.md"
+"explanation/bacula-fd-charm-architecture.md" "reference/architecture/bacula-fd-charm-architecture.md"
+"how-to/contribution.md" "how-to/contribute.rst"
+"reference/backup-integrator-charm-architecture.md" "reference/architecture/backup-integrator-charm-architecture.md"
+"reference/backup-server-charm-architecture.md" "reference/architecture/bacula-server-charm-architecture.md"
+"reference/bacula-server-charm-architecture.md" "reference/architecture/bacula-server-charm-architecture.md"
+"reference/bacula-fd-charm-architecture.md" "reference/architecture/bacula-fd-charm-architecture.md"

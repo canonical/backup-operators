@@ -26,5 +26,6 @@ header:
     - '**/templates/**'
     - 'charmed_bacula_server/snap/hooks/**'
     - '.readthedocs.yaml'
+    - '.copier-answers.yml'
     - 'docs/**'
   comment: on-failure
