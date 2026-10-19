@@ -12,7 +12,7 @@ Guides for managing the full operations lifecycle of the Bacula charms,
 from user operation and maintenance to developer contribution. Each 
 guide assumes that you've already deployed the charm with Juju.
 
-## Guide for charm users
+## Usage
 
 Manage the Bacula deployment using the Baculum web interface, including
 using the web interface to start a backup or restoration. Or learn how
@@ -32,6 +32,7 @@ Bacula charms project.
 
 ```{toctree}
 :maxdepth: 1
+:hidden:
 Integrate with the backup integrator <integrate-with-backup-integrator-charm.md>
 Use the Baculum web interface <use-baculum.md>
 Upgrade <upgrade.md>
