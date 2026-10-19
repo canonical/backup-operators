@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2026-10-19
+
+* Onboarded the documentation tooling to the centrally managed `platform-engineering-documentation-files` Copier template, replacing the legacy starter pack files, and added a scheduled workflow that keeps the tooling in sync. Set the documentation license to Apache-2.0 and added a description for `llms.txt`. There is no change to the charms.
+
 ## 2026-10-15
 
 * Added a `terraform/product` Terraform product module that deploys `bacula-server` with a bundled `postgresql` catalog database and a bundled `s3-integrator` into one machine model, and offers the `bacula-dir` endpoint for `bacula-fd` units deployed outside the product. The bundled `postgresql` and `s3-integrator` are skipped when `postgresql_integration` or `s3_integration` is set. The module is released with the `backup-server-tf-` tag prefix.
