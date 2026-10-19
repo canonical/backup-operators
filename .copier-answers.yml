@@ -1,0 +1,27 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: d2d1381
+_src_path: gh:canonical/platform-engineering-documentation-files.git
+author: Canonical Ltd.
+discourse: https://discourse.charmhub.io
+display_contributors: false
+docs_host: canonical.com
+github_url: https://github.com/canonical/backup-operators
+html_favicon: ''
+license_name: Apache-2.0
+license_url: https://github.com/canonical/backup-operators/blob/main/LICENSE
+linkcheck_timeout: 30
+llms_txt_description: Documentation for Backup Operators, a collection of Juju charms
+    that provide a highly integrated, low-operations file-level backup solution, based
+    on Bacula, for charms running in machine environments.
+matrix: https://matrix.to/#/#charmhub-charmdev:ubuntu.com
+mattermost: ''
+new_domain: canonical.com/juju/docs/backup-charms
+ogp_image: https://assets.ubuntu.com/v1/cc828679-docs_illustration.svg
+old_domain: canonical-backup-charms.readthedocs-hosted.com
+product_page: charmhub.io/bacula-server
+product_tag: ''
+project: Backup Operators
+repo_default_branch: main
+repo_folder: /docs/
+rtd_slug: juju/docs/backup-charms
+source_edit_link: https://github.com/canonical/backup-operators
