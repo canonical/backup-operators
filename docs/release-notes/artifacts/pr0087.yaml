@@ -1,7 +1,7 @@
 version_schema: 2
 
 changes:
-- title: Onboarded the documentation tooling to centrally managed Copier templates
+- title: Moved the documentation tooling to centrally managed Copier templates
   author: swetha1654
   type: minor
   description: Replaced the legacy starter pack documentation tooling with the centrally managed platform-engineering-documentation-files template and added a scheduled workflow that keeps it in sync. There is no change to the charms or their documented behavior.

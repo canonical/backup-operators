@@ -10,7 +10,7 @@ Each revision is versioned by the date of the revision.
 
 ## 2026-10-19
 
-* Onboarded the documentation tooling to the centrally managed `platform-engineering-documentation-files` Copier template, replacing the legacy starter pack files, and added a scheduled workflow that keeps the tooling in sync. Set the documentation license to Apache-2.0 and added a description for `llms.txt`. There is no change to the charms.
+* Moved the documentation tooling to the centrally managed `platform-engineering-documentation-files` Copier template, replacing the legacy starter pack files, and added a scheduled workflow that keeps the tooling in sync. Set the documentation license to Apache-2.0 and added a description for `llms.txt`. There is no change to the charms.
 
 ## 2026-10-15
 
