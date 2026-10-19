@@ -82,8 +82,8 @@ html_context = {
     "author": author,
     # Documentation license information
     "license": {
-        "name": "",
-        "url": "",
+        "name": "Apache-2.0",
+        "url": "https://github.com/canonical/backup-operators/blob/main/LICENSE",
     },
 }
 
@@ -164,7 +164,7 @@ rediraffe_dir_only = True
 # product docs.
 llms_txt_description = textwrap.dedent(
     """\
-    
+    Documentation for Backup Operators, a collection of Juju charms that provide a highly integrated, low-operations file-level backup solution, based on Bacula, for charms running in machine environments.
     """
 )
 
