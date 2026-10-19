@@ -55,7 +55,7 @@ ogp_image = "https://assets.ubuntu.com/v1/cc828679-docs_illustration.svg"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_context
 html_context = {
     # Product page URL; can be different from product docs URL
-    "product_page": "https://github.com/canonical/backup-operators",
+    "product_page": "https://charmhub.io/bacula-server",
 
     # Your Discourse instance URL
     "discourse": "https://discourse.charmhub.io",
@@ -273,6 +273,4 @@ rst_epilog = """
 # Intersphinx mappings for cross-referencing external documentation.
 intersphinx_mapping = {
     "juju": ("https://canonical.com/juju/docs/juju-cli/3.6/", None),
-    "starter-pack": ("https://canonical-sphinx-stack.readthedocs-hosted.com/latest/", None),
-    "sphinxcontrib-mermaid": ("https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest", None),
 }
