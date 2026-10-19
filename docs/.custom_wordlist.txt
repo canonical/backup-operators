@@ -3,5 +3,4 @@ Baculum
 conntrack
 iptables
 minio
-PRs
 sudo
