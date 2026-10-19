@@ -18,7 +18,7 @@ mattermost: ''
 new_domain: canonical.com/juju/docs/backup-charms
 ogp_image: https://assets.ubuntu.com/v1/cc828679-docs_illustration.svg
 old_domain: canonical-backup-charms.readthedocs-hosted.com
-product_page: https://charmhub.io/bacula-server
+product_page: charmhub.io/bacula-server
 product_tag: ''
 project: Backup Operators
 repo_default_branch: main

@@ -55,7 +55,7 @@ ogp_image = "https://assets.ubuntu.com/v1/cc828679-docs_illustration.svg"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_context
 html_context = {
     # Product page URL; can be different from product docs URL
-    "product_page": "https://charmhub.io/bacula-server",
+    "product_page": "charmhub.io/bacula-server",
 
     # Your Discourse instance URL
     "discourse": "https://discourse.charmhub.io",
