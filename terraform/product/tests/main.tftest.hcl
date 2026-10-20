@@ -61,7 +61,20 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.metadata.risk == "edge"
-    error_message = "the metadata should report the requested risk"
+    condition     = output.models.backup.components.bacula_server.charm[0].channel == "latest/edge"
+    error_message = "the bacula-server channel should reflect the requested risk"
   }
+}
+
+run "invalid_risk" {
+  command = plan
+
+  variables {
+    model_uuid = run.setup_tests.model_uuid
+    risk       = "beta"
+  }
+
+  expect_failures = [
+    var.risk,
+  ]
 }
